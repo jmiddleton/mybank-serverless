@@ -1,0 +1,81 @@
+service: mybank-backend
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: ap-southeast-2
+  stage: dev
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  create:
+    handler: payees/create.create
+    events:
+      - http:
+          path: payees
+          method: post
+          cors: true
+
+  list:
+    handler: payees/list.list
+    events:
+      - http:
+          path: payees
+          method: get
+          cors: true
+
+  get:
+    handler: payees/get.get
+    events:
+      - http:
+          path: payees/{id}
+          method: get
+          cors: true
+
+  update:
+    handler: payees/update.update
+    events:
+      - http:
+          path: payees/{id}
+          method: put
+          cors: true
+
+  delete:
+    handler: payees/delete.delete
+    events:
+      - http:
+          path: payees/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    PayeesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: payeeId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: payeeId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
