@@ -9,6 +9,7 @@ provider:
   stage: dev
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -19,8 +20,40 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ACCOUNTS_TABLE}"
 
 functions:
+  accounts:
+    handler: accounts/accounts.handler
+    events:
+      - http: 
+          path: '/accounts'
+          method: ANY
+          cors: true
+      - http: 
+          path: '/accounts/{proxy+}'
+          method: ANY
+          cors: true
+  payees:
+    handler: payees/payees.handler
+    events:
+      - http: 
+          path: '/payees2'
+          method: ANY
+          cors: true
+      - http:
+          path: '/payees2/{proxy+}'
+          method: ANY
+          cors: true
+      
   create:
     handler: payees/create.create
     events:
@@ -79,3 +112,19 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+    AccountsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: accountId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: accountId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.ACCOUNTS_TABLE}

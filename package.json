@@ -5,6 +5,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.419.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "serverless-http": "^1.9.1",
     "uuid": "^2.0.3"
   }
 }
