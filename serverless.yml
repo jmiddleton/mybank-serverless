@@ -10,6 +10,8 @@ provider:
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
+    ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
+    BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -29,18 +31,56 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ACCOUNTS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.BALANCES_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ACCOUNTS_DETAILS_TABLE}"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline #serverless-offline needs to be last in the list
+
+custom:
+  dynamodb:
+    start:
+      migrate: true
 
 functions:
   accounts:
     handler: accounts/accounts.handler
     events:
       - http: 
-          path: '/accounts'
+          path: '/cds-au/v1/banking/accounts'
           method: ANY
           cors: true
       - http: 
-          path: '/accounts/{proxy+}'
+          path: '/cds-au/v1/banking/accounts/{proxy+}'
           method: ANY
+          cors: true
+  balances:
+    handler: accounts/balances.handler
+    events:
+      - http: 
+          path: '/cds-au/v1/banking/internal/balances'
+          method: ANY
+          cors: true
+      - http: 
+          path: '/cds-au/v1/banking/accounts/balances'
+          method: GET
           cors: true
   payees:
     handler: payees/payees.handler
@@ -118,13 +158,63 @@ resources:
       Properties:
         AttributeDefinitions:
           -
+            AttributeName: customerId
+            AttributeType: S
+          - 
             AttributeName: accountId
             AttributeType: S
         KeySchema:
           -
-            AttributeName: accountId
+            AttributeName: customerId
             KeyType: HASH
+          -
+            AttributeName: accountId
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
+    AccountsDetailsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: accountId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: accountId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.ACCOUNTS_DETAILS_TABLE}
+    BalancesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: accountId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: accountId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.BALANCES_TABLE}

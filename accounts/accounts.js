@@ -7,11 +7,22 @@ const express = require('express');
 
 const app = express();
 const ACCOUNT_TABLE = process.env.ACCOUNTS_TABLE;
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const ACCOUNTS_DETAILS_TABLE = process.env.ACCOUNTS_DETAILS_TABLE;
+const BASE_PATH = '/cds-au/v1/banking/accounts';
+
+var dynamodbOfflineOptions = {
+  region: "localhost",
+  endpoint: "http://localhost:8000"
+},
+  isOffline = () => process.env.IS_OFFLINE;
+
+const dynamoDb = isOffline()
+  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+  : new AWS.DynamoDB.DocumentClient();
 
 app.use(bodyParser.json({ strict: false }));
 
-app.get('/accounts', function (req, res) {
+app.get(BASE_PATH + '/', function (req, res) {
   const params = {
     TableName: ACCOUNT_TABLE,
     Limit: 500
@@ -25,20 +36,36 @@ app.get('/accounts', function (req, res) {
     }
 
     // create a response
-    if (result) {
-      res.json(result);
+    if (result && result.Items) {
+      const response = {
+        data: {
+          accounts: result.Items
+        },
+        links: {
+          self: "/accounts?page=0",
+          first: "",
+          prev: "",
+          next: "",
+          last: ""
+        },
+        meta: {
+          totalRecords: result.Items.length,
+          totalPages: 1
+        }
+      }
+      res.json(response);
     } else {
       res.status(404).json({ error: "Account not found" });
     }
   });
 });
 
-
-// Get account endpoint
-app.get('/accounts/:accountId', function (req, res) {
+// Get account details endpoint
+app.get(BASE_PATH + '/:accountId', function (req, res) {
   const params = {
-    TableName: ACCOUNT_TABLE,
+    TableName: ACCOUNTS_DETAILS_TABLE,
     Key: {
+      customerId: 'test',
       accountId: req.params.accountId,
     }
   };
@@ -52,22 +79,53 @@ app.get('/accounts/:accountId', function (req, res) {
     }
 
     if (result && result.Item) {
-      res.json(result.Item);
+      const response = {
+        data: result.Item
+      }
+      res.json(response);
     } else {
       res.status(404).json({ error: "Account not found" });
     }
   });
 });
 
-app.post('/accounts/:accountId', function (req, res) {
+app.post(BASE_PATH + '/', function (req, res) {
   const timestamp = new Date().getTime();
-  const data = JSON.parse(req.body);
+  const data = req.body;
   data.created = timestamp;
+  data.customerId = req.apiGateway ? req.apiGateway.event.requestContext.authorizer.principalId : "test";
 
   const params = {
     TableName: ACCOUNT_TABLE,
     Item: data
   };
+
+  // write the account to the database
+  dynamoDb.put(params, (error) => {
+    // handle potential errors
+    if (error) {
+      console.error(error);
+      res.status(400).json({ error: 'Could not create the account' });
+    }
+
+    // create a response
+    res.json(params.Item);
+  });
+});
+
+app.post(BASE_PATH + '/:accountId', function (req, res) {
+  const timestamp = new Date().getTime();
+  const data = req.body;
+  data.created = timestamp;
+  data.customerId = req.apiGateway ? req.apiGateway.event.requestContext.authorizer.principalId : "test";
+  data.accountId = req.params.accountId
+
+  const params = {
+    TableName: ACCOUNTS_DETAILS_TABLE,
+    Item: data
+  };
+
+  console.log("JORGE: " + params.Item.customerId);
 
   // write the account to the database
   dynamoDb.put(params, (error) => {

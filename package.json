@@ -10,5 +10,9 @@
     "express": "^4.16.4",
     "serverless-http": "^1.9.1",
     "uuid": "^2.0.3"
+  },
+  "devDependencies": {
+    "serverless-offline": "^4.9.0",
+    "serverless-dynamodb-local": "^0.2.36"
   }
 }

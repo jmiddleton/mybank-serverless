@@ -7,7 +7,18 @@ const express = require('express');
 
 const app = express();
 const PAYEE_TABLE = process.env.DYNAMODB_TABLE;
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+var dynamodbOfflineOptions = {
+  region: "localhost",
+  endpoint: "http://localhost:8000"
+},
+isOffline = () => process.env.IS_OFFLINE;
+
+const dynamoDb = isOffline()
+? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+: new AWS.DynamoDB.DocumentClient();
+
+//const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 app.use(bodyParser.json({ strict: false }));
 
