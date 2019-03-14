@@ -1,13 +1,11 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const serverless = require('serverless-http');
-const bodyParser = require('body-parser');
-const express = require('express');
 
-const app = express();
-const BALANCES_TABLE = process.env.BALANCES_TABLE;
-const BASE_PATH = '/cds-au/v1/banking';
+const collectionHandlers = {
+  "GET": getBalances,
+  "POST": createBalance
+}
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -19,26 +17,50 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-app.use(bodyParser.json({ strict: false }));
+module.exports.handler = (event, context, callback) => {
+  let handlers = (event["pathParameters"] == null) ? collectionHandlers : methodHandlers;
 
-// Get bulk balances endpoint
-app.get(BASE_PATH + '/accounts/balances', function (req, res) {
+  let httpMethod = event["httpMethod"];
+  if (httpMethod in handlers) {
+    return handlers[httpMethod](event, context, callback);
+  }
+
+  const response = {
+    statusCode: 405,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": true
+    },
+    body: JSON.stringify({
+      message: `Invalid HTTP Method: ${httpMethod}`
+    }),
+  };
+
+  callback(null, response);
+};
+
+function getBalances(event, context, callback) {
   const params = {
-    TableName: BALANCES_TABLE,
+    TableName: process.env.BALANCES_TABLE,
+    Limit: 500,
     KeyConditionExpression: 'customerId = :customerId',
     ExpressionAttributeValues: {
-      ':customerId': 'test'
+      ':customerId': event.requestContext.authorizer.principalId
     }
   };
 
   dynamoDb.query(params, (error, result) => {
     if (error) {
-      console.error(error);
-      res.status(400).json({ error: 'Could not get balances' });
+      callback(null, {
+        statusCode: error.statusCode || 501,
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'Couldn\'t find balances.',
+      });
     }
 
+    // create a response
     if (result && result.Items) {
-      const response = {
+      const body = {
         data: {
           balances: result.Items
         },
@@ -54,35 +76,27 @@ app.get(BASE_PATH + '/accounts/balances', function (req, res) {
           totalPages: 1
         }
       }
-      res.json(response);
+
+      const response = {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true
+        },
+        body: JSON.stringify(body)
+      };
+
+      callback(null, response);
     } else {
-      res.status(404).json({ error: "Balances not found" });
+      callback(null, {
+        statusCode: 404,
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'Balances not found'
+      });
     }
   });
-});
+}
 
-app.post(BASE_PATH + '/internal/balances', function (req, res) {
-  const timestamp = new Date().getTime();
-
-  console.log(req);
-
-  const data = req.body;
-  data.created = timestamp;
-  data.customerId = "test";
-
-  const params = {
-    TableName: BALANCES_TABLE,
-    Item: data
-  };
-
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      console.error(error);
-      res.status(400).json({ error: 'Could not create balance' });
-    }
-
-    res.json(params.Item);
-  });
-});
-
-module.exports.handler = serverless(app);
+// Create balance
+function createBalance(event, context, callback) {
+}

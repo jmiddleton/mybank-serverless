@@ -1,0 +1,50 @@
+[
+    {
+        "customerId": "test",
+        "accountId": "5245245rfsfg",
+        "displayName": "Net Saver",
+        "nickname": "string",
+        "maskedNumber": "063000 3452450",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "TRANS_AND_SAVINGS_ACCOUNTS",
+        "productName": "Net Saver",
+        "institution": "cba"
+    },
+    {
+        "customerId": "test",
+        "accountId": "33333333fffff",
+        "displayName": "Day to Day Account",
+        "nickname": "string",
+        "maskedNumber": "342085 5635658",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "TRANS_AND_SAVINGS_ACCOUNTS",
+        "productName": "Day to Day Account",
+        "institution": "hsbc"
+    },
+    {
+        "customerId": "test",
+        "accountId": "5365635645",
+        "displayName": "Credit Card",
+        "nickname": "string",
+        "maskedNumber": "**** **** **** 1922",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "CRED_AND_CHRG_CARDS",
+        "productName": "string",
+        "institution": "citi"
+    },
+    {
+        "customerId": "test_123",
+        "accountId": "451212111",
+        "displayName": "Term Deposit",
+        "nickname": "string",
+        "maskedNumber": "TD-3431922",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "TERM_DEPOSITS",
+        "productName": "High Interest Savings Account",
+        "institution": "rabo"
+    }
+]

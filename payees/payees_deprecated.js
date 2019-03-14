@@ -6,7 +6,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 
 const app = express();
-const PAYEE_TABLE = process.env.DYNAMODB_TABLE;
+const PAYEE_TABLE = process.env.PAYEES_TABLE;
+const BASE_PATH = '/cds-au/v1/banking/payees';
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -18,17 +19,22 @@ const dynamoDb = isOffline()
 ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
 : new AWS.DynamoDB.DocumentClient();
 
-//const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
 app.use(bodyParser.json({ strict: false }));
 
-app.get('/payees2', function (req, res) {
+// Get all payees of a customer
+app.get(BASE_PATH+'/', function (req, res) {
+  let principal = req.requestContext.authorizer.principalId;
+
   const params = {
     TableName: PAYEE_TABLE,
-    Limit: 500
+    Limit: 500,
+    KeyConditionExpression: 'customerId = :customerId',
+    ExpressionAttributeValues: {
+      ':customerId': principal
+    }
   };
   
-  dynamoDb.scan(params, (error, result) => {
+  dynamoDb.query(params, (error, result) => {
     // handle potential errors
     if (error) {
       console.error(error);
@@ -46,12 +52,15 @@ app.get('/payees2', function (req, res) {
   });
 });
 
-// Get Payee endpoint
-app.get('/payees2/:payeeId', function (req, res) {
+// Get Payee details
+app.get(BASE_PATH+'/:payeeId', function (req, res) {
+  let principal = req.requestContext.authorizer.principalId;
+
   const params = {
     TableName: PAYEE_TABLE,
     Key: {
-      payeeId: req.params.payeeId,
+      customerId: principal,
+      payeeId: req.params.payeeId
     }
   };
 

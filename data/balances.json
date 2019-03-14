@@ -1,0 +1,70 @@
+[
+    {
+        "customerId": "test",
+        "accountId": "5245245rfsfg",
+        "balanceUType": "deposit",
+        "deposit": {
+            "currentBalance": {
+                "amount": "1234.90",
+                "currency": "AUD"
+            },
+            "availableBalance": {
+                "amount": "2000",
+                "currency": "AUD"
+            }
+        }
+    },
+    {
+        "customerId": "test",
+        "accountId": "33333333fffff",
+        "balanceUType": "deposit",
+        "deposit": {
+            "currentBalance": {
+                "amount": "3500.90",
+                "currency": "AUD"
+            },
+            "availableBalance": {
+                "amount": "3000",
+                "currency": "AUD"
+            }
+        }
+    },
+    {
+        "customerId": "test",
+        "accountId": "5365635645",
+        "balanceUType": "lending",
+        "lending": {
+            "accountBalance": {
+                "amount": "5500",
+                "currency": "AUD"
+            },
+            "availableBalance": {
+                "amount": "4500",
+                "currency": "AUD"
+            },
+            "creditLimit": {
+                "amount": "10000",
+                "currency": "AUD"
+            },
+            "amortisedLimit": {
+                "amount": "0",
+                "currency": "AUD"
+            }
+        }
+    },
+    {
+        "customerId": "test_123",
+        "accountId": "451212111",
+        "balanceUType": "deposit",
+        "deposit": {
+            "currentBalance": {
+                "amount": "135000",
+                "currency": "AUD"
+            },
+            "availableBalance": {
+                "amount": "135000",
+                "currency": "AUD"
+            }
+        }
+    }
+]

@@ -2,14 +2,27 @@
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-const params = {
-  TableName: process.env.DYNAMODB_TABLE,
-};
+var dynamodbOfflineOptions = {
+  region: "localhost",
+  endpoint: "http://localhost:8000"
+},
+  isOffline = () => process.env.IS_OFFLINE;
+
+const dynamoDb = isOffline()
+  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+  : new AWS.DynamoDB.DocumentClient();
 
 module.exports.list = (event, context, callback) => {
-  // fetch all todos from the database
-  dynamoDb.scan(params, (error, result) => {
+  const params = {
+    TableName: process.env.PAYEES_TABLE,
+    Limit: 500,
+    KeyConditionExpression: 'customerId = :customerId',
+    ExpressionAttributeValues: {
+      ':customerId': event.requestContext.authorizer.principalId
+    }
+  };
+
+  dynamoDb.query(params, (error, result) => {
     // handle potential errors
     if (error) {
       console.error(error);

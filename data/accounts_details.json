@@ -1,0 +1,79 @@
+[
+    {
+        "customerId": "test",
+        "accountId": "5245245rfsfg",
+        "displayName": "Net Saver",
+        "nickname": "string",
+        "maskedNumber": "063000 3452450",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "PERS_AT_CALL_DEPOSITS",
+        "productName": "Net Saver",
+        "bsb": "063000",
+        "accountNumber": "3452450",
+        "bundleName": "string",
+        "specificAccountUType": "depositRates",
+        "institution": "cba",
+        "depositRates": [
+            {
+                "depositRateType": "FIXED",
+                "rate": "1.50",
+                "additionalInfoUri": "https://www.commbank.com.au/banking/netbank-saver.html?ei=NBSaver1"
+            },
+            {
+                "depositRateType": "BONUS",
+                "rate": "1.80"
+            }
+        ]
+    },
+    {
+        "customerId": "test",
+        "accountId": "33333333fffff",
+        "displayName": "Day to Day Account",
+        "nickname": "string",
+        "maskedNumber": "342085 5635658",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "PERS_AT_CALL_DEPOSITS",
+        "productName": "Day to Day Account",
+        "institution": "hsbc",
+        "specificAccountUType": "depositRates",
+        "depositRates": [
+            {
+                "depositRateType": "FIXED",
+                "rate": "0.50",
+                "additionalInfoUri": "https://www.hsbc.com.au/accounts/products/day-to-day/"
+            },
+            {
+                "depositRateType": "BONUS",
+                "rate": "2.00"
+            },
+            {
+                "depositRateType": "PROMOTION",
+                "rate": "0.60"
+            }
+        ]
+    },
+    {
+        "customerId": "test",
+        "accountId": "5365635645",
+        "displayName": "Credit Card",
+        "nickname": "string",
+        "maskedNumber": "**** **** **** 1922",
+        "openStatus": "OPEN",
+        "isOwned": "true",
+        "productCategory": "PERS_CRED_AND_CHRG_CARDS",
+        "productName": "string",
+        "bsb": "string",
+        "accountNumber": "string",
+        "bundleName": "string",
+        "institution": "citi",
+        "specificAccountUType": "creditCard",
+        "creditCard": {
+            "minPaymentAmount": "120",
+            "paymentDueAmount": "1500",
+            "paymentCurrency": "AUD",
+            "paymentDueDate": "2019-03-08T22:29:32.279Z"
+        }
+    }
+]

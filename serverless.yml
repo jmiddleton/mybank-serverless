@@ -7,8 +7,18 @@ provider:
   runtime: nodejs8.10
   region: ap-southeast-2
   stage: dev
+  apiKeys:
+    - ${opt:stage, self:provider.stage}-apikey
+  usagePlan:
+    quota:
+      limit: 5000
+      offset: 2
+      period: MONTH
+    throttle:
+      burstLimit: 20
+      rateLimit: 10
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    PAYEES_TABLE: payees-${opt:stage, self:provider.stage}
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
@@ -21,7 +31,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.PAYEES_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -58,8 +68,24 @@ custom:
   dynamodb:
     start:
       migrate: true
+      inMemory: false
+      seed: true
+    seed:
+      domain:
+        sources:
+          - table: payees-dev
+            sources: [./data/payees.json]
+          - table: accounts-dev
+            sources: [./data/accounts.json]
+          - table: accounts-details-dev
+            sources: [./data/accounts_details.json]
+          - table: balances-dev
+            sources: [./data/balances.json]
 
 functions:
+  auth-jwt-token:
+    handler: auth/dummy_authorizer.auth
+    cors: true
   accounts:
     handler: accounts/accounts.handler
     events:
@@ -67,55 +93,75 @@ functions:
           path: '/cds-au/v1/banking/accounts'
           method: ANY
           cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
       - http: 
-          path: '/cds-au/v1/banking/accounts/{proxy+}'
+          path: '/cds-au/v1/banking/accounts/{accountId}'
           method: ANY
           cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+
   balances:
     handler: accounts/balances.handler
     events:
       - http: 
-          path: '/cds-au/v1/banking/internal/balances'
-          method: ANY
+          path: '/cds-au/v1/banking/accounts/balances'
+          method: POST
           cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
       - http: 
           path: '/cds-au/v1/banking/accounts/balances'
           method: GET
           cors: true
-  payees:
-    handler: payees/payees.handler
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+
+  list:
+    handler: payees/list.list
     events:
-      - http: 
-          path: '/payees2'
-          method: ANY
-          cors: true
       - http:
-          path: '/payees2/{proxy+}'
-          method: ANY
+          path: '/cds-au/v1/banking/payees'
+          method: get
           cors: true
-      
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+
+  get:
+    handler: payees/get.get
+    events:
+      - http:
+          path: '/cds-au/v1/banking/payees/{id}'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+
   create:
     handler: payees/create.create
     events:
       - http:
           path: payees
           method: post
-          cors: true
-
-  list:
-    handler: payees/list.list
-    events:
-      - http:
-          path: payees
-          method: get
-          cors: true
-
-  get:
-    handler: payees/get.get
-    events:
-      - http:
-          path: payees/{id}
-          method: get
           cors: true
 
   update:
@@ -142,16 +188,22 @@ resources:
       Properties:
         AttributeDefinitions:
           -
+            AttributeName: customerId
+            AttributeType: S
+          -
             AttributeName: payeeId
             AttributeType: S
         KeySchema:
           -
-            AttributeName: payeeId
+            AttributeName: customerId
             KeyType: HASH
+          -
+            AttributeName: payeeId
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.PAYEES_TABLE}
     AccountsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
