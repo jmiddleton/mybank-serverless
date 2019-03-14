@@ -2,15 +2,24 @@
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+var dynamodbOfflineOptions = {
+  region: "localhost",
+  endpoint: "http://localhost:8000"
+},
+  isOffline = () => process.env.IS_OFFLINE;
+
+const dynamoDb = isOffline()
+  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+  : new AWS.DynamoDB.DocumentClient();
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
   data.created = timestamp;
+  data.customerId = event.requestContext.authorizer.principalId;
 
   const params = {
-    TableName: process.env.DYNAMODB_TABLE,
+    TableName: process.env.PAYEES_TABLE,
     Item: data
   };
 

@@ -1,8 +1,16 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const AWS = require('aws-sdk');
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+var dynamodbOfflineOptions = {
+  region: "localhost",
+  endpoint: "http://localhost:8000"
+},
+  isOffline = () => process.env.IS_OFFLINE;
+
+const dynamoDb = isOffline()
+  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+  : new AWS.DynamoDB.DocumentClient();
 
 module.exports.update = (event, context, callback) => {
   const timestamp = new Date().getTime();
@@ -21,9 +29,10 @@ module.exports.update = (event, context, callback) => {
   // }
 
   const params = {
-    TableName: process.env.DYNAMODB_TABLE,
+    TableName: process.env.PAYEES_TABLE,
     Key: {
       'payeeId': event.pathParameters.id,
+      'customerId': event.requestContext.authorizer.principalId
     },
     ExpressionAttributeNames: {
       '#nn': 'name',
@@ -34,10 +43,9 @@ module.exports.update = (event, context, callback) => {
       ':BSB': data.BSB,
       ':accountNumber': data.accountNumber,
       ':payeeType': data.payeeType,
-      ':customerId': data.customerId,
       ':updatedAt': timestamp
     },
-    UpdateExpression: 'SET #nn = :name, description = :description, BSB = :BSB, accountNumber = :accountNumber, payeeType = :payeeType, customerId = :customerId, updatedAt = :updatedAt',
+    UpdateExpression: 'SET #nn = :name, description = :description, BSB = :BSB, accountNumber = :accountNumber, payeeType = :payeeType, updatedAt = :updatedAt',
     ReturnValues: 'UPDATED_NEW',
   };
 

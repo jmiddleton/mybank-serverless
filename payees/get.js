@@ -14,7 +14,7 @@ const dynamoDb = isOffline()
 
 module.exports.get = (event, context, callback) => {
   const params = {
-    TableName: process.env.DYNAMODB_TABLE,
+    TableName: process.env.PAYEES_TABLE,
     Key: {
       customerId: event.requestContext.authorizer.principalId,
       payeeId: event.pathParameters.id,

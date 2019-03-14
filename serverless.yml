@@ -22,6 +22,7 @@ provider:
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
+    TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -59,6 +60,12 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.ACCOUNTS_DETAILS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TRANSACTIONS_TABLE}"
 
 plugins:
   - serverless-dynamodb-local
@@ -81,6 +88,8 @@ custom:
             sources: [./data/accounts_details.json]
           - table: balances-dev
             sources: [./data/balances.json]
+          - table: transactions-dev
+            sources: [./data/transactions.json]
 
 functions:
   auth-jwt-token:
@@ -130,6 +139,19 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
 
+  transactions:
+    handler: accounts/transactions.handler
+    events:
+      - http: 
+          path: '/cds-au/v1/banking/accounts/{accountId}/transactions'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+            
   list:
     handler: payees/list.list
     events:
@@ -160,25 +182,40 @@ functions:
     handler: payees/create.create
     events:
       - http:
-          path: payees
+          path: '/cds-au/v1/banking/payees'
           method: post
           cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
 
   update:
     handler: payees/update.update
     events:
       - http:
-          path: payees/{id}
+          path: '/cds-au/v1/banking/payees/{id}'
           method: put
           cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
 
   delete:
     handler: payees/delete.delete
     events:
       - http:
-          path: payees/{id}
+          path: '/cds-au/v1/banking/payees/{id}'
           method: delete
           cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
 
 resources:
   Resources:
@@ -270,3 +307,25 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.BALANCES_TABLE}
+    TransactionsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: accountId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: accountId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.TRANSACTIONS_TABLE}
