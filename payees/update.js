@@ -17,6 +17,7 @@ module.exports.update = (event, context, callback) => {
   const data = JSON.parse(event.body);
 
   console.log(data);
+  console.log('----------');
   // validation
   // if (typeof data.idPayee !== 'string') {
   //   console.error('Validation Failed');
@@ -28,26 +29,54 @@ module.exports.update = (event, context, callback) => {
   //   return;
   // }
 
-  const params = {
+  var params = {
     TableName: process.env.PAYEES_TABLE,
     Key: {
       'payeeId': event.pathParameters.id,
       'customerId': event.requestContext.authorizer.principalId
     },
     ExpressionAttributeNames: {
-      '#nn': 'name',
+      '#nn': 'nickname',
+      '#typp': 'type',
     },
     ExpressionAttributeValues: {
-      ':name': data.name,
+      ':nickname': data.nickname,
       ':description': data.description,
-      ':BSB': data.BSB,
-      ':accountNumber': data.accountNumber,
-      ':payeeType': data.payeeType,
-      ':updatedAt': timestamp
+      ':typp': data.type,
+      ':payeeUType': data.payeeUType,
+      ':updatedAt': timestamp,
     },
-    UpdateExpression: 'SET #nn = :name, description = :description, BSB = :BSB, accountNumber = :accountNumber, payeeType = :payeeType, updatedAt = :updatedAt',
+    UpdateExpression: 'SET #nn = :nickname, description = :description, #typp = :typp, payeeUType = :payeeUType, updatedAt = :updatedAt',
     ReturnValues: 'UPDATED_NEW',
   };
+
+  if (data.domestic) {
+    params.ExpressionAttributeNames['#dom'] = 'domestic';
+    params.ExpressionAttributeNames['#biller'] = 'biller';
+    params.ExpressionAttributeNames['#int'] = 'international';
+    params.UpdateExpression = params.UpdateExpression + ', #dom = :domestic REMOVE #biller, #int';
+    params.ExpressionAttributeValues[':domestic'] = {
+      'payeeAccountUType': 'account',
+      'account': {
+        'accountName': data.domestic.account.accountName,
+        'bsb': data.domestic.account.accountNumber,
+        'accountNumber': data.domestic.account.bsb
+      }
+    };
+
+  } else if (data.biller) {
+    params.ExpressionAttributeNames['#biller'] = 'biller';
+    params.ExpressionAttributeNames['#dom'] = 'domestic';
+    params.ExpressionAttributeNames['#int'] = 'international';
+    params.UpdateExpression += ', #biller = :biller REMOVE #dom, #int';
+    params.ExpressionAttributeValues[':biller'] = {
+      'billerName': data.biller.billerName,
+      'billerCode': data.biller.billerCode,
+      'crn': data.biller.crn
+    };
+  }
+
+  console.log(params);
 
   // update the todo in the database
   dynamoDb.update(params, (error, result) => {

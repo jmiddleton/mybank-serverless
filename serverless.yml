@@ -151,7 +151,8 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-            
+
+#payees functions          
   list:
     handler: payees/list.list
     events:

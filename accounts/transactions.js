@@ -13,20 +13,26 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = (event, context, callback) => {
+  const pagesize = event.queryStringParameters['page-size'];
+
+  //console.log(JSON.stringify(event));
 
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
-    Limit: 500,
-    FilterExpression: 'customerId = :customerId and begins_with(accountId, :accountId)',
+    KeyConditionExpression: 'customerId = :customerId and begins_with(accountId, :accountId)',
+    //    FilterExpression: '',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
       ':accountId': event.pathParameters.accountId,
     }
   };
+  params.Limit = pagesize ? pagesize : 50;
 
-  console.log(JSON.stringify(params));
+  if (event.queryStringParameters.nextkey) {
+    params.ExclusiveStartKey = decodeAsJson(event.queryStringParameters.nextkey);
+  }
 
-  dynamoDb.scan(params, (error, result) => {
+  dynamoDb.query(params, (error, result) => {
     if (error) {
       console.log(error);
       callback(null, {
@@ -38,22 +44,12 @@ module.exports.handler = (event, context, callback) => {
 
     // create a response
     if (result && result.Items) {
-      const body = {
+      var body = {
         data: {
           transactions: result.Items
-        },
-        links: {
-          self: "/accounts/" + event.pathParameters.accountId + "/transactions?page=0",
-          first: "",
-          prev: "",
-          next: "",
-          last: ""
-        },
-        meta: {
-          totalRecords: result.Items.length,
-          totalPages: 1
         }
       }
+      addPaginationLinks(body, event.pathParameters, event.queryStringParameters, result);
 
       const response = {
         statusCode: 200,
@@ -63,6 +59,8 @@ module.exports.handler = (event, context, callback) => {
         },
         body: JSON.stringify(body)
       };
+
+      console.log(JSON.stringify(response));
 
       callback(null, response);
     } else {
@@ -74,3 +72,39 @@ module.exports.handler = (event, context, callback) => {
     }
   });
 };
+
+function addPaginationLinks(body, pathParameters, query, result) {
+  var links = {
+  };
+  var meta = {
+    totalRecords: result.Count,
+    totalPages: 1
+  }
+
+  const basepath = "/accounts/" + pathParameters.accountId + "/transactions?";
+  links.self = basepath + "text=" + query.text + "&nextkey=" + query.nextkey;
+  links.first = basepath + "text=" + query.text;
+  links.next = basepath + "text=" + query.text + "&nextkey=" + encodeJson(result.LastEvaluatedKey);
+
+  //  prev: "",
+  //  last: ""
+
+  body.links = links;
+  body.meta = meta;
+}
+
+function encodeJson(data) {
+  if (data) {
+    let buff = new Buffer(JSON.stringify(data));
+    return buff.toString('base64');
+  }
+  return "";
+}
+
+function decodeAsJson(data) {
+  if (data) {
+    let buff = new Buffer(data, 'base64');
+    return JSON.parse(buff.toString('ascii'));
+  }
+  return {};
+}

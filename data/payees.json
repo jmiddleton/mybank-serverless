@@ -1,93 +1,36 @@
 [
     {
-        "BSB": "858547",
-        "updatedAt": 1552223324485,
-        "created": 1551538277995,
+        "customerId": "test",
         "payeeId": "5c6059uhdis",
         "description": "This is my friend account",
-        "accountNumber": "69557949",
-        "name": "dolly",
+        "nickname": "test",
+        "type": "DOMESTIC",
+        "creationDate": "2019-01-20",
+        "payeeUType": "domestic",
+        "domestic": {
+            "payeeAccountUType": "account",
+            "account": {
+                "accountName": "Net saver",
+                "bsb": "858547",
+                "accountNumber": "69557949"
+            }
+        }
+    },
+    {
         "customerId": "test",
-        "payeeType": "PRT"
-    },
-    {
-        "BSB": "454830",
-        "created": 1551538936484,
-        "payeeId": "pan3xk40oul",
-        "description": "This is my friend account",
-        "name": "miller",
-        "accountNumber": "70881593",
-        "payeeType": "PRT",
-        "customerId": "test"
-    },
-    {
-        "BSB": "593289",
-        "created": 1551538910317,
-        "payeeId": "85hhpq21a4h",
-        "description": "This is my friend account",
-        "name": "producer",
-        "accountNumber": "18529855",
-        "payeeType": "PRT",
-        "customerId": "test"
-    },
-    {
-        "BSB": "936875",
-        "created": 1551538953614,
-        "payeeId": "arxumfrhbtj",
-        "description": "This is my friend account",
-        "name": "senor",
-        "accountNumber": "14950570",
-        "payeeType": "PRT",
-        "customerId": "test"
-    },
-    {
-        "BSB": "471913",
-        "created": 1551538573483,
-        "payeeId": "gphoxxc755",
-        "description": "This is my friend account",
-        "name": "captain",
-        "accountNumber": "51743427",
-        "payeeType": "PRT",
-        "customerId": "test"
-    },
-    {
-        "BSB": "116626",
-        "created": 1551539046354,
-        "payeeId": "66pydzuouwv",
-        "description": "This is my friend account",
-        "name": "potato",
-        "accountNumber": "81800998",
-        "payeeType": "PRT",
-        "customerId": "test"
-    },
-    {
-        "BSB": "517331",
-        "created": 1551538585289,
-        "payeeId": "xee5dzq116",
-        "description": "This is my friend account",
-        "name": "exorcism",
-        "accountNumber": "69531038",
-        "payeeType": "PRT",
-        "customerId": "test_123"
-    },
-    {
-        "BSB": "332729",
-        "created": 1551538566547,
-        "payeeId": "r6nsyzz0qhh",
-        "description": "This is my friend account",
-        "name": "set decorator",
-        "accountNumber": "51722518",
-        "payeeType": "PRT",
-        "customerId": "test_123"
-    },
-    {
-        "BSB": "063000",
-        "created": 1551537428123,
-        "payeeId": "lrufzb40c2h",
-        "description": "This is my friend account",
-        "name": "X-Men",
-        "accountNumber": "222222",
-        "payeeType": "PRT",
-        "customerId": "test_123"
+        "payeeId": "134134414",
+        "description": "Mum account",
+        "nickname": "This is mum account",
+        "type": "DOMESTIC",
+        "creationDate": "2019-01-21",
+        "payeeUType": "domestic",
+        "domestic": {
+            "payeeAccountUType": "account",
+            "account": {
+                "accountName": "Nick",
+                "bsb": "063000",
+                "accountNumber": "23234234"
+            }
+        }
     }
 ]
