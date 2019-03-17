@@ -23,6 +23,7 @@ provider:
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
+    SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -64,11 +65,28 @@ provider:
       Action:
         - dynamodb:Query
         - dynamodb:Scan
+        - dynamodb:PutItem
         - dynamodb:GetItem
+        - dynamodb:DeleteItem
+        # New permissions needed for stream
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TRANSACTIONS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SPENDING_TABLE}"
 
 plugins:
   - serverless-dynamodb-local
+  - serverless-offline-dynamodb-streams
   - serverless-offline #serverless-offline needs to be last in the list
 
 custom:
@@ -90,16 +108,24 @@ custom:
             sources: [./data/balances.json]
           - table: transactions-dev
             sources: [./data/transactions.json]
+  serverless-offline-dynamodb-streams:
+    apiVersion: 'latest'
+    endpoint: http://localhost:8000
+    region: localhost
+    accessKeyId: root
+    secretAccessKey: root
+    skipCacheInvalidation: false
 
 functions:
   auth-jwt-token:
     handler: auth/dummy_authorizer.auth
     cors: true
+
   accounts:
     handler: accounts/accounts.handler
     events:
       - http: 
-          path: '/cds-au/v1/banking/accounts'
+          path: '/mybank/v1/accounts'
           method: ANY
           cors: true
           private: true
@@ -108,7 +134,7 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
       - http: 
-          path: '/cds-au/v1/banking/accounts/{accountId}'
+          path: '/mybank/v1/accounts/{accountId}'
           method: ANY
           cors: true
           private: true
@@ -121,7 +147,7 @@ functions:
     handler: accounts/balances.handler
     events:
       - http: 
-          path: '/cds-au/v1/banking/accounts/balances'
+          path: '/mybank/v1/accounts/balances'
           method: POST
           cors: true
           private: true
@@ -130,7 +156,7 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
       - http: 
-          path: '/cds-au/v1/banking/accounts/balances'
+          path: '/mybank/v1/accounts/balances'
           method: GET
           cors: true
           private: true
@@ -140,10 +166,39 @@ functions:
             type: token
 
   transactions:
-    handler: accounts/transactions.handler
+    handler: transactions/transactions.handler
     events:
       - http: 
-          path: '/cds-au/v1/banking/accounts/{accountId}/transactions'
+          path: '/mybank/v1/accounts/{accountId}/transactions'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http: 
+          path: 'mybank/v1/transactions'
+          method: post
+          cors: true
+          private: true
+
+  spending-aggregator:
+    handler: analytics/spending-aggregator.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - TransactionsDynamoDbTable
+              - StreamArn
+          batchSize: 1
+
+  spendings:
+    handler: analytics/spending.handler
+    events:
+      - http: 
+          path: '/mybank/v1/analytics/spendings/{month}'
           method: get
           cors: true
           private: true
@@ -157,7 +212,7 @@ functions:
     handler: payees/list.list
     events:
       - http:
-          path: '/cds-au/v1/banking/payees'
+          path: '/mybank/v1/payees'
           method: get
           cors: true
           private: true
@@ -170,7 +225,7 @@ functions:
     handler: payees/get.get
     events:
       - http:
-          path: '/cds-au/v1/banking/payees/{id}'
+          path: '/mybank/v1/payees/{id}'
           method: get
           cors: true
           private: true
@@ -183,7 +238,7 @@ functions:
     handler: payees/create.create
     events:
       - http:
-          path: '/cds-au/v1/banking/payees'
+          path: '/mybank/v1/payees'
           method: post
           cors: true
           private: true
@@ -196,7 +251,7 @@ functions:
     handler: payees/update.update
     events:
       - http:
-          path: '/cds-au/v1/banking/payees/{id}'
+          path: '/mybank/v1/payees/{id}'
           method: put
           cors: true
           private: true
@@ -209,7 +264,7 @@ functions:
     handler: payees/delete.delete
     events:
       - http:
-          path: '/cds-au/v1/banking/payees/{id}'
+          path: '/mybank/v1/payees/{id}'
           method: delete
           cors: true
           private: true
@@ -330,3 +385,27 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.TRANSACTIONS_TABLE}
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+    SpendingsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: month
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: month
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.SPENDING_TABLE}

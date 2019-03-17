@@ -1,7 +1,7 @@
 {
   "name": "mybank-backend",
   "version": "1.0.0",
-  "description": "Serverless CRUD service exposing a REST HTTP interface",
+  "description": "MyBank Serverless Backend",
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -9,6 +9,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "serverless-http": "^1.9.1",
+    "serverless-offline-dynamodb-streams": "^1.5.1",
     "uuid": "^2.0.3"
   },
   "devDependencies": {

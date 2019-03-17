@@ -2,6 +2,11 @@
 
 const AWS = require('aws-sdk');
 
+const handlers = {
+  "GET": getTransactions,
+  "POST": createTransaction
+}
+
 var dynamodbOfflineOptions = {
   region: "localhost",
   endpoint: "http://localhost:8000"
@@ -13,9 +18,30 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = (event, context, callback) => {
-  const pagesize = event.queryStringParameters['page-size'];
 
-  //console.log(JSON.stringify(event));
+  let httpMethod = event["httpMethod"];
+  if (httpMethod in handlers) {
+    return handlers[httpMethod](event, context, callback);
+  }
+
+  const response = {
+    statusCode: 405,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
+    body: JSON.stringify({
+      message: `Invalid HTTP Method: ${httpMethod}`
+    }),
+  };
+
+  callback(null, response);
+};
+
+function getTransactions(event, context, callback) {
+
+  const pagesize = event.queryStringParameters ? event.queryStringParameters['page-size'] : 50;
+  const nextkey = event.queryStringParameters ? event.queryStringParameters.nextkey : "";
 
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
@@ -26,10 +52,10 @@ module.exports.handler = (event, context, callback) => {
       ':accountId': event.pathParameters.accountId,
     }
   };
-  params.Limit = pagesize ? pagesize : 50;
+  params.Limit = pagesize;
 
-  if (event.queryStringParameters.nextkey) {
-    params.ExclusiveStartKey = decodeAsJson(event.queryStringParameters.nextkey);
+  if (nextkey !== "") {
+    params.ExclusiveStartKey = decodeAsJson(nextkey);
   }
 
   dynamoDb.query(params, (error, result) => {
@@ -40,6 +66,7 @@ module.exports.handler = (event, context, callback) => {
         headers: { 'Content-Type': 'text/plain' },
         body: 'Couldn\'t find accounts.',
       });
+      return;
     }
 
     // create a response
@@ -60,8 +87,6 @@ module.exports.handler = (event, context, callback) => {
         body: JSON.stringify(body)
       };
 
-      console.log(JSON.stringify(response));
-
       callback(null, response);
     } else {
       callback(null, {
@@ -73,6 +98,38 @@ module.exports.handler = (event, context, callback) => {
   });
 };
 
+function createTransaction(event, context, callback) {
+  const data = JSON.parse(event.body);
+
+  const params = {
+    TableName: process.env.TRANSACTIONS_TABLE,
+    Item: data
+  };
+
+  dynamoDb.put(params, (error) => {
+    if (error) {
+      console.error(error);
+      callback(null, {
+        statusCode: error.statusCode || 501,
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'Couldn\'t create the payee.',
+      });
+      return;
+    }
+
+    // create a response
+    const response = {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
+      body: JSON.stringify(params.Item),
+    };
+    callback(null, response);
+  });
+}
+
 function addPaginationLinks(body, pathParameters, query, result) {
   var links = {
   };
@@ -81,10 +138,13 @@ function addPaginationLinks(body, pathParameters, query, result) {
     totalPages: 1
   }
 
+  const text = query ? query.text : "";
+  const nextkey = query ? query.nextkey : "";
+
   const basepath = "/accounts/" + pathParameters.accountId + "/transactions?";
-  links.self = basepath + "text=" + query.text + "&nextkey=" + query.nextkey;
-  links.first = basepath + "text=" + query.text;
-  links.next = basepath + "text=" + query.text + "&nextkey=" + encodeJson(result.LastEvaluatedKey);
+  links.self = basepath + "text=" + text + "&nextkey=" + nextkey;
+  links.first = basepath + "text=" + text;
+  links.next = basepath + "text=" + text + "&nextkey=" + encodeJson(result.LastEvaluatedKey);
 
   //  prev: "",
   //  last: ""
