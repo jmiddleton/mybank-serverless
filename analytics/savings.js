@@ -14,9 +14,9 @@ const dynamoDb = isOffline()
 
 module.exports.handler = (event, context, callback) => {
   const params = {
-    TableName: process.env.SPENDING_TABLE,
-    Limit: 500,
-    KeyConditionExpression: 'customerId = :customerId and begins_with(#month, :month)',
+    TableName: process.env.SAVINGS_TABLE,
+    Limit: 5,
+    KeyConditionExpression: 'customerId = :customerId and #month >= :month',
     ExpressionAttributeNames: {
       '#month': 'month'
     },
@@ -26,6 +26,10 @@ module.exports.handler = (event, context, callback) => {
     }
   };
 
+  if (event.queryStringParameters && event.queryStringParameters['page-size']) {
+    params.Limit = event.queryStringParameters['page-size'];
+  }
+
   dynamoDb.query(params, (error, result) => {
     if (error) {
       console.log(error);
@@ -33,7 +37,7 @@ module.exports.handler = (event, context, callback) => {
       callback(null, {
         statusCode: error.statusCode || 501,
         headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t find spendings for the month.',
+        body: 'Couldn\'t find savings for the month.',
       });
       return;
     }
@@ -42,7 +46,7 @@ module.exports.handler = (event, context, callback) => {
     if (result && result.Items) {
       const body = {
         data: {
-          spendings: result.Items
+          savings: result.Items
         }
       }
 
@@ -60,7 +64,7 @@ module.exports.handler = (event, context, callback) => {
       callback(null, {
         statusCode: 404,
         headers: { 'Content-Type': 'text/plain' },
-        body: 'Spendings not found'
+        body: 'Savings not found'
       });
     }
   });

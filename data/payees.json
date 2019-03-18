@@ -5,7 +5,7 @@
         "description": "This is my friend account",
         "nickname": "test",
         "type": "DOMESTIC",
-        "creationDate": "2019-01-20",
+        "created": 1552855034244,
         "payeeUType": "domestic",
         "domestic": {
             "payeeAccountUType": "account",
@@ -22,7 +22,7 @@
         "description": "Mum account",
         "nickname": "This is mum account",
         "type": "DOMESTIC",
-        "creationDate": "2019-01-21",
+        "created": 1552855034244,
         "payeeUType": "domestic",
         "domestic": {
             "payeeAccountUType": "account",

@@ -2,9 +2,6 @@
 
 const AWS = require('aws-sdk');
 
-const ACCOUNT_TABLE = process.env.ACCOUNTS_TABLE;
-const ACCOUNTS_DETAILS_TABLE = process.env.ACCOUNTS_DETAILS_TABLE;
-
 const collectionHandlers = {
   "GET": getAccounts,
   "POST": createAccount
@@ -47,7 +44,7 @@ module.exports.handler = (event, context, callback) => {
 
 function getAccounts(event, context, callback) {
   const params = {
-    TableName: ACCOUNT_TABLE,
+    TableName: process.env.ACCOUNTS_TABLE,
     Limit: 500,
     KeyConditionExpression: 'customerId = :customerId',
     ExpressionAttributeValues: {
@@ -107,7 +104,7 @@ function getAccounts(event, context, callback) {
 function getAccountById(event, context, callback) {
 
   const params = {
-    TableName: ACCOUNTS_DETAILS_TABLE,
+    TableName: process.env.ACCOUNTS_DETAILS_TABLE,
     Key: {
       customerId: event.requestContext.authorizer.principalId,
       accountId: event.pathParameters.accountId,

@@ -24,6 +24,7 @@ provider:
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
+    SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -83,6 +84,15 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SPENDING_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SAVINGS_TABLE}"
 
 plugins:
   - serverless-dynamodb-local
@@ -93,7 +103,7 @@ custom:
   dynamodb:
     start:
       migrate: true
-      inMemory: false
+      inMemory: true
       seed: true
     seed:
       domain:
@@ -183,8 +193,8 @@ functions:
           cors: true
           private: true
 
-  spending-aggregator:
-    handler: analytics/spending-aggregator.handler
+  analytics-aggregator:
+    handler: analytics/analytics-aggregator.handler
     events:
       - stream:
           type: dynamodb
@@ -195,10 +205,23 @@ functions:
           batchSize: 1
 
   spendings:
-    handler: analytics/spending.handler
+    handler: analytics/spendings.handler
     events:
       - http: 
           path: '/mybank/v1/analytics/spendings/{month}'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+
+  savings:
+    handler: analytics/savings.handler
+    events:
+      - http: 
+          path: '/mybank/v1/analytics/savings/{month}'
           method: get
           cors: true
           private: true
@@ -409,3 +432,25 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.SPENDING_TABLE}
+    SavingsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: month
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: month
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.SAVINGS_TABLE}

@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const moment = require('moment');
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -27,7 +28,16 @@ module.exports.handler = (event, context, callback) => {
       continue;
     }
 
-    const aggregatedMonth = record.postingDateTime.substring(0, 7);
+    //TODO: synch would be better
+    aggregateSpending(record);
+    aggregateSavings(record);
+
+  }
+  callback(null, `Successfully processed ${event.Records.length} records.`);
+};
+
+function aggregateSpending(record){
+  const aggregatedMonth = record.postingDateTime.substring(0, 7);
     const merchantCode = !record.merchantCategoryCode || record.merchantCategoryCode === "null"
       || record.merchantCategoryCode === null ? 0 : record.merchantCategoryCode;
 
@@ -55,7 +65,7 @@ module.exports.handler = (event, context, callback) => {
     dynamoDb.update(params, (error, result) => {
       if (error) {
         console.error(
-          `Internal Error: Error updating dynamoDB record with keys [${JSON.stringify(
+          `Internal Error: Error updating spendings record with keys [${JSON.stringify(
             params.Key
           )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
         );
@@ -63,13 +73,48 @@ module.exports.handler = (event, context, callback) => {
         return;
       };
     });
-  }
-  callback(null, `Successfully processed ${event.Records.length} records.`);
-};
+}
+
+function aggregateSavings(record){
+  const aggregatedMonth = record.postingDateTime.substring(0, 7);
+
+    const params = {
+      TableName: process.env.SAVINGS_TABLE,
+      Key: {
+        customerId: record.customerId,
+        month: aggregatedMonth
+      },
+      UpdateExpression: 'SET #updated = :updated, #monthName = :monthName ADD #totalSavings :amount',
+      ExpressionAttributeNames: {
+        '#monthName': 'monthName',
+        '#totalSavings': 'totalSavings',
+        '#updated': 'lastUpdated'
+      },
+      ExpressionAttributeValues: {
+        ':amount': new Number(record.amount),
+        ':updated': new Date().getTime(),
+        ':monthName': getMonthName(aggregatedMonth)
+      },
+      ReturnValues: 'ALL_NEW'
+    };
+
+    //Write updates to daily rollup table
+    dynamoDb.update(params, (error, result) => {
+      console.log(result);
+      if (error) {
+        console.error(
+          `Internal Error: Error updating savings record with keys [${JSON.stringify(
+            params.Key
+          )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
+        );
+        console.log(error);
+        return;
+      };
+    });
+}
 
 //TODO: refactor this method to get the values from DB
 function getMCCDescription(code) {
-
   switch (code) {
     case 4111:
       return "Transport";
@@ -84,4 +129,11 @@ function getMCCDescription(code) {
     default:
       return "General";
   }
+}
+
+function getMonthName(month){
+  if(month){
+    return moment(month, "YYYY-MM").format("MMMM");
+  }
+  return "";
 }
