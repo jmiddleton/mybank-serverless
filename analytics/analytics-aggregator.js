@@ -23,11 +23,6 @@ module.exports.handler = (event, context, callback) => {
   );
 
   for (let record of unmarshalledRecords) {
-    if (record.status !== "POSTED") {
-      console.log(`Skipping non posted transaction: ${record.transactionId}`);
-      continue;
-    }
-
     //TODO: synch would be better
     aggregateSpending(record);
     aggregateSavings(record);
@@ -36,103 +31,115 @@ module.exports.handler = (event, context, callback) => {
   callback(null, `Successfully processed ${event.Records.length} records.`);
 };
 
-function aggregateSpending(record){
-  const aggregatedMonth = record.postingDateTime.substring(0, 7);
-    const merchantCode = !record.merchantCategoryCode || record.merchantCategoryCode === "null"
-      || record.merchantCategoryCode === null ? 0 : record.merchantCategoryCode;
+function aggregateSpending(record) {
+  const amount = new Number(record.amount);
+  
+  //credit doesn't count as spending.
+  if(amount >= 0){
+    return;
+  }
 
-    const params = {
-      TableName: process.env.SPENDING_TABLE,
-      Key: {
-        customerId: record.customerId,
-        month: aggregatedMonth + '-' + merchantCode
-      },
-      UpdateExpression: 'SET #category = :category, #updated = :updated ADD #totalSpent :amount',
-      ExpressionAttributeNames: {
-        '#category': 'category',
-        '#totalSpent': 'totalSpent',
-        '#updated': 'lastUpdated'
-      },
-      ExpressionAttributeValues: {
-        ':category': getMCCDescription(merchantCode),
-        ':amount': new Number(record.amount),
-        ':updated': new Date().getTime()
-      },
-      ReturnValues: 'ALL_NEW'
+  const aggregatedMonth = record.valueDateTime.substring(0, 7);
+  const merchantCode = !record.merchantCategoryCode || record.merchantCategoryCode === "null"
+    || record.merchantCategoryCode === null ? 0 : record.merchantCategoryCode;
+
+  const params = {
+    TableName: process.env.SPENDING_TABLE,
+    Key: {
+      customerId: record.customerId,
+      month: aggregatedMonth + '-' + merchantCode
+    },
+    UpdateExpression: 'SET #category = :category, #updated = :updated ADD #totalSpent :amount, #totalOfTrans :sumOfTrans',
+    ExpressionAttributeNames: {
+      '#category': 'category',
+      '#totalSpent': 'totalSpent',
+      '#updated': 'lastUpdated',
+      '#totalOfTrans': 'totalOfTrans'
+    },
+    ExpressionAttributeValues: {
+      ':category': getMCCDescription(merchantCode),
+      ':amount': amount,
+      ':updated': new Date().getTime(),
+      ':sumOfTrans': 1
+    },
+    ReturnValues: 'ALL_NEW'
+  };
+
+  //Write updates to daily rollup table
+  dynamoDb.update(params, (error, result) => {
+    console.log(result);
+    if (error) {
+      console.error(
+        `Internal Error: Error updating spendings record with keys [${JSON.stringify(
+          params.Key
+        )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
+      );
+      console.log(error);
+      return;
     };
-
-    //Write updates to daily rollup table
-    dynamoDb.update(params, (error, result) => {
-      if (error) {
-        console.error(
-          `Internal Error: Error updating spendings record with keys [${JSON.stringify(
-            params.Key
-          )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
-        );
-        console.log(error);
-        return;
-      };
-    });
+  });
 }
 
-function aggregateSavings(record){
-  const aggregatedMonth = record.postingDateTime.substring(0, 7);
+function aggregateSavings(record) {
+  const aggregatedMonth = record.valueDateTime.substring(0, 7);
 
-    const params = {
-      TableName: process.env.SAVINGS_TABLE,
-      Key: {
-        customerId: record.customerId,
-        month: aggregatedMonth
-      },
-      UpdateExpression: 'SET #updated = :updated, #monthName = :monthName ADD #totalSavings :amount',
-      ExpressionAttributeNames: {
-        '#monthName': 'monthName',
-        '#totalSavings': 'totalSavings',
-        '#updated': 'lastUpdated'
-      },
-      ExpressionAttributeValues: {
-        ':amount': new Number(record.amount),
-        ':updated': new Date().getTime(),
-        ':monthName': getMonthName(aggregatedMonth)
-      },
-      ReturnValues: 'ALL_NEW'
+  const params = {
+    TableName: process.env.SAVINGS_TABLE,
+    Key: {
+      customerId: record.customerId,
+      month: aggregatedMonth
+    },
+    UpdateExpression: 'SET #updated = :updated, #monthName = :monthName ADD #totalSavings :amount',
+    ExpressionAttributeNames: {
+      '#monthName': 'monthName',
+      '#totalSavings': 'totalSavings',
+      '#updated': 'lastUpdated'
+    },
+    ExpressionAttributeValues: {
+      ':amount': new Number(record.amount),
+      ':updated': new Date().getTime(),
+      ':monthName': getMonthName(aggregatedMonth)
+    },
+    ReturnValues: 'ALL_NEW'
+  };
+
+  //Write updates to daily rollup table
+  dynamoDb.update(params, (error, result) => {
+    console.log(result);
+    if (error) {
+      console.error(
+        `Internal Error: Error updating savings record with keys [${JSON.stringify(
+          params.Key
+        )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
+      );
+      console.log(error);
+      return;
     };
-
-    //Write updates to daily rollup table
-    dynamoDb.update(params, (error, result) => {
-      console.log(result);
-      if (error) {
-        console.error(
-          `Internal Error: Error updating savings record with keys [${JSON.stringify(
-            params.Key
-          )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
-        );
-        console.log(error);
-        return;
-      };
-    });
+  });
 }
 
 //TODO: refactor this method to get the values from DB
 function getMCCDescription(code) {
   switch (code) {
-    case 4111:
+    case "4111":
       return "Transport";
-      case 4829:
+    case "4829":
       return "Money Transfer";
-    case 5411:
+    case "5411":
       return "Supermarkets";
-    case 5462:
+    case "5462":
       return "Bakeries";
-    case 5139:
+    case "5139":
       return "Commercial Footwear";
+    case "0732":
+      return "Deposits";
     default:
       return "General";
   }
 }
 
-function getMonthName(month){
-  if(month){
+function getMonthName(month) {
+  if (month) {
     return moment(month, "YYYY-MM").format("MMMM");
   }
   return "";

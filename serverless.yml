@@ -202,7 +202,7 @@ functions:
             Fn::GetAtt:
               - TransactionsDynamoDbTable
               - StreamArn
-          batchSize: 1
+          batchSize: 10
 
   spendings:
     handler: analytics/spendings.handler

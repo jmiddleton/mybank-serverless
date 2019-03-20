@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const moment = require('moment');
 
 const handlers = {
   "GET": getTransactions,
@@ -46,7 +47,7 @@ function getTransactions(event, context, callback) {
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
     KeyConditionExpression: 'customerId = :customerId and begins_with(accountId, :accountId)',
-    //    FilterExpression: '',
+    //FilterExpression: '',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
       ':accountId': event.pathParameters.accountId,
@@ -69,11 +70,13 @@ function getTransactions(event, context, callback) {
       return;
     }
 
-    // create a response
+    // create a response - "2019-03-19T08:19:31.432Z",
     if (result && result.Items) {
       var body = {
         data: {
-          transactions: result.Items
+          transactions: result.Items.sort(function(a, b) {
+            return moment(a.valueDateTime, "YYYY-MM-DDTHH:mm").isAfter(b.valueDateTime, 'minute') ? -1 : 1;
+        })
         }
       }
       addPaginationLinks(body, event.pathParameters, event.queryStringParameters, result);
