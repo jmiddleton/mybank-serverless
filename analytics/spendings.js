@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const moment = require('moment');
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -13,22 +14,35 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = (event, context, callback) => {
+
+  if (!event.pathParameters.month || event.pathParameters.month.length != 7){
+    callback(null, {
+      statusCode: 400,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Couldn\'t find spendings for the month.',
+    });
+    return;
+  }
+
   const params = {
     TableName: process.env.SPENDING_TABLE,
     Limit: 5,
-    KeyConditionExpression: 'customerId = :customerId and begins_with(#month, :month)',
+    KeyConditionExpression: 'customerId = :customerId AND #month BETWEEN :startdate AND :enddate',
     ExpressionAttributeNames: {
       '#month': 'month'
     },
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
-      ':month': event.pathParameters.month
+      ':startdate': getMonth(event.pathParameters.month, -2),
+      ':enddate': getMonth(event.pathParameters.month, 1)
     }
   };
 
   if (event.queryStringParameters && event.queryStringParameters['page-size']) {
-    params.Limit = event.queryStringParameters['page-size'];
+    params.Limit = parseInt(event.queryStringParameters['page-size']);
   }
+
+  console.log(params);
 
   dynamoDb.query(params, (error, result) => {
     if (error) {
@@ -69,3 +83,10 @@ module.exports.handler = (event, context, callback) => {
     }
   });
 };
+
+function getMonth(month, add) {
+  if (month) {
+    return moment(month, "YYYY-MM").add(add, "months").format("YYYY-MM");
+  }
+  return "";
+}

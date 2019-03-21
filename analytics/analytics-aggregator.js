@@ -33,21 +33,20 @@ module.exports.handler = (event, context, callback) => {
 
 function aggregateSpending(record) {
   const amount = new Number(record.amount);
-  
+
   //credit doesn't count as spending.
-  if(amount >= 0){
+  if (amount >= 0) {
     return;
   }
 
   const aggregatedMonth = record.valueDateTime.substring(0, 7);
-  const merchantCode = !record.merchantCategoryCode || record.merchantCategoryCode === "null"
-    || record.merchantCategoryCode === null ? 0 : record.merchantCategoryCode;
+  const category= getMCCDescription(record);
 
   const params = {
     TableName: process.env.SPENDING_TABLE,
     Key: {
       customerId: record.customerId,
-      month: aggregatedMonth + '-' + merchantCode
+      month: aggregatedMonth + '#' + category
     },
     UpdateExpression: 'SET #category = :category, #updated = :updated ADD #totalSpent :amount, #totalOfTrans :sumOfTrans',
     ExpressionAttributeNames: {
@@ -57,7 +56,7 @@ function aggregateSpending(record) {
       '#totalOfTrans': 'totalOfTrans'
     },
     ExpressionAttributeValues: {
-      ':category': getMCCDescription(merchantCode),
+      ':category': category,
       ':amount': amount,
       ':updated': new Date().getTime(),
       ':sumOfTrans': 1
@@ -119,23 +118,26 @@ function aggregateSavings(record) {
 }
 
 //TODO: refactor this method to get the values from DB
-function getMCCDescription(code) {
-  switch (code) {
-    case "4111":
-      return "Transport";
-    case "4829":
-      return "Money Transfer";
-    case "5411":
-      return "Supermarkets";
-    case "5462":
-      return "Bakeries";
-    case "5139":
-      return "Commercial Footwear";
-    case "0732":
-      return "Deposits";
-    default:
-      return "General";
+
+const categories = [
+  { "name": "Groceries", "codes": ["5462", "5411"] },
+  { "name": "Transport", "codes": ["4111", "0661"] },
+  { "name": "Shopping", "codes": ["5139", "5661"] },
+  { "name": "Cash", "codes": ["4829"] },
+];
+
+function getMCCDescription(record) {
+  var result;
+  
+  const merchantCode = record.merchantCategoryCode;
+  if(merchantCode){
+    result = categories.find(category => category.codes.find(code => code === merchantCode));
   }
+
+  if(result){
+    return result.name;
+  }
+  return "uncategorised";
 }
 
 function getMonthName(month) {
