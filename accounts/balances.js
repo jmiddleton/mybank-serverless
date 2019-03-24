@@ -4,7 +4,6 @@ const AWS = require('aws-sdk');
 
 const collectionHandlers = {
   "GET": getBalances,
-  "POST": createBalance
 }
 
 var dynamodbOfflineOptions = {
@@ -95,8 +94,4 @@ function getBalances(event, context, callback) {
       });
     }
   });
-}
-
-// Create balance
-function createBalance(event, context, callback) {
 }

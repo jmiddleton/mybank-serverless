@@ -183,6 +183,18 @@ functions:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
 
+  balance-update:
+    handler: accounts/balance-update.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+
+  account-details:
+    handler: accounts/account-details.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+
   balances:
     handler: accounts/balances.handler
     events:
