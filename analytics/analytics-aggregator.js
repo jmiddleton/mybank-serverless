@@ -66,14 +66,12 @@ function aggregateSpending(record) {
 
   //Write updates to daily rollup table
   dynamoDb.update(params, (error, result) => {
-    console.log(result);
     if (error) {
       console.error(
         `Internal Error: Error updating spendings record with keys [${JSON.stringify(
           params.Key
         )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
       );
-      console.log(error);
       return;
     };
   });
@@ -104,14 +102,12 @@ function aggregateSavings(record) {
 
   //Write updates to daily rollup table
   dynamoDb.update(params, (error, result) => {
-    console.log(result);
     if (error) {
       console.error(
         `Internal Error: Error updating savings record with keys [${JSON.stringify(
           params.Key
         )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
       );
-      console.log(error);
       return;
     };
   });
@@ -124,6 +120,7 @@ const categories = [
   { "name": "Transport", "codes": ["4111", "0661"] },
   { "name": "Shopping", "codes": ["5139", "5661"] },
   { "name": "Cash", "codes": ["4829"] },
+  { "name": "EatingOut", "codes": ["5812", "5814"] },
 ];
 
 function getMCCDescription(record) {

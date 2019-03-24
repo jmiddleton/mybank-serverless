@@ -21,6 +21,7 @@ provider:
     PAYEES_TABLE: payees-${opt:stage, self:provider.stage}
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
+    ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
@@ -93,10 +94,15 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SAVINGS_TABLE}"
+    - Effect: Allow
+      Action:
+        - SNS:Publish
+      Resource: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
 
 plugins:
   - serverless-dynamodb-local
   - serverless-offline-dynamodb-streams
+  - serverless-offline-sns
   - serverless-offline #serverless-offline needs to be last in the list
 
 custom:
@@ -125,11 +131,29 @@ custom:
     accessKeyId: root
     secretAccessKey: root
     skipCacheInvalidation: false
+  serverless-offline-sns:
+    port: 4002
+    debug: true
 
 functions:
   auth-jwt-token:
     handler: auth/dummy_authorizer.auth
     cors: true
+
+  register-bank:
+    handler: customer/register-bank.handler
+    events:
+      - http:
+          path: '/mybank/v1/customers'
+          method: post
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+    environment:
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
 
   accounts:
     handler: accounts/accounts.handler
@@ -152,6 +176,12 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
+
+  account-linking:
+    handler: accounts/link-account.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
 
   balances:
     handler: accounts/balances.handler

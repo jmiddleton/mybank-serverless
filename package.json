@@ -9,8 +9,10 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "moment": "^2.24.0",
+    "r2": "^2.0.1",
     "serverless-http": "^1.9.1",
     "serverless-offline-dynamodb-streams": "^1.5.1",
+    "serverless-offline-sns": "^0.53.0",
     "uuid": "^2.0.3"
   },
   "devDependencies": {

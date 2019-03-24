@@ -1,10 +1,10 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const jsonResponse = require("../libs/json-response");
 
 const collectionHandlers = {
-  "GET": getAccounts,
-  "POST": createAccount
+  "GET": getAccounts
 }
 const methodHandlers = {
   "GET": getAccountById
@@ -80,22 +80,11 @@ function getAccounts(event, context, callback) {
         }
       }
 
-      const response = {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true
-        },
-        body: JSON.stringify(body)
-      };
-
-      callback(null, response);
+      callback(null, jsonResponse.ok(body));
     } else {
-      callback(null, {
-        statusCode: 404,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Accounts not found'
-      });
+      callback(null, jsonResponse.notFound({
+        error: "Accounts not found"
+      }));
     }
   });
 }
@@ -113,11 +102,9 @@ function getAccountById(event, context, callback) {
 
   dynamoDb.get(params, (error, result) => {
     if (error) {
-      callback(null, {
-        statusCode: 400,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Could not get accounts',
-      });
+      callback(null, jsonResponse.notFound({
+        error: "Could not get accounts"
+      }));
       return;
     }
 
@@ -127,25 +114,11 @@ function getAccountById(event, context, callback) {
         data: result.Item
       }
 
-      const response = {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true,
-        },
-        body: JSON.stringify(data),
-      };
-      callback(null, response);
+      callback(null, jsonResponse.ok(data));
     } else {
-      callback(null, {
-        statusCode: 404,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Account not found'
-      });
+      callback(null, jsonResponse.notFound({
+        error: "Accounts not found"
+      }));
     }
   });
-}
-
-// Create account
-function createAccount(event, context, callback) {
 }

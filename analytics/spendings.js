@@ -42,8 +42,6 @@ module.exports.handler = (event, context, callback) => {
     params.Limit = parseInt(event.queryStringParameters['page-size']);
   }
 
-  console.log(params);
-
   dynamoDb.query(params, (error, result) => {
     if (error) {
       console.log(error);
