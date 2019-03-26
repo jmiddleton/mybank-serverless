@@ -24,7 +24,6 @@ module.exports.handler = async (event, context) => {
   try {
     let response = await r2(url + "/" + account.accountId).json;
 
-    console.log(response);
     //if (response && response.data) { //this endpoint should return a data element
     if (response) {
       let accountDetail = response;

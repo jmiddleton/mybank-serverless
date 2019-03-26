@@ -13,6 +13,7 @@
     "serverless-http": "^1.9.1",
     "serverless-offline-dynamodb-streams": "^1.5.1",
     "serverless-offline-sns": "^0.53.0",
+    "shortid": "^2.2.14",
     "uuid": "^2.0.3"
   },
   "devDependencies": {

@@ -134,7 +134,7 @@ function getMCCDescription(record) {
   if(result){
     return result.name;
   }
-  return "uncategorised";
+  return "Others";
 }
 
 function getMonthName(month) {

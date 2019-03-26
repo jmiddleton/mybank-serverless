@@ -183,14 +183,14 @@ functions:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
 
-  balance-update:
-    handler: accounts/balance-update.handler
+  balance-sync:
+    handler: accounts/balance-sync.handler
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
 
-  account-details:
-    handler: accounts/account-details.handler
+  account-detail-sync:
+    handler: accounts/account-detail-sync.handler
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
@@ -234,6 +234,12 @@ functions:
           method: post
           cors: true
           private: true
+
+  transaction-sync:
+    handler: transactions/transaction-sync.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
 
   analytics-aggregator:
     handler: analytics/analytics-aggregator.handler
