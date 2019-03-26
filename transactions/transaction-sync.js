@@ -5,6 +5,8 @@ const jsonResponse = require("../libs/json-response");
 const r2 = require("r2");
 const shortid = require('shortid');
 
+//TODO: use const clean = require('obj-clean'); to remove empty elements not allowed by dynamoDB.
+
 const url = "http://localhost:4000/accounts/";
 
 var dynamodbOfflineOptions = {

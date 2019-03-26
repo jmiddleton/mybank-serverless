@@ -155,6 +155,21 @@ functions:
     environment:
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
 
+  account-refresh:
+    handler: accounts/account-refresh.handler
+    events:
+      - http:
+          path: '/mybank/v1/accounts/{accountId}/refresh'
+          method: post
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+    environment:
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+
   accounts:
     handler: accounts/accounts.handler
     events:

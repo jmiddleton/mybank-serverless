@@ -1,4 +1,4 @@
-const AWS = require("aws-sdk"); // must be npm installed to use
+const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
 const r2 = require("r2");
 
@@ -16,22 +16,20 @@ if (isOffline()) {
 
 let sns = new AWS.SNS(snsOpts);
 
-//este endpoint va ser invocado despues de recibir el access_token
-//consultar las accounts y por cada una, send an sns con los datos de la misma
-//multiple listener recibiran la account y haran algo como consultar balances, account details y transactions 
+//this endpoint refreshes account's details
 module.exports.handler = async (event, context) => {
-    const data = JSON.parse(event.body);
+    const accountId = event.pathParameters.accountId;
+    const principalId = event.requestContext.authorizer.principalId;
 
     try {
         let response = await r2(url).json;
-
-        //TODO: register customer and link bank accounts to this customer
-
         if (response && response.data && response.data.accounts) {
-            response.data.accounts.forEach(account => {
-                account.customerId = event.requestContext.authorizer.principalId;
+
+            const result = response.data.accounts.find(account => account.accountId === accountId);
+            if (result) {
+                result.customerId = principalId;
                 let messageData = {
-                    Message: JSON.stringify(account),
+                    Message: JSON.stringify(result),
                     TopicArn: process.env.accountsTopicArn,
                 };
 
@@ -42,7 +40,7 @@ module.exports.handler = async (event, context) => {
                 catch (err) {
                     console.log(err);
                 }
-            });
+            }
         }
         return jsonResponse.ok({});
     } catch (err) {

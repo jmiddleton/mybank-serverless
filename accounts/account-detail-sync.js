@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
 const r2 = require("r2");
 
-const url = "http://localhost:4000/accountDetails";
+const url = "http://localhost:4000/accountDetails/";
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -22,7 +22,7 @@ module.exports.handler = async (event, context) => {
   const account = JSON.parse(message);
 
   try {
-    let response = await r2(url + "/" + account.accountId).json;
+    let response = await r2(url + account.accountId).json;
 
     //if (response && response.data) { //this endpoint should return a data element
     if (response) {
