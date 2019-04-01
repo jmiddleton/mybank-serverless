@@ -139,7 +139,6 @@ functions:
   auth-jwt-token:
     handler: auth/dummy_authorizer.auth
     cors: true
-
   register-bank:
     handler: customer/register-bank.handler
     events:
@@ -154,7 +153,6 @@ functions:
             type: token
     environment:
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
-
   account-refresh:
     handler: accounts/account-refresh.handler
     events:
@@ -169,7 +167,6 @@ functions:
             type: token
     environment:
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
-
   accounts:
     handler: accounts/accounts.handler
     events:
@@ -191,25 +188,21 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
-  account-linking:
-    handler: accounts/link-account.handler
+  account-sync:
+    handler: accounts/account-sync.handler
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
-
   balance-sync:
     handler: accounts/balance-sync.handler
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
-
   account-detail-sync:
     handler: accounts/account-detail-sync.handler
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
-
   balances:
     handler: accounts/balances.handler
     events:
@@ -231,7 +224,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
   transactions:
     handler: transactions/transactions.handler
     events:
@@ -249,13 +241,11 @@ functions:
           method: post
           cors: true
           private: true
-
   transaction-sync:
     handler: transactions/transaction-sync.handler
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
-
   analytics-aggregator:
     handler: analytics/analytics-aggregator.handler
     events:
@@ -266,7 +256,6 @@ functions:
               - TransactionsDynamoDbTable
               - StreamArn
           batchSize: 10
-
   spendings:
     handler: analytics/spendings.handler
     events:
@@ -279,7 +268,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
   savings:
     handler: analytics/savings.handler
     events:
@@ -306,7 +294,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
   get:
     handler: payees/get.get
     events:
@@ -319,7 +306,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
   create:
     handler: payees/create.create
     events:
@@ -332,7 +318,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
   update:
     handler: payees/update.update
     events:
@@ -345,7 +330,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
   delete:
     handler: payees/delete.delete
     events:

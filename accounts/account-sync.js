@@ -1,12 +1,6 @@
 'use strict';
 
-//@deprecated
-
 const AWS = require('aws-sdk');
-const jsonResponse = require("../libs/json-response");
-const r2 = require("r2");
-
-const url = "http://localhost:4000/accounts";
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -21,33 +15,21 @@ const dynamoDb = isOffline()
 module.exports.handler = async (event, context) => {
   const message = event.Records[0].Sns.Message;
   const timestamp = new Date().getTime();
-  const account = JSON.parse(message);
+  const data = JSON.parse(message);
 
-  try {
-    let response = await r2(url + account.accountId).json;
+  data.created = timestamp;
+  data.updated = timestamp;
+  data.visible = true;
 
-    if (response && response.data && response.data.balances) {
-      response.data.balances.forEach(balance => {
+  const params = {
+    TableName: process.env.ACCOUNTS_TABLE,
+    Item: data
+  };
 
-        balance.updated = timestamp;
-        balance.customerId = account.customerId;
-
-        const params = {
-          TableName: process.env.ACCOUNTS_TABLE,
-          Item: balance
-        };
-
-        dynamoDb.put(params, (error) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-        });
-      });
+  dynamoDb.put(params, (error) => {
+    if (error) {
+      console.error(error);
+      return;
     }
-    return jsonResponse.ok({});
-  } catch (err) {
-    console.log(err);
-    return jsonResponse.error();
-  }
+  });
 };

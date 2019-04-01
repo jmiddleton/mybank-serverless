@@ -40,7 +40,11 @@ module.exports.handler = async (event, context) => {
                 catch (err) {
                     console.log(err);
                 }
+            }else{
+                console.log("Account not found.");
             }
+        }else{
+            console.log("No account data.");
         }
         return jsonResponse.ok({});
     } catch (err) {
