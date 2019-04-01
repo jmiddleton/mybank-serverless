@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 const moment = require('moment');
+const categories = require("./categories.js");
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -13,7 +14,7 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = (event, context, callback) => {
+module.exports.handler = async (event, context) => {
 
   //trim down to just "INSERT" events
   const insertRecords = event.Records.filter(record => record.eventName === 'INSERT');
@@ -28,10 +29,10 @@ module.exports.handler = (event, context, callback) => {
     aggregateSavings(record);
 
   }
-  callback(null, `Successfully processed ${event.Records.length} records.`);
+  return `Successfully processed ${event.Records.length} records.`;
 };
 
-function aggregateSpending(record) {
+async function aggregateSpending(record) {
   const amount = new Number(record.amount);
 
   //credit doesn't count as spending.
@@ -40,7 +41,7 @@ function aggregateSpending(record) {
   }
 
   const aggregatedMonth = record.valueDateTime.substring(0, 7);
-  const category= getMCCDescription(record);
+  const category = await getCategory(record);
 
   const params = {
     TableName: process.env.SPENDING_TABLE,
@@ -113,26 +114,15 @@ function aggregateSavings(record) {
   });
 }
 
-//TODO: refactor this method to get the values from DB
-
-const categories = [
-  { "name": "Groceries", "codes": ["5462", "5411"] },
-  { "name": "Transport", "codes": ["4111", "0661"] },
-  { "name": "Shopping", "codes": ["5139", "5661"] },
-  { "name": "Cash", "codes": ["4829"] },
-  { "name": "EatingOut", "codes": ["5812", "5814"] },
-];
-
-function getMCCDescription(record) {
-  var result;
-  
+async function getCategory(record) {
   const merchantCode = record.merchantCategoryCode;
-  if(merchantCode){
-    result = categories.find(category => category.codes.find(code => code === merchantCode));
-  }
+  if (merchantCode) {
+    const categoryPromise = categories.getCategoryByCode(merchantCode);
+    const dbCategory = await categoryPromise;
 
-  if(result){
-    return result.name;
+    if (dbCategory) {
+      return dbCategory.category;
+    }
   }
   return "Others";
 }

@@ -26,6 +26,7 @@ provider:
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
+    CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -98,6 +99,14 @@ provider:
       Action:
         - SNS:Publish
       Resource: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.CATEGORIES_TABLE}"
 
 plugins:
   - serverless-dynamodb-local
@@ -124,6 +133,8 @@ custom:
             sources: [./data/balances.json]
           - table: transactions-dev
             sources: [./data/transactions.json]
+          - table: categories-dev
+            sources: [./data/categories.json]
   serverless-offline-dynamodb-streams:
     apiVersion: 'latest'
     endpoint: http://localhost:8000
@@ -501,3 +512,21 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.SAVINGS_TABLE}
+    CategoriesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: code
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: code
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.CATEGORIES_TABLE}
+
+        
