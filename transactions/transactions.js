@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk');
 const moment = require('moment');
+const jsonResponse = require("../libs/json-response");
 
 const handlers = {
   "GET": getTransactions,
@@ -25,18 +26,7 @@ module.exports.handler = (event, context, callback) => {
     return handlers[httpMethod](event, context, callback);
   }
 
-  const response = {
-    statusCode: 405,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': true,
-    },
-    body: JSON.stringify({
-      message: `Invalid HTTP Method: ${httpMethod}`
-    }),
-  };
-
-  callback(null, response);
+  callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
 };
 
 function getTransactions(event, context, callback) {
@@ -61,12 +51,7 @@ function getTransactions(event, context, callback) {
 
   dynamoDb.query(params, (error, result) => {
     if (error) {
-      console.log(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t find accounts.',
-      });
+      callback(null, jsonResponse.notFound({ error: "Couldn\'t find accounts" }));
       return;
     }
 
@@ -74,29 +59,16 @@ function getTransactions(event, context, callback) {
     if (result && result.Items) {
       var body = {
         data: {
-          transactions: result.Items.sort(function(a, b) {
+          transactions: result.Items.sort(function (a, b) {
             return moment(a.valueDateTime, "YYYY-MM-DDTHH:mm").isAfter(b.valueDateTime, 'minute') ? -1 : 1;
-        })
+          })
         }
       }
       addPaginationLinks(body, event.pathParameters, event.queryStringParameters, result);
 
-      const response = {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true
-        },
-        body: JSON.stringify(body)
-      };
-
-      callback(null, response);
+      callback(null, jsonResponse.ok(body));
     } else {
-      callback(null, {
-        statusCode: 404,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Accounts not found'
-      });
+      callback(null, jsonResponse.notFound({ error: "Accounts not found" }));
     }
   });
 };
@@ -111,25 +83,11 @@ function createTransaction(event, context, callback) {
 
   dynamoDb.put(params, (error) => {
     if (error) {
-      console.error(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t create the payee.',
-      });
+      callback(null, jsonResponse.error({ error: "Couldn\'t create a transaction" }));
       return;
     }
 
-    // create a response
-    const response = {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true,
-      },
-      body: JSON.stringify(params.Item),
-    };
-    callback(null, response);
+    callback(null, jsonResponse.ok(params.Item));
   });
 }
 

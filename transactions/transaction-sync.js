@@ -28,9 +28,9 @@ module.exports.handler = async (event, context) => {
     let response = await r2(url + account.accountId + "/transactions").json;
 
     if (response && response.data && response.data.transactions) {
-      response.data.transactions.forEach(txn => {
+      response.data.transactions.forEach(async txn => {
 
-        let id= txn.accountId + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
+        let id = txn.accountId + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
 
         txn.updated = timestamp;
         txn.customerId = account.customerId;
@@ -41,17 +41,15 @@ module.exports.handler = async (event, context) => {
           Item: txn
         };
 
-        dynamoDb.put(params, (error) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-        });
+        try {
+          let data = await dynamoDb.put(params).promise();
+          console.log("Transactions for account: " + txn.accountId + " synched successfully");
+        } catch (error) {
+          console.error(error);
+        }
       });
     }
-    return jsonResponse.ok({});
   } catch (err) {
     console.log(err);
-    return jsonResponse.error();
   }
 };

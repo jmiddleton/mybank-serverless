@@ -17,7 +17,7 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 
-  //Bulk balance - obtain balances for multiple, filtered accounts
+//Bulk balance - obtain balances for multiple, filtered accounts
 module.exports.handler = async (event, context) => {
   const message = event.Records[0].Sns.Message;
   const timestamp = new Date().getTime();
@@ -27,7 +27,7 @@ module.exports.handler = async (event, context) => {
     let response = await r2(url).json;
 
     if (response && response.data && response.data.balances) {
-      response.data.balances.forEach(balance => {
+      response.data.balances.forEach(async balance => {
 
         balance.updated = timestamp;
         balance.customerId = account.customerId;
@@ -37,17 +37,15 @@ module.exports.handler = async (event, context) => {
           Item: balance
         };
 
-        dynamoDb.put(params, (error) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-        });
+        try {
+          let data = await dynamoDb.put(params).promise();
+          console.log("Balance for account: " + balance.accountId + " synched successfully");
+        } catch (error) {
+          console.error(error);
+        }
       });
     }
-    return jsonResponse.ok({});
   } catch (err) {
-    console.log(err);
-    return jsonResponse.error();
+    console.error(error);
   }
 };

@@ -28,18 +28,7 @@ module.exports.handler = (event, context, callback) => {
     return handlers[httpMethod](event, context, callback);
   }
 
-  const response = {
-    statusCode: 405,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true
-    },
-    body: JSON.stringify({
-      message: `Invalid HTTP Method: ${httpMethod}`
-    }),
-  };
-
-  callback(null, response);
+  callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
 };
 
 function getAccounts(event, context, callback) {
@@ -54,15 +43,12 @@ function getAccounts(event, context, callback) {
 
   dynamoDb.query(params, (error, result) => {
     if (error) {
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t find accounts.',
-      });
+      callback(null, jsonResponse.notFound({ error: "Couldn\'t find accounts" }));
+      return;
     }
 
     // create a response
-    if (result && result.Items) {
+    if (result && result.Items && result.Items.length > 0) {
       const body = {
         data: {
           accounts: result.Items

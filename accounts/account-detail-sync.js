@@ -36,16 +36,10 @@ module.exports.handler = async (event, context) => {
         Item: accountDetail
       };
 
-      dynamoDb.put(params, (error) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-      });
+      let data = await dynamoDb.put(params).promise();
+      console.log("AccountDetails for account: " + accountDetail.accountId + " synched successfully");
     }
-    return jsonResponse.ok({});
-  } catch (err) {
-    console.log(err);
-    return jsonResponse.error();
+  } catch (error) {
+    console.error(error);
   }
 };

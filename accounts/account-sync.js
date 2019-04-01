@@ -15,21 +15,21 @@ const dynamoDb = isOffline()
 module.exports.handler = async (event, context) => {
   const message = event.Records[0].Sns.Message;
   const timestamp = new Date().getTime();
-  const data = JSON.parse(message);
+  const account = JSON.parse(message);
 
-  data.created = timestamp;
-  data.updated = timestamp;
-  data.visible = true;
+  account.created = timestamp;
+  account.updated = timestamp;
+  account.visible = true;
 
   const params = {
     TableName: process.env.ACCOUNTS_TABLE,
-    Item: data
+    Item: account
   };
 
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
-  });
+  try {
+    let data = await dynamoDb.put(params).promise();
+    console.log("Account " + account.accountId + " synched successfully");
+  } catch (error) {
+    console.error(error);
+  }
 };

@@ -10,6 +10,10 @@ function ok(data) {
     return json(404, data);
   }
 
+  function invalid(data) {
+    return json(405, data);
+  }
+
   function serverError(data) {
     return json(500, data);
   }
@@ -30,5 +34,6 @@ function ok(data) {
     error,
     serverError,
     notFound,
-    json
+    json,
+    invalid
   };

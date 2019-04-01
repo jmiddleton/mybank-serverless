@@ -12,7 +12,7 @@ const dynamoDb = isOffline()
     ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
     : new AWS.DynamoDB.DocumentClient();
 
-module.exports.getCategoryByCode = async (mcode, callback) => {
+module.exports.getCategoryByCode = async (mcode) => {
     const params = {
         TableName: process.env.CATEGORIES_TABLE,
         Key: {
@@ -21,7 +21,7 @@ module.exports.getCategoryByCode = async (mcode, callback) => {
     };
 
     try {
-        const data = await dynamoDb.get(params).promise();
+        let data = await dynamoDb.get(params).promise();
         return data.Item;
     } catch (error) {
         return { "code": "0000", "category": "Others" };

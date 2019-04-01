@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const jsonResponse = require("../libs/json-response");
 
 const collectionHandlers = {
   "GET": getBalances,
@@ -24,18 +25,7 @@ module.exports.handler = (event, context, callback) => {
     return handlers[httpMethod](event, context, callback);
   }
 
-  const response = {
-    statusCode: 405,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true
-    },
-    body: JSON.stringify({
-      message: `Invalid HTTP Method: ${httpMethod}`
-    }),
-  };
-
-  callback(null, response);
+  callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
 };
 
 function getBalances(event, context, callback) {
@@ -50,15 +40,12 @@ function getBalances(event, context, callback) {
 
   dynamoDb.query(params, (error, result) => {
     if (error) {
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t find balances.',
-      });
+      callback(null, jsonResponse.notFound({ error: "Could not find balances" }));
+      return;
     }
 
     // create a response
-    if (result && result.Items) {
+    if (result && result.Items && result.Items.length > 0) {
       const body = {
         data: {
           balances: result.Items
@@ -76,22 +63,9 @@ function getBalances(event, context, callback) {
         }
       }
 
-      const response = {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true
-        },
-        body: JSON.stringify(body)
-      };
-
-      callback(null, response);
+      callback(null, jsonResponse.ok(body));
     } else {
-      callback(null, {
-        statusCode: 404,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Balances not found'
-      });
+      callback(null, jsonResponse.notFound({ error: "Balances not found" }));
     }
   });
 }
