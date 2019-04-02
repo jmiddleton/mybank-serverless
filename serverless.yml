@@ -28,6 +28,8 @@ provider:
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
     CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
     BANKS_TABLE: banks-${opt:stage, self:provider.stage}
+    AUTH0_CLIENT_ID: ${file(./dev-mybank-secrets.json):AUTH0_CLIENT_ID}
+    AUTH0_CLIENT_PUBLIC_KEY: ${file(./dev-mybank.cer)}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -159,7 +161,7 @@ custom:
 
 functions:
   auth-jwt-token:
-    handler: auth/dummy_authorizer.auth
+    handler: auth/jwt_token_authorizer.auth
     cors: true
   register-bank:
     handler: customer/register-bank.handler

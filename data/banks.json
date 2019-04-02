@@ -4,7 +4,21 @@
     "name": "Commonwealth Bank",
     "url": "https://www.commbank.com.au/",
     "logo-url": "cba.png",
-    "description": "n"
+    "description": "n",
+    "oidc-config": {
+      "domain": "dev-mybank.au.auth0.com",
+      "client_id": "x",
+      "redirect_uri": "http://localhost:8080/callback",
+      "response_type": "id_token token",
+      "scope": "openid email profile",
+      "metadata": {
+        "issuer": "https://dev-mybank.au.auth0.com/",
+        "authorization_endpoint": "https://dev-mybank.au.auth0.com/authorize",
+        "userinfo_endpoint": "https://dev-mybank.au.auth0.com/userinfo",
+        "end_session_endpoint": "https://dev-mybank.au.auth0.com/v2/logout",
+        "jwks_uri": "https://dev-mybank.au.auth0.com/.well-known/jwks.json"
+      }
+    }
   },
   {
     "code": "hsbc",

@@ -35,6 +35,7 @@ function getAccounts(event, context, callback) {
   const params = {
     TableName: process.env.ACCOUNTS_TABLE,
     Limit: 500,
+    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, productCategory',
     KeyConditionExpression: 'customerId = :customerId',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId
@@ -80,6 +81,7 @@ function getAccountById(event, context, callback) {
 
   const params = {
     TableName: process.env.ACCOUNTS_DETAILS_TABLE,
+    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, productCategory, bsb, accountNumber, specificAccountUType, depositRates, creditCard',
     Key: {
       customerId: event.requestContext.authorizer.principalId,
       accountId: event.pathParameters.accountId,

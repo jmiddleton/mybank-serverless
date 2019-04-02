@@ -1,6 +1,6 @@
 [
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca3224d04099c0e4aec452a",
         "accountId": "5245245rfsfg#2019-03-19T08:19:31+00:00#5c90a613079a73831eebc51a",
         "transactionId": "07beb4e3-9379-4f52-acb7-fec24d0466f1",
         "isDetailAvailable": false,
@@ -17,7 +17,7 @@
         "merchantCategoryCode": "4829"
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "accountId": "33333333fffff#2019-02-19T08:19:31+00:00#5c90a6132a4c076b8f627731",
         "transactionId": "b13661ad-b393-4b66-b4bb-0684f33be2b2",
         "isDetailAvailable": false,
@@ -34,7 +34,7 @@
         "merchantCategoryCode": "4111"
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca3224d04099c0e4aec452a",
         "accountId": "5245245rfsfg#2019-01-19T08:19:31+00:00#5c90a6135ecfdfa2b3aa27da",
         "transactionId": "b2832146-e348-4e5b-92ff-647977a6739f",
         "isDetailAvailable": false,
@@ -51,7 +51,7 @@
         "merchantCategoryCode": "5462"
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "accountId": "33333333fffff#2019-03-19T08:19:31+00:00#5c90a6130aeb059f368cd7dc",
         "transactionId": "ce82d728-bee3-473a-8073-96677577cf94",
         "isDetailAvailable": false,
@@ -68,7 +68,7 @@
         "merchantCategoryCode": "0732"
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "accountId": "33333333fffff#2019-02-19T08:19:31+00:00#5c90a6138e0b002578507183",
         "transactionId": "6f2cfcc7-0279-4869-acab-0871ee9dc80a",
         "isDetailAvailable": false,
@@ -102,7 +102,7 @@
         "merchantCategoryCode": "0732"
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "accountId": "33333333fffff#2019-03-19T08:19:31+00:00#5c90a613996c270ef0fa0a38",
         "transactionId": "57afd524-7e06-499a-a08a-f12faceb0ec7",
         "isDetailAvailable": false,

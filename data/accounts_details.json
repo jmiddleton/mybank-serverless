@@ -1,6 +1,6 @@
 [
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca3224d04099c0e4aec452a",
         "accountId": "5245245rfsfg",
         "displayName": "Net Saver",
         "nickname": "string",
@@ -27,7 +27,7 @@
         ]
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "accountId": "33333333fffff",
         "displayName": "Day to Day Account",
         "nickname": "string",

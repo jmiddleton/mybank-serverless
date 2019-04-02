@@ -1,6 +1,6 @@
 [
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "payeeId": "5c6059uhdis",
         "description": "This is my friend account",
         "nickname": "test",
@@ -17,7 +17,7 @@
         }
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "payeeId": "134134414",
         "description": "Mum account",
         "nickname": "This is mum account",
