@@ -2,3 +2,5 @@ node_modules
 package-lock.json
 .vscode/
 yarn.lock
+dev-mybank-secrets.json
+dev-mybank.cer
