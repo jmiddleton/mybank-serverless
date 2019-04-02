@@ -1,0 +1,37 @@
+[
+  {
+    "code": "cba",
+    "name": "Commonwealth Bank",
+    "url": "https://www.commbank.com.au/",
+    "logo-url": "cba.png",
+    "description": "n"
+  },
+  {
+    "code": "hsbc",
+    "name": "HSBC",
+    "url": "https://www.hsbc.com.au/",
+    "logo-url": "hsbc.png",
+    "description": "n"
+  },
+  {
+    "code": "westpac",
+    "name": "Westpac",
+    "url": "https://www.westpac.com.au/",
+    "logo-url": "westpac.png",
+    "description": "n"
+  },
+  {
+    "code": "rabobank",
+    "name": "Rabobank",
+    "url": "https://www.rabobank.com.au/",
+    "logo-url": "rabo.png",
+    "description": "n"
+  },
+  {
+    "code": "citi",
+    "name": "Citibank",
+    "url": "http://citibank.com.au/",
+    "logo-url": "citi.png",
+    "description": "n"
+  }
+]
