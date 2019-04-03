@@ -55,7 +55,7 @@
         ]
     },
     {
-        "customerId": "test",
+        "customerId": "auth0|5ca30dd504099c0e4aec4471",
         "accountId": "5365635645",
         "displayName": "Credit Card",
         "nickname": "string",

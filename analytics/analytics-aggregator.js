@@ -1,8 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const AWS = require('aws-sdk');
 const moment = require('moment');
-const categories = require("./categories.js");
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -40,14 +39,13 @@ async function aggregateSpending(record) {
     return;
   }
 
-  const aggregatedMonth = record.valueDateTime.substring(0, 7);
-  const category = await getCategory(record);
+  const monthCategory = record.valueDateTime.substring(0, 7) + '#' + record.category;
 
   const params = {
     TableName: process.env.SPENDING_TABLE,
     Key: {
       customerId: record.customerId,
-      month: aggregatedMonth + '#' + category
+      month: monthCategory
     },
     UpdateExpression: 'SET #category = :category, #updated = :updated ADD #totalSpent :amount, #totalOfTrans :sumOfTrans',
     ExpressionAttributeNames: {
@@ -57,7 +55,7 @@ async function aggregateSpending(record) {
       '#totalOfTrans': 'totalOfTrans'
     },
     ExpressionAttributeValues: {
-      ':category': category,
+      ':category': record.category,
       ':amount': amount,
       ':updated': new Date().getTime(),
       ':sumOfTrans': 1
@@ -112,19 +110,6 @@ function aggregateSavings(record) {
       return;
     };
   });
-}
-
-async function getCategory(record) {
-  const merchantCode = record.merchantCategoryCode;
-  if (merchantCode) {
-    const categoryPromise = categories.getCategoryByCode(merchantCode);
-    const dbCategory = await categoryPromise;
-
-    if (dbCategory) {
-      return dbCategory.category;
-    }
-  }
-  return "Others";
 }
 
 function getMonthName(month) {

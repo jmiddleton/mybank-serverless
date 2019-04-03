@@ -1,9 +1,9 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const jsonResponse = require("../libs/json-response");
 const r2 = require("r2");
 const shortid = require('shortid');
+const mcccodes = require("../category/mcccodes.js");
 
 //TODO: use const clean = require('obj-clean'); to remove empty elements not allowed by dynamoDB.
 
@@ -35,6 +35,7 @@ module.exports.handler = async (event, context) => {
         txn.updated = timestamp;
         txn.customerId = account.customerId;
         txn.accountId = id;
+        txn.category= await getCategory(txn);
 
         const params = {
           TableName: process.env.TRANSACTIONS_TABLE,
@@ -53,3 +54,16 @@ module.exports.handler = async (event, context) => {
     console.log(err);
   }
 };
+
+async function getCategory(record) {
+  const merchantCode = record.merchantCategoryCode;
+  if (merchantCode) {
+    const categoryPromise = mcccodes.getMCCCategoryByCode(merchantCode);
+    const dbCategory = await categoryPromise;
+
+    if (dbCategory) {
+      return dbCategory.category;
+    }
+  }
+  return "Uncategorized";
+}

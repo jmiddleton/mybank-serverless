@@ -1,6 +1,6 @@
 'use strict';
 
-const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
+const AWS = require('aws-sdk');
 
 var dynamodbOfflineOptions = {
     region: "localhost",
@@ -12,9 +12,9 @@ const dynamoDb = isOffline()
     ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
     : new AWS.DynamoDB.DocumentClient();
 
-module.exports.getCategoryByCode = async (mcode) => {
+module.exports.getMCCCategoryByCode = async (mcode) => {
     const params = {
-        TableName: process.env.CATEGORIES_TABLE,
+        TableName: process.env.MCC_CODES_TABLE,
         Key: {
             code: mcode
         }
@@ -24,6 +24,6 @@ module.exports.getCategoryByCode = async (mcode) => {
         let data = await dynamoDb.get(params).promise();
         return data.Item;
     } catch (error) {
-        return { "code": "0000", "category": "Others" };
+        return { "code": "0000", "category": "Uncategorized" };
     }
 };
