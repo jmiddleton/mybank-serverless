@@ -7,8 +7,6 @@ const mcccodes = require("../category/mcccodes.js");
 
 //TODO: use const clean = require('obj-clean'); to remove empty elements not allowed by dynamoDB.
 
-const url = "http://localhost:4000/accounts/";
-
 var dynamodbOfflineOptions = {
   region: "localhost",
   endpoint: "http://localhost:8000"
@@ -20,12 +18,11 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = async (event, context) => {
-  const message = event.Records[0].Sns.Message;
+  const message = JSON.parse(event.Records[0].Sns.Message);
   const timestamp = new Date().getTime();
-  const account = JSON.parse(message);
 
   try {
-    let response = await r2(url + account.accountId + "/transactions").json;
+    let response = await r2(message.cdr_url + "/accounts/" + message.accountId + "/transactions").json;
 
     if (response && response.data && response.data.transactions) {
       response.data.transactions.forEach(async txn => {
@@ -33,7 +30,7 @@ module.exports.handler = async (event, context) => {
         let id = txn.accountId + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
 
         txn.updated = timestamp;
-        txn.customerId = account.customerId;
+        txn.customerId = message.customerId;
         txn.accountId = id;
         txn.category= await getCategory(txn);
 

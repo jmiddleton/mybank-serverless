@@ -3,14 +3,15 @@
     "code": "cba",
     "name": "Commonwealth Bank",
     "url": "https://www.commbank.com.au/",
-    "logo-url": "cba.png",
+    "cdr_url":"http://localhost:4000",
+    "logo_url": "cba.png",
     "description": "n",
-    "oidc-config": {
+    "oidc_config": {
       "domain": "dev-mybank.au.auth0.com",
-      "client_id": "x",
+      "client_id": "LHKECP453F89QcqPBiSyTGTxauEMiVkK",
       "redirect_uri": "http://localhost:8080/callback",
       "response_type": "id_token token",
-      "scope": "openid email profile",
+      "scope": "openid+email+profile",
       "metadata": {
         "issuer": "https://dev-mybank.au.auth0.com/",
         "authorization_endpoint": "https://dev-mybank.au.auth0.com/authorize",
@@ -23,29 +24,33 @@
   {
     "code": "hsbc",
     "name": "HSBC",
+    "cdr_url":"http://localhost:4000",
     "url": "https://www.hsbc.com.au/",
-    "logo-url": "hsbc.png",
+    "logo_url": "hsbc.png",
     "description": "n"
   },
   {
     "code": "westpac",
     "name": "Westpac",
+    "cdr_url":"http://localhost:4000",
     "url": "https://www.westpac.com.au/",
-    "logo-url": "westpac.png",
+    "logo_url": "westpac.png",
     "description": "n"
   },
   {
     "code": "rabobank",
     "name": "Rabobank",
+    "cdr_url":"http://localhost:4000",
     "url": "https://www.rabobank.com.au/",
-    "logo-url": "rabo.png",
+    "logo_url": "rabo.png",
     "description": "n"
   },
   {
     "code": "citi",
     "name": "Citibank",
+    "cdr_url":"http://localhost:4000",
     "url": "http://citibank.com.au/",
-    "logo-url": "citi.png",
+    "logo_url": "citi.png",
     "description": "n"
   }
 ]
