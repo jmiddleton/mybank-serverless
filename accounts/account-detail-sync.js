@@ -21,7 +21,7 @@ module.exports.handler = async (event, context) => {
     let response = await r2(message.cdr_url + "/accountDetails/" + message.accountId).json;
 
     //if (response && response.data) { //this endpoint should return a data element
-    if (response) {
+    if (response && response.accountId) {
       let accountDetail = response;
       accountDetail.updated = timestamp;
       accountDetail.customerId = message.customerId;

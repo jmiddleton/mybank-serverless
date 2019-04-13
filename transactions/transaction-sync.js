@@ -17,7 +17,7 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = async (event, context) => {
+module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
   const timestamp = new Date().getTime();
 
@@ -28,7 +28,6 @@ module.exports.handler = async (event, context) => {
       response.data.transactions.forEach(async txn => {
 
         let id = txn.accountId + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
-
         txn.updated = timestamp;
         txn.customerId = message.customerId;
         txn.accountId = id;

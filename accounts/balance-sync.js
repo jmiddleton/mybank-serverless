@@ -22,7 +22,7 @@ module.exports.handler = async (event) => {
     let response = await r2(message.cdr_url + "/balances").json;
     if (response && response.data && response.data.balances) {
       response.data.balances.forEach(async balance => {
-        await createBalance(balance, message);
+        await updateBalance(balance, message);
       });
     }
   } catch (err) {
@@ -30,7 +30,7 @@ module.exports.handler = async (event) => {
   }
 };
 
-async function createBalance(balance, message) {
+async function updateBalance(balance, message) {
   
   balance.updated = new Date().getTime();
   balance.customerId = message.customerId;

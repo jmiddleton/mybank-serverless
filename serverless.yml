@@ -205,6 +205,8 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
+    environment:
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   accounts:
     handler: accounts/accounts.handler
     events:
