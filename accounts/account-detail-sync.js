@@ -34,6 +34,8 @@ module.exports.handler = async (event, context) => {
 
       let data = await dynamoDb.put(params).promise();
       console.log("AccountDetails for account: " + accountDetail.accountId + " synched successfully");
+    }else{
+      console.log("No Account Details found.");
     }
   } catch (error) {
     console.error(error);

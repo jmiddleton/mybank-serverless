@@ -22,7 +22,6 @@ provider:
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
-    BANKS_SNS_TOPIC: banks-topic-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
@@ -106,10 +105,6 @@ provider:
       Resource: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
     - Effect: Allow
       Action:
-        - SNS:Publish
-      Resource: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.BANKS_SNS_TOPIC}"
-    - Effect: Allow
-      Action:
         - dynamodb:Query
         - dynamodb:GetItem
         - dynamodb:PutItem
@@ -179,11 +174,11 @@ functions:
   auth-jwt-token:
     handler: auth/jwt_token_authorizer.auth
     cors: true
-  register-bank:
-    handler: customer/register-bank.handler
+  link-accounts:
+    handler: accounts/link-accounts.handler
     events:
       - http:
-          path: '/mybank/v1/customers'
+          path: '/mybank/v1/link-accounts'
           method: post
           cors: true
           private: true
@@ -192,7 +187,7 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
     environment:
-      banksTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.BANKS_SNS_TOPIC}"
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   account-refresh:
     handler: accounts/account-refresh.handler
     events:
@@ -228,18 +223,11 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-  accounts-sync:
-    handler: accounts/accounts-sync.handler
-    events:
-      - sns:
-          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.BANKS_SNS_TOPIC}
-    environment:
-      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   balance-sync:
     handler: accounts/balance-sync.handler
     events:
       - sns: 
-          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.BANKS_SNS_TOPIC}
+          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
   account-detail-sync:
     handler: accounts/account-detail-sync.handler
     events:

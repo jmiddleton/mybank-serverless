@@ -43,7 +43,6 @@ module.exports.handler = async (event) => {
     }
 };
 
-
 async function sendSNS(event, account, bank) {
     let messageData = {
         Message: JSON.stringify({

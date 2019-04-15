@@ -45,6 +45,8 @@ module.exports.handler = async (event) => {
           console.error(error);
         }
       });
+    }else{
+      console.log("No Transactions found.");
     }
   } catch (err) {
     console.log(err);

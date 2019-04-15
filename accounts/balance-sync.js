@@ -24,6 +24,8 @@ module.exports.handler = async (event) => {
       response.data.balances.forEach(async balance => {
         await updateBalance(balance, message);
       });
+    }else{
+      console.log("No Balance found.");
     }
   } catch (err) {
     console.error(error);
