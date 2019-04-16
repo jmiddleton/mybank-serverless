@@ -1,7 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const r2 = require("r2");
+const axios = require("axios");
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -18,11 +18,12 @@ module.exports.handler = async (event, context) => {
   const timestamp = new Date().getTime();
 
   try {
-    let response = await r2(message.cdr_url + "/accountDetails/" + message.accountId).json;
+    const headers = { Authorization: "Bearer " + message.access_token };
+    let response = await axios.get(message.cdr_url + "/accountDetails/" + message.accountId, { headers: headers });
 
     //if (response && response.data) { //this endpoint should return a data element
-    if (response && response.accountId) {
-      let accountDetail = response;
+    if (response && response.data && response.data.accountId) {
+      let accountDetail = response.data;
       accountDetail.updated = timestamp;
       accountDetail.customerId = message.customerId;
       accountDetail.institution = message.bank_code;
@@ -34,10 +35,10 @@ module.exports.handler = async (event, context) => {
 
       let data = await dynamoDb.put(params).promise();
       console.log("AccountDetails for account: " + accountDetail.accountId + " synched successfully");
-    }else{
+    } else {
       console.log("No Account Details found.");
     }
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.log("-> Error retrieving account details: " + err.response.statusText);
   }
 };

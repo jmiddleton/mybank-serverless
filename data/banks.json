@@ -3,28 +3,32 @@
     "code": "cba",
     "name": "Commonwealth Bank",
     "url": "https://www.commbank.com.au/",
-    "cdr_url":"http://localhost:4000",
+    "cdr_url": "http://localhost:4000",
     "logo_url": "cba.png",
     "description": "n",
     "oidc_config": {
       "domain": "dev-mybank.au.auth0.com",
       "client_id": "LHKECP453F89QcqPBiSyTGTxauEMiVkK",
-      "redirect_uri": "http://localhost:8080/callback",
+      "client_secret": "2t-hgrhgZ2J3ufqdIl3ejngKMAjhO9DE2aTBXTUoh2OkzsK_YNcMw5gs1eXpwK7g",
+      "redirect_uri": "http://localhost:8080/bankcallback",
       "response_type": "id_token token",
       "scope": "openid+email+profile",
       "metadata": {
         "issuer": "https://dev-mybank.au.auth0.com/",
         "authorization_endpoint": "https://dev-mybank.au.auth0.com/authorize",
+        "token_endpoint": "https://dev-mybank.au.auth0.com/oauth/token",
         "userinfo_endpoint": "https://dev-mybank.au.auth0.com/userinfo",
-        "end_session_endpoint": "https://dev-mybank.au.auth0.com/v2/logout",
-        "jwks_uri": "https://dev-mybank.au.auth0.com/.well-known/jwks.json"
+        "mfa_challenge_endpoint": "https://dev-mybank.au.auth0.com/mfa/challenge",
+        "jwks_uri": "https://dev-mybank.au.auth0.com/.well-known/jwks.json",
+        "registration_endpoint": "https://dev-mybank.au.auth0.com/oidc/register",
+        "revocation_endpoint": "https://dev-mybank.au.auth0.com/oauth/revoke"
       }
     }
   },
   {
     "code": "hsbc",
     "name": "HSBC",
-    "cdr_url":"http://localhost:4000",
+    "cdr_url": "http://localhost:4000",
     "url": "https://www.hsbc.com.au/",
     "logo_url": "hsbc.png",
     "description": "n"
@@ -32,7 +36,7 @@
   {
     "code": "westpac",
     "name": "Westpac",
-    "cdr_url":"http://localhost:4000",
+    "cdr_url": "http://localhost:4000",
     "url": "https://www.westpac.com.au/",
     "logo_url": "westpac.png",
     "description": "n"
@@ -40,7 +44,7 @@
   {
     "code": "rabobank",
     "name": "Rabobank",
-    "cdr_url":"http://localhost:4000",
+    "cdr_url": "http://localhost:4000",
     "url": "https://www.rabobank.com.au/",
     "logo_url": "rabobank.png",
     "description": "n"
@@ -48,7 +52,7 @@
   {
     "code": "citi",
     "name": "Citibank",
-    "cdr_url":"http://localhost:4000",
+    "cdr_url": "http://localhost:4000",
     "url": "http://citibank.com.au/",
     "logo_url": "citi.png",
     "description": "n"

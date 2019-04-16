@@ -1,7 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const r2 = require("r2");
+const axios = require("axios");
 const shortid = require('shortid');
 const mcccodes = require("../category/mcccodes.js");
 
@@ -22,16 +22,17 @@ module.exports.handler = async (event) => {
   const timestamp = new Date().getTime();
 
   try {
-    let response = await r2(message.cdr_url + "/accounts/" + message.accountId + "/transactions").json;
+    const headers = { Authorization: "Bearer " + message.access_token };
+    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
 
-    if (response && response.data && response.data.transactions) {
-      response.data.transactions.forEach(async txn => {
+    if (response && response.data && response.data.data && response.data.data.transactions) {
+      response.data.data.transactions.forEach(async txn => {
 
         let id = txn.accountId + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
         txn.updated = timestamp;
         txn.customerId = message.customerId;
         txn.accountId = id;
-        txn.category= await getCategory(txn);
+        txn.category = await getCategory(txn);
 
         const params = {
           TableName: process.env.TRANSACTIONS_TABLE,
@@ -45,11 +46,11 @@ module.exports.handler = async (event) => {
           console.error(error);
         }
       });
-    }else{
+    } else {
       console.log("No Transactions found.");
     }
   } catch (err) {
-    console.log(err);
+    console.log("-> Error retrieving transactions: " + err.response.statusText);
   }
 };
 

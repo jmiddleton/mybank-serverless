@@ -1,7 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const r2 = require("r2");
+const axios = require("axios");
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -19,21 +19,23 @@ module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
 
   try {
-    let response = await r2(message.cdr_url + "/balances").json;
-    if (response && response.data && response.data.balances) {
-      response.data.balances.forEach(async balance => {
+    const headers = { Authorization: "Bearer " + message.access_token };
+    let response = await axios.get(message.cdr_url + "/balances", { headers: headers });
+
+    if (response && response.data && response.data.data && response.data.data.balances) {
+      response.data.data.balances.forEach(async balance => {
         await updateBalance(balance, message);
       });
-    }else{
+    } else {
       console.log("No Balance found.");
     }
   } catch (err) {
-    console.error(error);
+    console.log("-> Error retrieving balances: " + err.response.statusText);
   }
 };
 
 async function updateBalance(balance, message) {
-  
+
   balance.updated = new Date().getTime();
   balance.customerId = message.customerId;
   const params = {
