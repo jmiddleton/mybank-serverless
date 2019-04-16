@@ -143,6 +143,8 @@ custom:
     seed:
       domain:
         sources:
+          - table: banks-dev
+            sources: [./data/banks.json]
           - table: payees-dev
             sources: [./data/payees.json]
           - table: accounts-dev
@@ -157,8 +159,6 @@ custom:
             sources: [./data/mcccodes.json]
           - table: categories-dev
             sources: [./data/categories.json]
-          - table: banks-dev
-            sources: [./data/banks.json]
   serverless-offline-dynamodb-streams:
     apiVersion: 'latest'
     endpoint: http://localhost:8000

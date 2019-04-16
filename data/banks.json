@@ -39,7 +39,25 @@
     "cdr_url": "http://localhost:4000",
     "url": "https://www.westpac.com.au/",
     "logo_url": "westpac.png",
-    "description": "n"
+    "description": "n",
+    "oidc_config": {
+      "domain": "dev-mybank.au.auth0.com",
+      "client_id": "6iDFa34R9SixnS4SmU0lmOtUrMnA7J6w",
+      "client_secret": "jk63OnCtBpsR9wshTfyo1unOZed3uoHnUft4sI0EAY4WUppiT7AGEC4sSSb0sXF_",
+      "redirect_uri": "http://localhost:8080/bankcallback",
+      "response_type": "id_token token",
+      "scope": "openid+email+profile",
+      "metadata": {
+        "issuer": "https://dev-mybank.au.auth0.com/",
+        "authorization_endpoint": "https://dev-mybank.au.auth0.com/authorize",
+        "token_endpoint": "https://dev-mybank.au.auth0.com/oauth/token",
+        "userinfo_endpoint": "https://dev-mybank.au.auth0.com/userinfo",
+        "mfa_challenge_endpoint": "https://dev-mybank.au.auth0.com/mfa/challenge",
+        "jwks_uri": "https://dev-mybank.au.auth0.com/.well-known/jwks.json",
+        "registration_endpoint": "https://dev-mybank.au.auth0.com/oidc/register",
+        "revocation_endpoint": "https://dev-mybank.au.auth0.com/oauth/revoke"
+      }
+    }
   },
   {
     "code": "rabobank",
