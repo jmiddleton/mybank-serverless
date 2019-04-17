@@ -76,8 +76,6 @@ module.exports.update = (event, context, callback) => {
     };
   }
 
-  console.log(params);
-
   // update the todo in the database
   dynamoDb.update(params, (error, result) => {
     // handle potential errors

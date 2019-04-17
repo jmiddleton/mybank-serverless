@@ -29,6 +29,7 @@ provider:
     MCC_CODES_TABLE: mcccodes-${opt:stage, self:provider.stage}
     CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
     BANKS_TABLE: banks-${opt:stage, self:provider.stage}
+    USER_BANK_AUTH_TABLE: user-bank-auth-${opt:stage, self:provider.stage}
     AUTH0_CLIENT_ID: ${file(./dev-mybank-secrets.json):AUTH0_CLIENT_ID}
     AUTH0_CLIENT_PUBLIC_KEY: ${file(./dev-mybank.cer)}
   iamRoleStatements:
@@ -127,6 +128,14 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.BANKS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.USER_BANK_AUTH_TABLE}"
 
 plugins:
   - serverless-dynamodb-local
@@ -603,3 +612,26 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.BANKS_TABLE}
+    UserBankAuthDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: bank
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: bank
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.USER_BANK_AUTH_TABLE}
+        

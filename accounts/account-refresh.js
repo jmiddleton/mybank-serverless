@@ -29,19 +29,13 @@ module.exports.handler = async (event) => {
     const principalId = event.requestContext.authorizer.principalId;
 
     try {
-        let account = await getAccountById(accountId, principalId);
+        const account = await getAccountById(accountId, principalId);
         if (account) {
-            let bank = await getBank(account.institution);
-            if (bank) {
-                //TODO: get userbankauth
-                let token = {
-                    access_token: "zcvadfadf",
-                    id_token: "Dfadf",
-                    expires_in: 1353604926,
-                    token_type: "Bearer",
-                    refresh_token: "adfaf"
-                };
-                sendSNS(event, account, bank, token);
+            const userBankAuth = await getUserBankAuth(account.institution, principalId);
+            if (userBankAuth) {
+                sendSNS(account, userBankAuth);
+            } else {
+                return jsonResponse.notFound({ error_code: "TokenNotFound", error_message: "Access token not found" });
             }
         }
         return jsonResponse.ok({});
@@ -51,19 +45,19 @@ module.exports.handler = async (event) => {
     }
 };
 
-async function sendSNS(event, account, bank, token) {
+async function sendSNS(account, token) {
     let messageData = {
         Message: JSON.stringify({
             accountId: account.accountId,
-            customerId: event.requestContext.authorizer.principalId,
-            cdr_url: bank.cdr_url,
-            bank_code: bank.code,
+            customerId: token.customerId,
+            cdr_url: token.cdr_url,
+            bank_code: token.bank,
             access_token: token.access_token
         }),
         TopicArn: process.env.accountsTopicArn,
     };
 
-    console.log("PUBLISHING MESSAGE TO SNS:", messageData);
+    console.log("PUBLISHING ACCOUNT MESSAGE TO SNS:", messageData);
     try {
         sns.publish(messageData).promise();
     } catch (err) {
@@ -71,16 +65,18 @@ async function sendSNS(event, account, bank, token) {
     }
 }
 
-async function getBank(code) {
+async function getUserBankAuth(bank, principalId) {
     const params = {
-        TableName: process.env.BANKS_TABLE,
+        TableName: process.env.USER_BANK_AUTH_TABLE,
         Key: {
-            code: code
+            customerId: principalId,
+            bank: bank
         }
     };
 
     try {
         let data = await dynamoDb.get(params).promise();
+        //TODO: check the token is not expired
         return data.Item;
     } catch (error) {
         console.log(error);

@@ -30,21 +30,20 @@ module.exports.handler = async (event) => {
     const principalId = event.requestContext.authorizer.principalId;
 
     try {
-        let bank = await getBank(data.bank_code);
+        const bank = await getBank(data.bank_code);
         if (bank) {
-            let token = await registerUserBankAuth(bank, data.auth_code, principalId);
-
-            console.log(token);
-
-            const headers = { Authorization: "Bearer " + token.access_token };
-            let response = await axios.get(bank.cdr_url + "/accounts", { headers: headers });
-
-            if (response && response.data && response.data.data && response.data.data.accounts) {
-                response.data.data.accounts.forEach(account => {
-                    registerAccount(account, bank, principalId);
-                    sendSNS(account, bank, token, principalId);
+            const userBankAuth = await registerUserBankAuth(bank, data.auth_code, principalId);
+            if (userBankAuth) {
+                const accounts = await getAccounts(bank, userBankAuth);
+                accounts.forEach(account => {
+                    registerAccount(account, userBankAuth);
+                    sendSNS(account, userBankAuth);
                 });
+            } else {
+                return jsonResponse.error({ error: "Failure to retrieve user authorization" });
             }
+        } else {
+            return jsonResponse.error({ error: "Bank not found" });
         }
         return jsonResponse.ok({});
     } catch (err) {
@@ -53,13 +52,22 @@ module.exports.handler = async (event) => {
     }
 };
 
-async function sendSNS(account, bank, token, principalId) {
+async function getAccounts(bank, token) {
+    const headers = { Authorization: "Bearer " + token.access_token };
+    const accounts = await axios.get(bank.cdr_url + "/accounts", { headers: headers });
+    if (accounts && accounts.data && accounts.data.data && accounts.data.data.accounts) {
+        return accounts.data.data.accounts;
+    }
+    return [];
+}
+
+async function sendSNS(account, token) {
     let messageData = {
         Message: JSON.stringify({
             accountId: account.accountId,
-            customerId: principalId,
-            cdr_url: bank.cdr_url,
-            bank_code: bank.code,
+            customerId: token.customerId,
+            cdr_url: token.cdr_url,
+            bank_code: token.bank,
             access_token: token.access_token
         }),
         TopicArn: process.env.accountsTopicArn,
@@ -73,12 +81,12 @@ async function sendSNS(account, bank, token, principalId) {
     }
 }
 
-async function registerAccount(account, bank, principalId) {
+async function registerAccount(account, token) {
     const timestamp = new Date().getTime();
-    account.customerId = principalId;
+    account.customerId = token.customerId;
     account.created = timestamp;
     account.visible = true;
-    account.institution = bank.code;
+    account.institution = token.bank;
 
     const params = {
         TableName: process.env.ACCOUNTS_TABLE,
@@ -113,19 +121,29 @@ async function registerUserBankAuth(bank, auth_code, principalId) {
             qs.stringify(token_request),
             { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
 
-        token_response.customerId = principalId;
-        token_response.created = timestamp;
-        token_response.institution = bank.code;
+        if (token_response && token_response.data) {
+            console.log("Token successfully exchanged with bank " + bank.code);
+            const userBankAuth = {
+                customerId: principalId,
+                created: timestamp,
+                bank: bank.code,
+                access_token: token_response.data.access_token,
+                id_token: token_response.data.id_token,
+                expires_in: token_response.data.expires_in,
+                token_type: token_response.data.token_type,
+                cdr_url: bank.cdr_url
+            };
 
-        const params = {
-            TableName: process.env.USER_BANK_AUTH_TABLE,
-            Item: token_response
-        };
+            await dynamoDb.put({
+                TableName: process.env.USER_BANK_AUTH_TABLE,
+                Item: userBankAuth
+            }).promise();
 
-        //await dynamoDb.put(params).promise();
-        console.log("User authentication: " + principalId + " created successfully");
-        return token_response;
+            console.log("User authentication: " + principalId + " created successfully");
+            return userBankAuth;
+        }
     } catch (error) {
+        //TODO: improve error handling
         console.error(error);
     }
 }
