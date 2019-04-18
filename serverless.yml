@@ -276,10 +276,23 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
       - http: 
+          path: '/mybank/v1/accounts/{accountId}/transactions/{transactionId}'
+          method: put
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http: 
           path: 'mybank/v1/transactions'
           method: post
           cors: true
           private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
   transaction-sync:
     handler: transactions/transaction-sync.handler
     events:

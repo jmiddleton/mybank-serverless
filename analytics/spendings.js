@@ -28,13 +28,16 @@ module.exports.handler = (event, context, callback) => {
     TableName: process.env.SPENDING_TABLE,
     Limit: 5,
     KeyConditionExpression: 'customerId = :customerId AND #month BETWEEN :startdate AND :enddate',
+    FilterExpression: '#totalOfTrans > :amount',
     ExpressionAttributeNames: {
-      '#month': 'month'
+      '#month': 'month',
+      '#totalOfTrans': 'totalOfTrans'
     },
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
       ':startdate': getMonth(event.pathParameters.month, -2),
-      ':enddate': getMonth(event.pathParameters.month, 1)
+      ':enddate': getMonth(event.pathParameters.month, 1),
+      ':amount': 0
     }
   };
 

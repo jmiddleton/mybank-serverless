@@ -6,7 +6,8 @@ const jsonResponse = require("../libs/json-response");
 
 const handlers = {
   "GET": getTransactions,
-  "POST": createTransaction
+  "POST": createTransaction,
+  "PUT": updateTransaction
 }
 
 var dynamodbOfflineOptions = {
@@ -20,7 +21,6 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = (event, context, callback) => {
-
   let httpMethod = event["httpMethod"];
   if (httpMethod in handlers) {
     return handlers[httpMethod](event, context, callback);
@@ -86,7 +86,23 @@ function createTransaction(event, context, callback) {
       callback(null, jsonResponse.error({ error: "Couldn\'t create a transaction" }));
       return;
     }
+    callback(null, jsonResponse.ok(params.Item));
+  });
+}
 
+function updateTransaction(event, context, callback) {
+  const data = JSON.parse(event.body);
+
+  const params = {
+    TableName: process.env.TRANSACTIONS_TABLE,
+    Item: data
+  };
+
+  dynamoDb.put(params, (error) => {
+    if (error) {
+      callback(null, jsonResponse.error({ error: "Couldn\'t update a transaction" }));
+      return;
+    }
     callback(null, jsonResponse.ok(params.Item));
   });
 }
