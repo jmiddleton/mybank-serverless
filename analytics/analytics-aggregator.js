@@ -19,21 +19,22 @@ module.exports.handler = async (event, context) => {
     const jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
 
     if (record.eventName == 'INSERT') {
-      aggregateSpending(jsonRecord);
+      aggregateSpending(jsonRecord, 1);
       aggregateSavings(jsonRecord);
     } else if (record.eventName == 'MODIFY') {
       //IF category is different, recalculate stats
       const oldRecord= AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
       
-      reverseSpending(oldRecord);
-      aggregateSpending(jsonRecord);
+      aggregateSpending(oldRecord, -1);
+      aggregateSpending(jsonRecord, 1);
     }
   });
 
   return `Successfully processed ${event.Records.length} records.`;
 };
 
-async function aggregateSpending(record) {
+//reverse: -1 reverse txn, 1 new txn
+async function aggregateSpending(record, reverse) {
   const amount = new Number(record.amount);
 
   //credit doesn't count as spending.
@@ -58,48 +59,9 @@ async function aggregateSpending(record) {
     },
     ExpressionAttributeValues: {
       ':category': record.category,
-      ':amount': amount,
+      ':amount': (reverse * amount),
       ':updated': new Date().getTime(),
-      ':sumOfTrans': 1
-    },
-    ReturnValues: 'ALL_NEW'
-  };
-
-  //Write updates to daily rollup table
-  dynamoDb.update(params, (error, result) => {
-    if (error) {
-      console.error(
-        `Internal Error: Error updating spendings record with keys [${JSON.stringify(
-          params.Key
-        )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
-      );
-      return;
-    };
-  });
-}
-
-async function reverseSpending(record) {
-  const amount = new Number(record.amount);
-  const monthCategory = record.valueDateTime.substring(0, 7) + '#' + record.category;
-
-  const params = {
-    TableName: process.env.SPENDING_TABLE,
-    Key: {
-      customerId: record.customerId,
-      month: monthCategory
-    },
-    UpdateExpression: 'SET #category = :category, #updated = :updated ADD #totalSpent :amount, #totalOfTrans :sumOfTrans',
-    ExpressionAttributeNames: {
-      '#category': 'category',
-      '#totalSpent': 'totalSpent',
-      '#updated': 'lastUpdated',
-      '#totalOfTrans': 'totalOfTrans'
-    },
-    ExpressionAttributeValues: {
-      ':category': record.category,
-      ':amount': -1 * amount,
-      ':updated': new Date().getTime(),
-      ':sumOfTrans': -1
+      ':sumOfTrans': (reverse * 1)
     },
     ReturnValues: 'ALL_NEW'
   };
