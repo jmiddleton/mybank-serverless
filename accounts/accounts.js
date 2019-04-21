@@ -7,7 +7,8 @@ const collectionHandlers = {
   "GET": getAccounts
 }
 const methodHandlers = {
-  "GET": getAccountById
+  "GET": getAccountById,
+  "DELETE": deleteAccount
 }
 
 var dynamodbOfflineOptions = {
@@ -81,7 +82,7 @@ function getAccountById(event, context, callback) {
 
   const params = {
     TableName: process.env.ACCOUNTS_DETAILS_TABLE,
-    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, productCategory, bsb, accountNumber, specificAccountUType, depositRates, creditCard',
+    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, productCategory, bsb, accountNumber, specificAccountUType, depositRates, creditCard, termDeposit',
     Key: {
       customerId: event.requestContext.authorizer.principalId,
       accountId: event.pathParameters.accountId,
@@ -109,4 +110,8 @@ function getAccountById(event, context, callback) {
       }));
     }
   });
+}
+
+function deleteAccount(event, context, callback) {
+  //TODO: send an SNS to functions to delete the data
 }

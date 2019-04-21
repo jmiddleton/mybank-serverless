@@ -17,7 +17,12 @@
   {
     "code": "Cash",
     "name": "Cash",
-    "description": "Cash salary income, gifts, etc."
+    "description": "Cash gifts, atm extract, etc."
+  },
+  {
+    "code": "Income",
+    "name": "Income",
+    "description": "Salary income, investment or credit interest, etc."
   },
   {
     "code": "EatingOut",

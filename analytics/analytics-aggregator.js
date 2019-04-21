@@ -13,36 +13,54 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = async (event, context) => {
+module.exports.handler = async (event) => {
 
   event.Records.forEach((record) => {
     const jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
+    const amount = new Number(jsonRecord.amount);
 
-    if (record.eventName == 'INSERT') {
-      aggregateSpending(jsonRecord, 1);
-      aggregateSavings(jsonRecord);
-    } else if (record.eventName == 'MODIFY') {
-      //IF category is different, recalculate stats
-      const oldRecord= AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
-      
-      aggregateSpending(oldRecord, -1);
-      aggregateSpending(jsonRecord, 1);
+    if (record.eventName === 'INSERT') {
+      if (amount > 0) {
+        //aggregateIncome(jsonRecord, -1, 1);
+      } else {
+        aggregateSpending(jsonRecord, -1, 1);
+      }
+      aggregateSavings(jsonRecord, 1);
+    } else if (record.eventName === 'MODIFY') {
+      //if category is different then recalculate stats
+      const oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
+
+      if (record.category !== oldRecord.category) {
+        if (amount > 0) {
+          //aggregateIncome(oldRecord, 1, -1);
+          //aggregateIncome(jsonRecord, -1, 1);
+        } else {
+          aggregateSpending(oldRecord, 1, -1);
+          aggregateSpending(jsonRecord, -1, 1);
+        }
+      }
+    } else if (record.eventName === 'REMOVE') {
+      if (amount > 0) {
+        //aggregateIncome(jsonRecord, -1, -1);
+      } else {
+        aggregateSpending(jsonRecord, -1, -1);
+      }
+      aggregateSavings(jsonRecord, -1);
     }
   });
 
   return `Successfully processed ${event.Records.length} records.`;
 };
 
-//reverse: -1 reverse txn, 1 new txn
-async function aggregateSpending(record, reverse) {
+//sign: -1 reverse txn, 1 create new txn
+async function aggregateSpending(record, sign, sum) {
   const amount = new Number(record.amount);
+  const monthCategory = record.valueDateTime.substring(0, 7) + '#' + record.category;
 
   //credit doesn't count as spending.
   if (amount >= 0) {
     return;
   }
-
-  const monthCategory = record.valueDateTime.substring(0, 7) + '#' + record.category;
 
   const params = {
     TableName: process.env.SPENDING_TABLE,
@@ -59,15 +77,13 @@ async function aggregateSpending(record, reverse) {
     },
     ExpressionAttributeValues: {
       ':category': record.category,
-      ':amount': (reverse * amount),
+      ':amount': (sign * amount),
       ':updated': new Date().getTime(),
-      ':sumOfTrans': (reverse * 1)
-    },
-    ReturnValues: 'ALL_NEW'
+      ':sumOfTrans': sum
+    }
   };
 
-  //Write updates to daily rollup table
-  dynamoDb.update(params, (error, result) => {
+  dynamoDb.update(params, (error) => {
     if (error) {
       console.error(
         `Internal Error: Error updating spendings record with keys [${JSON.stringify(
@@ -79,7 +95,8 @@ async function aggregateSpending(record, reverse) {
   });
 }
 
-function aggregateSavings(record) {
+function aggregateSavings(record, sign) {
+  const amount = new Number(record.amount);
   const aggregatedMonth = record.valueDateTime.substring(0, 7);
 
   const params = {
@@ -95,15 +112,13 @@ function aggregateSavings(record) {
       '#updated': 'lastUpdated'
     },
     ExpressionAttributeValues: {
-      ':amount': new Number(record.amount),
+      ':amount': sign * amount,
       ':updated': new Date().getTime(),
       ':monthName': getMonthName(aggregatedMonth)
-    },
-    ReturnValues: 'ALL_NEW'
+    }
   };
 
-  //Write updates to daily rollup table
-  dynamoDb.update(params, (error, result) => {
+  dynamoDb.update(params, (error) => {
     if (error) {
       console.error(
         `Internal Error: Error updating savings record with keys [${JSON.stringify(

@@ -17,15 +17,12 @@ module.exports.handler = (event, context, callback) => {
     TableName: process.env.SAVINGS_TABLE,
     Limit: 5,
     KeyConditionExpression: 'customerId = :customerId AND #month >= :month',
-    FilterExpression: '#totalSavings > :amount',
     ExpressionAttributeNames: {
-      '#month': 'month',
-      '#totalSavings': 'totalSavings',
+      '#month': 'month'
     },
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
-      ':month': event.pathParameters.month,
-      ':amount': 0
+      ':month': event.pathParameters.month
     }
   };
 
