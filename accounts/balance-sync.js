@@ -43,7 +43,7 @@ async function updateBalance(balance, message) {
     Item: balance
   };
   try {
-    let data = await dynamoDb.put(params).promise();
+    await dynamoDb.put(params).promise();
     console.log("Balance for account: " + balance.accountId + " synched successfully");
   }
   catch (error) {

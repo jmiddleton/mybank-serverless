@@ -26,13 +26,13 @@ module.exports.handler = (event, context, callback) => {
 
   let httpMethod = event["httpMethod"];
   if (httpMethod in handlers) {
-    return handlers[httpMethod](event, context, callback);
+    return handlers[httpMethod](event, callback);
   }
 
   callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
 };
 
-function getAccounts(event, context, callback) {
+function getAccounts(event, callback) {
   const params = {
     TableName: process.env.ACCOUNTS_TABLE,
     Limit: 500,
@@ -78,7 +78,7 @@ function getAccounts(event, context, callback) {
 }
 
 // Get account details endpoint
-function getAccountById(event, context, callback) {
+function getAccountById(event, callback) {
 
   const params = {
     TableName: process.env.ACCOUNTS_DETAILS_TABLE,
@@ -112,6 +112,102 @@ function getAccountById(event, context, callback) {
   });
 }
 
-function deleteAccount(event, context, callback) {
+async function deleteAccount(event, callback) {
   //TODO: send an SNS to functions to delete the data
+  const principalId = event.requestContext.authorizer.principalId;
+  const accountId = event.pathParameters.accountId;
+
+  deleteAccountById(principalId, accountId);
+  deleteAccountDetails(principalId, accountId);
+  deleteBalance(principalId, accountId);
+  deleteTransactions(principalId, accountId);
+
+  callback(null, jsonResponse.ok({ message: "Account has been successfully deleted" }));
+}
+
+
+async function deleteAccountById(customerId, accountId) {
+  const params = {
+    TableName: process.env.ACCOUNTS_TABLE,
+    Key: {
+      customerId: customerId,
+      accountId: accountId,
+    }
+  };
+
+  try {
+    dynamoDb.delete(params).promise();
+    console.log("Account: " + accountId + " successfully deleted");
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteAccountDetails(customerId, accountId) {
+  const params = {
+    TableName: process.env.ACCOUNTS_DETAILS_TABLE,
+    Key: {
+      customerId: customerId,
+      accountId: accountId,
+    }
+  };
+
+  try {
+    dynamoDb.delete(params).promise();
+    console.log("Account details: " + accountId + " successfully deleted");
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteBalance(customerId, accountId) {
+  const params = {
+    TableName: process.env.BALANCES_TABLE,
+    Key: {
+      customerId: customerId,
+      accountId: accountId,
+    }
+  };
+
+  try {
+    dynamoDb.delete(params).promise();
+    console.log("Balance for account: " + accountId + " successfully deleted");
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+async function deleteTransactions(customerId, accountId) {
+  const params = {
+    TableName: process.env.TRANSACTIONS_TABLE,
+    KeyConditionExpression: 'customerId = :customerId and begins_with(accountId, :accountId)',
+    ExpressionAttributeValues: {
+      ':customerId': customerId,
+      ':accountId': accountId,
+    }
+  };
+
+  try {
+    const transactions = await dynamoDb.query(params).promise();
+    if (transactions && transactions.Items) {
+      transactions.Items.forEach(async txn => {
+        const txnparams = {
+          TableName: process.env.TRANSACTIONS_TABLE,
+          Key: {
+            customerId: txn.customerId,
+            accountId: txn.accountId,
+          }
+        };
+        dynamoDb.delete(txnparams).promise();
+      });
+
+      console.log("Transactions of account: " + accountId + " successfully deleted");
+    }
+  }
+  catch (error) {
+    console.error(error);
+  }
 }

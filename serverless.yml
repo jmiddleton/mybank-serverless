@@ -298,8 +298,18 @@ functions:
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
-  analytics-aggregator:
-    handler: analytics/analytics-aggregator.handler
+  savings-aggregator:
+    handler: analytics/savings-aggregator.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - TransactionsDynamoDbTable
+              - StreamArn
+          batchSize: 10
+  spendings-aggregator:
+    handler: analytics/spendings-aggregator.handler
     events:
       - stream:
           type: dynamodb
@@ -332,7 +342,27 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
+  user-bank-auth:
+    handler: customer/user-bank-auth.handler
+    events:
+      - http: 
+          path: '/mybank/v1/bankauths'
+          method: GET
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http: 
+          path: '/mybank/v1/bankauths/{bankcode}'
+          method: DELETE
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
 #payees functions          
   list:
     handler: payees/list.list

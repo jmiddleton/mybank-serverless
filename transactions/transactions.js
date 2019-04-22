@@ -37,7 +37,7 @@ function getTransactions(event, context, callback) {
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
     KeyConditionExpression: 'customerId = :customerId and begins_with(accountId, :accountId)',
-    //FilterExpression: '',
+    ScanIndexForward: false,
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
       ':accountId': event.pathParameters.accountId,
@@ -58,11 +58,7 @@ function getTransactions(event, context, callback) {
     // create a response - "2019-03-19T08:19:31.432Z",
     if (result && result.Items) {
       var body = {
-        data: {
-          transactions: result.Items.sort(function (a, b) {
-            return moment(a.valueDateTime, "YYYY-MM-DDTHH:mm").isAfter(b.valueDateTime, 'minute') ? -1 : 1;
-          })
-        }
+        data: { transactions: result.Items }
       }
       addPaginationLinks(body, event.pathParameters, event.queryStringParameters, result);
 

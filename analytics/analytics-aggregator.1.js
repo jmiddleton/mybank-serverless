@@ -40,12 +40,14 @@ module.exports.handler = async (event) => {
         }
       }
     } else if (record.eventName === 'REMOVE') {
+      const oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
+
       if (amount > 0) {
-        //aggregateIncome(jsonRecord, -1, -1);
+        //aggregateIncome(oldRecord, -1, -1);
       } else {
-        aggregateSpending(jsonRecord, -1, -1);
+        aggregateSpending(oldRecord, 1, -1);
       }
-      aggregateSavings(jsonRecord, -1);
+      aggregateSavings(oldRecord, -1);
     }
   });
 
