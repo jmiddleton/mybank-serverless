@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
+const userbankHelper = require("./userbank-helper");
 
 var dynamodbOfflineOptions = {
     region: "localhost",
@@ -27,17 +28,22 @@ let sns = new AWS.SNS(snsOpts);
 module.exports.handler = async (event) => {
     const accountId = event.pathParameters.accountId;
     const principalId = event.requestContext.authorizer.principalId;
+    const data = JSON.parse(event.body);
 
     try {
-        const account = await getAccountById(accountId, principalId);
-        if (account) {
-            const userBankAuth = await getUserBankAuth(account.institution, principalId);
-            if (userBankAuth) {
-                sendSNS(account, userBankAuth);
-            } else {
-                return jsonResponse.notFound({ error_code: "TokenNotFound", error_message: "Access token not found" });
-            }
+        let userBankAuth;
+        if (data.auth_code) {
+            userBankAuth = await userbankHelper.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
+        } else {
+            userBankAuth = await userbankHelper.getUserBankAuth(data.bank_code, principalId);
         }
+
+        if (userBankAuth) {
+            sendSNS(accountId, userBankAuth);
+        } else {
+            return jsonResponse.forbidden({ error: "TokenNotFound", message: "Access token not found" });
+        }
+
         return jsonResponse.ok({});
     } catch (err) {
         console.log(err);
@@ -45,10 +51,10 @@ module.exports.handler = async (event) => {
     }
 };
 
-async function sendSNS(account, token) {
+async function sendSNS(accountId, token) {
     let messageData = {
         Message: JSON.stringify({
-            accountId: account.accountId,
+            accountId: accountId,
             customerId: token.customerId,
             cdr_url: token.cdr_url,
             bank_code: token.bank,
@@ -64,25 +70,6 @@ async function sendSNS(account, token) {
         console.log(err);
     }
 }
-
-async function getUserBankAuth(bank, principalId) {
-    const params = {
-        TableName: process.env.USER_BANK_AUTH_TABLE,
-        Key: {
-            customerId: principalId,
-            bank: bank
-        }
-    };
-
-    try {
-        let data = await dynamoDb.get(params).promise();
-        //TODO: check the token is not expired
-        return data.Item;
-    } catch (error) {
-        console.log(error);
-        return undefined;
-    }
-};
 
 // Get account details endpoint
 async function getAccountById(accountId, customerId) {

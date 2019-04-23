@@ -347,7 +347,7 @@ functions:
     events:
       - http: 
           path: '/mybank/v1/bankauths'
-          method: GET
+          method: ANY
           cors: true
           private: true
           authorizer: 
@@ -356,7 +356,7 @@ functions:
             type: token
       - http: 
           path: '/mybank/v1/bankauths/{bankcode}'
-          method: DELETE
+          method: ANY
           cors: true
           private: true
           authorizer: 
@@ -429,7 +429,16 @@ functions:
     events:
       - http:
           path: '/mybank/v1/banks'
-          method: get
+          method: GET
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http: 
+          path: '/mybank/v1/banks/{bankcode}'
+          method: GET
           cors: true
           private: true
           authorizer: 

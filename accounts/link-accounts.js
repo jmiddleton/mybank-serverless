@@ -2,8 +2,8 @@
 
 const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
+const userbankHelper = require("./userbank-helper");
 const axios = require("axios");
-var qs = require('querystring');
 
 var dynamodbOfflineOptions = {
     region: "localhost",
@@ -30,31 +30,27 @@ module.exports.handler = async (event) => {
     const principalId = event.requestContext.authorizer.principalId;
 
     try {
-        const bank = await getBank(data.bank_code);
-        if (bank) {
-            const userBankAuth = await registerUserBankAuth(bank, data.auth_code, principalId);
-            if (userBankAuth) {
-                const accounts = await getAccounts(bank, userBankAuth);
-                accounts.forEach(account => {
-                    registerAccount(account, userBankAuth);
-                    sendSNS(account, userBankAuth);
-                });
-            } else {
-                return jsonResponse.error({ error: "Failure to retrieve user authorization" });
-            }
+        const userBankAuth = await userbankHelper.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
+        if (userBankAuth) {
+            const accounts = await getAccounts(userBankAuth);
+            accounts.forEach(account => {
+                registerAccount(account, userBankAuth);
+                sendSNS(account, userBankAuth);
+            });
         } else {
-            return jsonResponse.error({ error: "Bank not found" });
+            return jsonResponse.error({ error: "Failure to retrieve user authorization" });
         }
+
         return jsonResponse.ok({});
     } catch (err) {
         console.log(err);
-        return jsonResponse.error();
+        return jsonResponse.error(err);
     }
 };
 
-async function getAccounts(bank, token) {
+async function getAccounts(token) {
     const headers = { Authorization: "Bearer " + token.access_token };
-    const accounts = await axios.get(bank.cdr_url + "/accounts", { headers: headers });
+    const accounts = await axios.get(token.cdr_url + "/accounts", { headers: headers });
     if (accounts && accounts.data && accounts.data.data && accounts.data.data.accounts) {
         return accounts.data.data.accounts;
     }
@@ -100,67 +96,3 @@ async function registerAccount(account, token) {
         console.error(error);
     }
 }
-
-//TODO: exchange for an access token and ID token. 
-//Your server makes this exchange by sending an HTTPS POST request. 
-//The POST request is sent to the token endpoint, which you should retrieve 
-//from the Discovery document using the key token_endpoint.
-async function registerUserBankAuth(bank, auth_code, principalId) {
-    const timestamp = new Date().getTime();
-
-    const token_request = {
-        code: auth_code,
-        client_id: bank.oidc_config.client_id,
-        client_secret: bank.oidc_config.client_secret,
-        redirect_uri: bank.oidc_config.redirect_uri,
-        grant_type: "authorization_code"
-    };
-
-    try {
-        let token_response = await axios.post(bank.oidc_config.metadata.token_endpoint,
-            qs.stringify(token_request),
-            { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
-
-        if (token_response && token_response.data) {
-            console.log("Token successfully exchanged with bank " + bank.code);
-            const userBankAuth = {
-                customerId: principalId,
-                created: timestamp,
-                bank: bank.code,
-                access_token: token_response.data.access_token,
-                id_token: token_response.data.id_token,
-                expires_in: token_response.data.expires_in,
-                token_type: token_response.data.token_type,
-                cdr_url: bank.cdr_url
-            };
-
-            await dynamoDb.put({
-                TableName: process.env.USER_BANK_AUTH_TABLE,
-                Item: userBankAuth
-            }).promise();
-
-            console.log("User authentication: " + principalId + " created successfully");
-            return userBankAuth;
-        }
-    } catch (error) {
-        //TODO: improve error handling
-        console.error(error);
-    }
-}
-
-async function getBank(code) {
-    const params = {
-        TableName: process.env.BANKS_TABLE,
-        Key: {
-            code: code
-        }
-    };
-
-    try {
-        let data = await dynamoDb.get(params).promise();
-        return data.Item;
-    } catch (error) {
-        console.log(error);
-        return undefined;
-    }
-};

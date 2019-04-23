@@ -34,11 +34,9 @@ module.exports.handler = async (event) => {
 
     if (amount < 0) {
       if (oldRecord) {
-        console.log("reverting spending");
         aggregateSpending(oldRecord, 1, -1);
       }
       if (jsonRecord) {
-        console.log("aggregating spending");
         aggregateSpending(jsonRecord, -1, 1);
       }
     }

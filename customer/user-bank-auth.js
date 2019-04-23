@@ -7,6 +7,7 @@ const collectionHandlers = {
   "GET": getUserBankAuths
 }
 const methodHandlers = {
+  "GET": getUserBankAuth,
   "DELETE": unlinkUserBankAuth
 }
 
@@ -34,7 +35,7 @@ module.exports.handler = async (event) => {
 async function getUserBankAuths(event) {
   const params = {
     TableName: process.env.USER_BANK_AUTH_TABLE,
-    ProjectionExpression: 'bank, created, expires_in',
+    //ProjectionExpression: 'bank, created, expires_in',
     KeyConditionExpression: 'customerId = :customerId',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId
@@ -46,6 +47,31 @@ async function getUserBankAuths(event) {
     return jsonResponse.ok(data.Items);
   } catch (error) {
     console.log(error);
+  }
+}
+
+async function getUserBankAuth(event) {
+  const params = {
+    TableName: process.env.USER_BANK_AUTH_TABLE,
+    Key: {
+      customerId: event.requestContext.authorizer.principalId,
+      bank: event.pathParameters.bankcode
+    }
+  };
+
+  try {
+    let data = await dynamoDb.get(params).promise();
+    if (data.Item) {
+      return jsonResponse.ok(data.Item);
+    } else {
+      return jsonResponse.notFound({ error: "NotFound", message: "Could not find user bank authorization" });
+    }
+  } catch (error) {
+    console.log(error);
+    return jsonResponse.serverError({
+      error: "DBError",
+      message: error.message
+    });
   }
 }
 

@@ -10,7 +10,7 @@
       "domain": "dev-mybank.au.auth0.com",
       "client_id": "LHKECP453F89QcqPBiSyTGTxauEMiVkK",
       "client_secret": "2t-hgrhgZ2J3ufqdIl3ejngKMAjhO9DE2aTBXTUoh2OkzsK_YNcMw5gs1eXpwK7g",
-      "redirect_uri": "http://localhost:8080/bankcallback",
+      "redirect_uri": "http://localhost:8080/app/bankcallback",
       "response_type": "id_token token",
       "scope": "openid+email+profile",
       "metadata": {
@@ -44,7 +44,7 @@
       "domain": "dev-mybank.au.auth0.com",
       "client_id": "6iDFa34R9SixnS4SmU0lmOtUrMnA7J6w",
       "client_secret": "jk63OnCtBpsR9wshTfyo1unOZed3uoHnUft4sI0EAY4WUppiT7AGEC4sSSb0sXF_",
-      "redirect_uri": "http://localhost:8080/bankcallback",
+      "redirect_uri": "http://localhost:8080/app/bankcallback",
       "response_type": "id_token token",
       "scope": "openid+email+profile",
       "metadata": {
