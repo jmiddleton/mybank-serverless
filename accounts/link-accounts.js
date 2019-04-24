@@ -2,7 +2,7 @@
 
 const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
-const userbankHelper = require("./userbank-helper");
+const userbankDao = require("../customer/userbank-auth-dao.js");
 const axios = require("axios");
 
 var dynamodbOfflineOptions = {
@@ -30,7 +30,7 @@ module.exports.handler = async (event) => {
     const principalId = event.requestContext.authorizer.principalId;
 
     try {
-        const userBankAuth = await userbankHelper.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
+        const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         if (userBankAuth) {
             const accounts = await getAccounts(userBankAuth);
             accounts.forEach(account => {

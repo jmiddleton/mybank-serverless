@@ -342,8 +342,8 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-  user-bank-auth:
-    handler: customer/user-bank-auth.handler
+  userbank-auth:
+    handler: customer/userbank-auth.handler
     events:
       - http: 
           path: '/mybank/v1/bankauths'

@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
-const userbankHelper = require("./userbank-helper");
+const userbankDao = require("../customer/userbank-auth-dao.js");
 
 var dynamodbOfflineOptions = {
     region: "localhost",
@@ -33,9 +33,9 @@ module.exports.handler = async (event) => {
     try {
         let userBankAuth;
         if (data.auth_code) {
-            userBankAuth = await userbankHelper.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
+            userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         } else {
-            userBankAuth = await userbankHelper.getUserBankAuth(data.bank_code, principalId);
+            userBankAuth = await userbankDao.getUserBankAuth(data.bank_code, principalId);
         }
 
         if (userBankAuth) {

@@ -28,7 +28,7 @@ module.exports.handler = async (event) => {
     if (response && response.data && response.data.data && response.data.data.transactions) {
       response.data.data.transactions.forEach(async txn => {
 
-        let id = txn.accountId + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
+        let id = txn.accountId + "#" + txn.valueDateTime + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
         txn.updated = timestamp;
         txn.customerId = message.customerId;
         txn.accountId = id;
