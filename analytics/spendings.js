@@ -14,8 +14,13 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = (event, context, callback) => {
+  let prefetch = 0;
 
-  if (!event.pathParameters.month || event.pathParameters.month.length != 7){
+  if (event.queryStringParameters && event.queryStringParameters['monthsToPrefetch']) {
+    prefetch = -1 * new Number(event.queryStringParameters['monthsToPrefetch']);
+  }
+
+  if (!event.pathParameters.month || event.pathParameters.month.length != 7) {
     callback(null, {
       statusCode: 400,
       headers: { 'Content-Type': 'text/plain' },
@@ -35,7 +40,7 @@ module.exports.handler = (event, context, callback) => {
     },
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
-      ':startdate': getMonth(event.pathParameters.month, -2),
+      ':startdate': getMonth(event.pathParameters.month, prefetch),
       ':enddate': getMonth(event.pathParameters.month, 1),
       ':amount': 0
     }
