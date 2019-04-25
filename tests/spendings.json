@@ -1,0 +1,30 @@
+{
+    "pathParameters": {
+        "month": "2019-04"
+    },
+    "requestContext": {
+        "stage": "dev",
+        "requestId": "offlineContext_requestId_6794124968565076",
+        "authorizer": {
+            "principalId": "auth0|5ca30dd504099c0e4aec4471"
+        },
+        "protocol": "HTTP/1.1",
+        "resourcePath": "/mybank/v1/analytics/spendings/{month}",
+        "httpMethod": "GET"
+    },
+    "resource": "/mybank/v1/analytics/spendings/{month}",
+    "httpMethod": "GET",
+    "queryStringParameters": {
+        "monthsToPrefetch": "2",
+        "page-size": "50"
+    },
+    "multiValueQueryStringParameters": {
+        "monthsToPrefetch": [
+            "2"
+        ],
+        "page-size": [
+            "50"
+        ]
+    },
+    "isOffline": true
+}

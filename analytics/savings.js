@@ -1,6 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const jsonResponse = require("../libs/json-response");
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -12,7 +13,7 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = (event, context, callback) => {
+module.exports.handler = async (event) => {
   const params = {
     TableName: process.env.SAVINGS_TABLE,
     Limit: 5,
@@ -30,42 +31,18 @@ module.exports.handler = (event, context, callback) => {
     params.Limit = event.queryStringParameters['page-size'];
   }
 
-  dynamoDb.query(params, (error, result) => {
-    if (error) {
-      console.log(error);
-
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t find savings for the month.',
-      });
-      return;
-    }
-
-    // create a response
-    if (result && result.Items) {
-      const body = {
-        data: {
-          savings: result.Items
-        }
+  try {
+    let result = await dynamoDb.query(params).promise();
+    return jsonResponse.ok({
+      data: {
+        savings: result.Items
       }
-
-      const response = {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true
-        },
-        body: JSON.stringify(body)
-      };
-
-      callback(null, response);
-    } else {
-      callback(null, {
-        statusCode: 404,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Savings not found'
-      });
-    }
-  });
+    });
+  } catch (error) {
+    console.log(error);
+    return jsonResponse.notFound({
+      error: "NotFound",
+      message: "Savings not found"
+    });
+  }
 };

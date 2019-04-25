@@ -1,0 +1,107 @@
+{
+    "headers": {
+        "Host": "localhost:3000",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Referer": "http://localhost:8080/app/spending",
+        "x-api-key": "d41d8cd98f00b204e9800998ecf8427e",
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1rSTBOakJET0VVeU5qSTRSREJFTURWR1JUVTJSREV4TmpsRlEwVXdSVU01UXpFMFFrWTNRZyJ9.eyJuaWNrbmFtZSI6Im15YmFua3Rlc3QiLCJuYW1lIjoibXliYW5rdGVzdEBteWJhbmsuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyL2Y2OGY0NDA5M2FiZWFjMWEyMjBmNzRlZjdiODdjNzNiP3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGbXkucG5nIiwidXBkYXRlZF9hdCI6IjIwMTktMDQtMjRUMDY6NTI6NDMuMDM2WiIsImVtYWlsIjoibXliYW5rdGVzdEBteWJhbmsuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJpc3MiOiJodHRwczovL2Rldi1teWJhbmsuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVjYTMwZGQ1MDQwOTljMGU0YWVjNDQ3MSIsImF1ZCI6IlIyemJTUUxGdmR5Y0FoUG5Geko2RkNCSmpPRkNRQW84IiwiaWF0IjoxNTU2MjI0NTk1LCJleHAiOjE1NTYyMjgxOTUsIm5vbmNlIjoiS08yb0ZMaXU3alN4Ny5YTnE5T3NZSGloNnE0clFyTlMifQ.oS2YEemu5GMu8tNMS5JaFxqV0SZJnmg1d-7jYDYUTFSPATf4ggFRjPtddk6sTRl3LXTGGxHXgaMap81fLFL1v44oAotnDO8xErr6_TVUS0thxYdGapfb8ns64MgpER0uWsn1GE1PVlKD1BGK3PQ3PoimMKtuh01dN2VZ7ENEd_8IiPYbGLCd1FFe6M-Zfh3B2GRcZ1-z1j1jYZoFAygLki1rfbq3Xe5zCcAVpDfrUnY3eeoWGaUJocXq229BvsArBRIPDiJp7BTEcjHXzjkzUw1Z3sfTe3SI-o_vJUuUqegAncCxd33sT8oeSmF95JznS3I0JE87h8UF_LjzDw5fZA",
+        "Origin": "http://localhost:8080",
+        "Connection": "keep-alive"
+    },
+    "multiValueHeaders": {
+        "Host": [
+            "localhost:3000"
+        ],
+        "User-Agent": [
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0"
+        ],
+        "Accept": [
+            "application/json, text/plain, */*"
+        ],
+        "Accept-Language": [
+            "en-US,en;q=0.5"
+        ],
+        "Accept-Encoding": [
+            "gzip, deflate"
+        ],
+        "Referer": [
+            "http://localhost:8080/app/spending"
+        ],
+        "x-api-key": [
+            "d41d8cd98f00b204e9800998ecf8427e"
+        ],
+        "Authorization": [
+            "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik1rSTBOakJET0VVeU5qSTRSREJFTURWR1JUVTJSREV4TmpsRlEwVXdSVU01UXpFMFFrWTNRZyJ9.eyJuaWNrbmFtZSI6Im15YmFua3Rlc3QiLCJuYW1lIjoibXliYW5rdGVzdEBteWJhbmsuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vcy5ncmF2YXRhci5jb20vYXZhdGFyL2Y2OGY0NDA5M2FiZWFjMWEyMjBmNzRlZjdiODdjNzNiP3M9NDgwJnI9cGcmZD1odHRwcyUzQSUyRiUyRmNkbi5hdXRoMC5jb20lMkZhdmF0YXJzJTJGbXkucG5nIiwidXBkYXRlZF9hdCI6IjIwMTktMDQtMjRUMDY6NTI6NDMuMDM2WiIsImVtYWlsIjoibXliYW5rdGVzdEBteWJhbmsuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJpc3MiOiJodHRwczovL2Rldi1teWJhbmsuYXUuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVjYTMwZGQ1MDQwOTljMGU0YWVjNDQ3MSIsImF1ZCI6IlIyemJTUUxGdmR5Y0FoUG5Geko2RkNCSmpPRkNRQW84IiwiaWF0IjoxNTU2MjI0NTk1LCJleHAiOjE1NTYyMjgxOTUsIm5vbmNlIjoiS08yb0ZMaXU3alN4Ny5YTnE5T3NZSGloNnE0clFyTlMifQ.oS2YEemu5GMu8tNMS5JaFxqV0SZJnmg1d-7jYDYUTFSPATf4ggFRjPtddk6sTRl3LXTGGxHXgaMap81fLFL1v44oAotnDO8xErr6_TVUS0thxYdGapfb8ns64MgpER0uWsn1GE1PVlKD1BGK3PQ3PoimMKtuh01dN2VZ7ENEd_8IiPYbGLCd1FFe6M-Zfh3B2GRcZ1-z1j1jYZoFAygLki1rfbq3Xe5zCcAVpDfrUnY3eeoWGaUJocXq229BvsArBRIPDiJp7BTEcjHXzjkzUw1Z3sfTe3SI-o_vJUuUqegAncCxd33sT8oeSmF95JznS3I0JE87h8UF_LjzDw5fZA"
+        ],
+        "Origin": [
+            "http://localhost:8080"
+        ],
+        "Connection": [
+            "keep-alive"
+        ]
+    },
+    "path": "/mybank/v1/analytics/spendings/2019-02",
+    "pathParameters": {
+        "month": "2019-02"
+    },
+    "requestContext": {
+        "accountId": "offlineContext_accountId",
+        "resourceId": "offlineContext_resourceId",
+        "apiId": "offlineContext_apiId",
+        "stage": "dev",
+        "requestId": "offlineContext_requestId_25923384932798976",
+        "identity": {
+            "cognitoIdentityPoolId": "offlineContext_cognitoIdentityPoolId",
+            "accountId": "offlineContext_accountId",
+            "cognitoIdentityId": "offlineContext_cognitoIdentityId",
+            "caller": "offlineContext_caller",
+            "apiKey": "offlineContext_apiKey",
+            "sourceIp": "127.0.0.1",
+            "cognitoAuthenticationType": "offlineContext_cognitoAuthenticationType",
+            "cognitoAuthenticationProvider": "offlineContext_cognitoAuthenticationProvider",
+            "userArn": "offlineContext_userArn",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:66.0) Gecko/20100101 Firefox/66.0",
+            "user": "offlineContext_user"
+        },
+        "authorizer": {
+            "principalId": "auth0|5ca30dd504099c0e4aec4471",
+            "claims": {
+                "nickname": "mybanktest",
+                "name": "mybanktest@mybank.com",
+                "picture": "https://s.gravatar.com/avatar/f68f44093abeac1a220f74ef7b87c73b?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fmy.png",
+                "updated_at": "2019-04-24T06:52:43.036Z",
+                "email": "mybanktest@mybank.com",
+                "email_verified": false,
+                "iss": "https://dev-mybank.au.auth0.com/",
+                "sub": "auth0|5ca30dd504099c0e4aec4471",
+                "aud": "R2zbSQLFvdycAhPnFzJ6FCBJjOFCQAo8",
+                "iat": 1556224595,
+                "exp": 1556228195,
+                "nonce": "KO2oFLiu7jSx7.XNq9OsYHih6q4rQrNS"
+            }
+        },
+        "protocol": "HTTP/1.1",
+        "resourcePath": "/mybank/v1/analytics/spendings/{month}",
+        "httpMethod": "GET"
+    },
+    "resource": "/mybank/v1/analytics/spendings/{month}",
+    "httpMethod": "GET",
+    "queryStringParameters": {
+        "monthsToPrefetch": "2",
+        "page-size": "50"
+    },
+    "multiValueQueryStringParameters": {
+        "monthsToPrefetch": [
+            "2"
+        ],
+        "page-size": [
+            "50"
+        ]
+    },
+    "stageVariables": null,
+    "body": null,
+    "isOffline": true
+}
