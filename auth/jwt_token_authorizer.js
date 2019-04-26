@@ -47,8 +47,10 @@ module.exports.auth = (event, context, callback) => {
         console.log(`Token invalid. ${verifyError}`);
         return callback('Unauthorized');
       }
-
-      return callback(null, generatePolicy(decoded.sub, 'Allow', event.methodArn));
+      //arn is used for caching of the validation
+      //as mentioned here: https://medium.com/asked-io/serverless-custom-authorizer-issues-on-aws-57a40176f63f
+      const arn = event.methodArn.split('/').slice(0, 2).join('/') + '/*';
+      return callback(null, generatePolicy(decoded.sub, 'Allow', arn));
     });
   } catch (err) {
     console.log('catch error. Invalid token', err);
@@ -60,9 +62,9 @@ module.exports.auth = (event, context, callback) => {
 module.exports.publicEndpoint = (event, context, callback) => callback(null, {
   statusCode: 200,
   headers: {
-      /* Required for CORS support to work */
+    /* Required for CORS support to work */
     'Access-Control-Allow-Origin': '*',
-      /* Required for cookies, authorization headers with HTTPS */
+    /* Required for cookies, authorization headers with HTTPS */
     'Access-Control-Allow-Credentials': true,
   },
   body: JSON.stringify({
@@ -74,9 +76,9 @@ module.exports.publicEndpoint = (event, context, callback) => callback(null, {
 module.exports.privateEndpoint = (event, context, callback) => callback(null, {
   statusCode: 200,
   headers: {
-      /* Required for CORS support to work */
+    /* Required for CORS support to work */
     'Access-Control-Allow-Origin': '*',
-      /* Required for cookies, authorization headers with HTTPS */
+    /* Required for cookies, authorization headers with HTTPS */
     'Access-Control-Allow-Credentials': true,
   },
   body: JSON.stringify({

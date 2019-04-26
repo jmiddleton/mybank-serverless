@@ -1,7 +1,6 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const moment = require('moment');
 const jsonResponse = require("../libs/json-response");
 
 const handlers = {

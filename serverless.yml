@@ -7,6 +7,7 @@ provider:
   runtime: nodejs8.10
   region: ap-southeast-2
   stage: dev
+  accountId: 828628298567
   apiKeys:
     - ${opt:stage, self:provider.stage}-apikey
   usagePlan:
@@ -103,7 +104,7 @@ provider:
     - Effect: Allow
       Action:
         - SNS:Publish
-      Resource: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+      Resource: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -111,6 +112,8 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
+        - dynamodb:Scan
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.CATEGORIES_TABLE}"
     - Effect: Allow
       Action:
@@ -119,6 +122,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MCC_CODES_TABLE}"
     - Effect: Allow
       Action:
@@ -127,6 +131,8 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
+        - dynamodb:Scan
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.BANKS_TABLE}"
     - Effect: Allow
       Action:
@@ -138,6 +144,7 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.USER_BANK_AUTH_TABLE}"
 
 plugins:
+  - serverless-pseudo-parameters
   - serverless-dynamodb-local
   - serverless-offline-dynamodb-streams
   - serverless-offline-sns
@@ -196,7 +203,7 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
     environment:
-      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   account-refresh:
     handler: accounts/account-refresh.handler
     events:
@@ -210,7 +217,7 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
     environment:
-      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   accounts:
     handler: accounts/accounts.handler
     events:
@@ -236,12 +243,12 @@ functions:
     handler: accounts/balance-sync.handler
     events:
       - sns: 
-          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
   account-detail-sync:
     handler: accounts/account-detail-sync.handler
     events:
       - sns: 
-          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
   balances:
     handler: accounts/balances.handler
     events:
@@ -297,7 +304,7 @@ functions:
     handler: transactions/transaction-sync.handler
     events:
       - sns: 
-          arn: arn:aws:sns:${opt:region, self:provider.region}:123456789012:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
   savings-aggregator:
     handler: analytics/savings-aggregator.handler
     events:
@@ -424,12 +431,21 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-  banks-get:
-    handler: customer/get-banks.handler
+  banks:
+    handler: customer/banks.handler
     events:
       - http:
           path: '/mybank/v1/banks'
-          method: GET
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http:
+          path: '/mybank/v1/banks'
+          method: post
           cors: true
           private: true
           authorizer: 
@@ -438,14 +454,15 @@ functions:
             type: token
       - http: 
           path: '/mybank/v1/banks/{bankcode}'
-          method: GET
+          method: get
           cors: true
           private: true
           authorizer: 
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-  categories-get:
+          
+  categories:
     handler: category/categories.handler
     events:
       - http:
@@ -457,12 +474,21 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
+      - http:
+          path: '/mybank/v1/categories'
+          method: post
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
 
 resources:
   Resources:
     PayeesDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -484,7 +510,7 @@ resources:
         TableName: ${self:provider.environment.PAYEES_TABLE}
     AccountsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -506,7 +532,7 @@ resources:
         TableName: ${self:provider.environment.ACCOUNTS_TABLE}
     AccountsDetailsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -528,7 +554,7 @@ resources:
         TableName: ${self:provider.environment.ACCOUNTS_DETAILS_TABLE}
     BalancesDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -550,7 +576,7 @@ resources:
         TableName: ${self:provider.environment.BALANCES_TABLE}
     TransactionsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -574,7 +600,7 @@ resources:
           StreamViewType: NEW_AND_OLD_IMAGES
     SpendingsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -596,7 +622,7 @@ resources:
         TableName: ${self:provider.environment.SPENDING_TABLE}
     SavingsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -618,7 +644,7 @@ resources:
         TableName: ${self:provider.environment.SAVINGS_TABLE}
     MCCCodesDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -634,7 +660,7 @@ resources:
         TableName: ${self:provider.environment.MCC_CODES_TABLE}
     CategoriesDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -650,7 +676,7 @@ resources:
         TableName: ${self:provider.environment.CATEGORIES_TABLE}
     BanksDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -
@@ -666,7 +692,7 @@ resources:
         TableName: ${self:provider.environment.BANKS_TABLE}
     UserBankAuthDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
           -

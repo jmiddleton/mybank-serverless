@@ -33,9 +33,11 @@ module.exports.handler = async (event) => {
         const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         if (userBankAuth) {
             const accounts = await getAccounts(userBankAuth);
-            accounts.forEach(account => {
-                registerAccount(account, userBankAuth);
-                sendSNS(account, userBankAuth);
+            accounts.forEach(async account => {
+                const status= await registerAccount(account, userBankAuth);
+                if (status == 0) {
+                    sendSNS(account, userBankAuth);
+                }
             });
         } else {
             return jsonResponse.error({ error: "Failure to retrieve user authorization" });
@@ -71,7 +73,7 @@ async function sendSNS(account, token) {
 
     console.log("PUBLISHING ACCOUNT MESSAGE TO SNS:", messageData);
     try {
-        sns.publish(messageData).promise();
+        await sns.publish(messageData).promise();
     } catch (err) {
         console.log(err);
     }
@@ -92,7 +94,9 @@ async function registerAccount(account, token) {
     try {
         await dynamoDb.put(params).promise();
         console.log("Account: " + account.accountId + " synched successfully");
+        return 0;
     } catch (error) {
         console.error(error);
+        return -1;
     }
 }

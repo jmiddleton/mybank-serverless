@@ -23,7 +23,9 @@ module.exports.handler = async (event) => {
 
   try {
     const headers = { Authorization: "Bearer " + message.access_token };
-    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
+    //TODO: use this with real endpoint 
+    //let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
+    let response = await axios.get(message.cdr_url + "/transactions/" + message.accountId , { headers: headers });
 
     if (response && response.data && response.data.data && response.data.data.transactions) {
       response.data.data.transactions.forEach(async txn => {
