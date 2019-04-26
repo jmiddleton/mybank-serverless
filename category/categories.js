@@ -5,7 +5,7 @@ const jsonResponse = require("../libs/json-response");
 
 const handlers = {
     "GET": getCategories,
-    "POST": loadBulkCategories
+    "POST": bulkLoadCategories
 }
 
 var dynamodbOfflineOptions = {
@@ -44,7 +44,7 @@ async function getCategories() {
     }
 };
 
-async function loadBulkCategories(event) {
+async function bulkLoadCategories(event) {
     const requestBody = JSON.parse(event.body);
     const putRequest = [];
 

@@ -2,7 +2,7 @@
 
 const AWS = require("aws-sdk");
 const axios = require("axios");
-const banksDAO = require("./get-banks.js");
+const banksDAO = require("./banks.js");
 var qs = require('querystring');
 
 var dynamodbOfflineOptions = {

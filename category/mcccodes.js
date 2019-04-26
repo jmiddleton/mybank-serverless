@@ -1,6 +1,12 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const jsonResponse = require("../libs/json-response");
+
+const handlers = {
+    "GET": getMCCCodes,
+    "POST": bulkLoadMCCCodes
+}
 
 var dynamodbOfflineOptions = {
     region: "localhost",
@@ -12,7 +18,66 @@ const dynamoDb = isOffline()
     ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
     : new AWS.DynamoDB.DocumentClient();
 
-module.exports.getMCCCategoryByCode = async (mcode) => {
+//handle HTTP requests
+async function handler(event) {
+    let httpMethod = event["httpMethod"];
+
+    if (httpMethod in handlers) {
+        return handlers[httpMethod](event);
+    }
+    return jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` });
+};
+
+//internal function
+async function getMCCCodes(event) {
+    const params = {
+        TableName: process.env.MCC_CODES_TABLE
+    };
+
+    try {
+        let data = await dynamoDb.scan(params).promise();
+        return jsonResponse.ok(data.Items);
+    } catch (error) {
+        console.log(error);
+        return jsonResponse.notFound({
+            error: "NotFound",
+            message: "MCC Codes not found"
+        });
+    }
+}
+
+async function bulkLoadMCCCodes(event) {
+    const requestBody = JSON.parse(event.body);
+    const putRequest = [];
+
+    requestBody.forEach(mcc => {
+        putRequest.push({
+            "PutRequest": {
+                "Item": mcc
+            }
+        })
+    });
+
+    const params = {
+        RequestItems: {
+            [process.env.MCC_CODES_TABLE]: putRequest
+        }
+    }
+
+    try {
+        await dynamoDb.batchWrite(params).promise();
+        return jsonResponse.ok();
+    } catch (error) {
+        console.log(error);
+        return jsonResponse.notFound({
+            error: "SystemError",
+            message: "Error loading MCC codes"
+        });
+    }
+};
+
+//function used by transactions-sync
+async function getMCCCategoryByCode(mcode) {
     const params = {
         TableName: process.env.MCC_CODES_TABLE,
         Key: {
@@ -26,4 +91,9 @@ module.exports.getMCCCategoryByCode = async (mcode) => {
     } catch (error) {
         return { "code": "0000", "category": "Uncategorized" };
     }
+};
+
+module.exports = {
+    handler,
+    getMCCCategoryByCode
 };

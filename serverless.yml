@@ -122,6 +122,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:Scan
         - dynamodb:BatchWriteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MCC_CODES_TABLE}"
     - Effect: Allow
@@ -461,7 +462,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-          
   categories:
     handler: category/categories.handler
     events:
@@ -483,7 +483,27 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-
+  mcccodes:
+    handler: category/mcccodes.handler
+    events:
+      - http:
+          path: '/mybank/v1/mcccodes'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http:
+          path: '/mybank/v1/mcccodes'
+          method: post
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
 resources:
   Resources:
     PayeesDynamoDbTable:

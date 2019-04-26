@@ -5,7 +5,7 @@ const jsonResponse = require("../libs/json-response");
 
 const collectionHandlers = {
   "GET": getBanks,
-  "POST": createBanks
+  "POST": bulkLoadBanks
 }
 const methodHandlers = {
   "GET": getBank
@@ -62,7 +62,7 @@ async function getBank(event) {
   }
 }
 
-async function createBanks(event) {
+async function bulkLoadBanks(event) {
   const requestBody = JSON.parse(event.body);
   const putRequest = [];
 
