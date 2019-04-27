@@ -18,6 +18,8 @@ const dynamoDb = isOffline()
 module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
 
+  console.log("Processing Account Balance event...");
+
   try {
     const headers = { Authorization: "Bearer " + message.access_token };
     let response = await axios.get(message.cdr_url + "/balances", { headers: headers });

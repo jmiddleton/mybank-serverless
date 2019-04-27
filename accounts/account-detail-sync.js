@@ -13,9 +13,11 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = async (event, context) => {
+module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
   const timestamp = new Date().getTime();
+
+  console.log("Processing Account Details event...");
 
   try {
     const headers = { Authorization: "Bearer " + message.access_token };

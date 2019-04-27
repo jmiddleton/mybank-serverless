@@ -1,52 +1,43 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const moment = require('moment');
+const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
 
-var dynamodbOfflineOptions = {
-  region: "localhost",
-  endpoint: "http://localhost:8000"
-},
-  isOffline = () => process.env.IS_OFFLINE;
-
-const dynamoDb = isOffline()
-  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
-  : new AWS.DynamoDB.DocumentClient();
-
-module.exports.handler = async (event) => {
+module.exports.handler = (event, context, callback) => {
+  console.log("Processing transactions to aggregate spendings...");
 
   event.Records.forEach((record) => {
     let jsonRecord = undefined;
     let oldRecord = undefined;
     let amount = 0;
 
-    if (record.eventName === 'INSERT') {
+    if (record.eventName == 'INSERT') {
       jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
       amount = new Number(jsonRecord.amount);
-    } else if (record.eventName === 'MODIFY') {
+    } else if (record.eventName == 'MODIFY') {
       jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
       oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
       amount = new Number(oldRecord.amount);
-    } else if (record.eventName === 'REMOVE') {
+    } else if (record.eventName == 'REMOVE') {
       oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
       amount = new Number(oldRecord.amount);
     }
 
     if (amount < 0) {
-      if (oldRecord) {
+      if (oldRecord !== undefined) {
         aggregateSpending(oldRecord, 1, -1);
       }
-      if (jsonRecord) {
+      if (jsonRecord !== undefined) {
         aggregateSpending(jsonRecord, -1, 1);
       }
     }
   });
 
-  return `Successfully processed ${event.Records.length} records.`;
+  callback(null, `Successfully processed ${event.Records.length} records.`);
 };
 
 //sign: -1 reverse txn, 1 create new txn
-async function aggregateSpending(record, sign, sum) {
+function aggregateSpending(record, sign, sum) {
   const amount = new Number(record.amount);
   const monthCategory = record.valueDateTime.substring(0, 7) + '#' + record.category;
 
@@ -73,17 +64,11 @@ async function aggregateSpending(record, sign, sum) {
       ':amount': (sign * amount),
       ':updated': new Date().getTime(),
       ':sumOfTrans': sum
-    }
+    },
+    ReturnValues: 'UPDATED_NEW'
   };
 
-  dynamoDb.update(params, (error) => {
-    if (error) {
-      console.error(
-        `Internal Error: Error updating spendings record with keys [${JSON.stringify(
-          params.Key
-        )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
-      );
-      return;
-    };
+  dynamoDb.update(params, function (err, data) {
+    if (err) console.log(err);
   });
 }

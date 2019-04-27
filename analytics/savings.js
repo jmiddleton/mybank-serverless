@@ -1,17 +1,7 @@
 'use strict';
 
-const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
-
-var dynamodbOfflineOptions = {
-  region: "localhost",
-  endpoint: "http://localhost:8000"
-},
-  isOffline = () => process.env.IS_OFFLINE;
-
-const dynamoDb = isOffline()
-  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
-  : new AWS.DynamoDB.DocumentClient();
+const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
 
 module.exports.handler = async (event) => {
   const params = {

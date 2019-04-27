@@ -2,20 +2,30 @@
 
 const AWS = require('aws-sdk');
 const moment = require('moment');
-const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
 
-module.exports.handler = (event, context, callback) => {
+var dynamodbOfflineOptions = {
+  region: "localhost",
+  endpoint: "http://localhost:8000"
+},
+  isOffline = () => process.env.IS_OFFLINE;
+
+const dynamoDb = isOffline()
+  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
+  : new AWS.DynamoDB.DocumentClient();
+
+module.exports.handler = (event) => {
   console.log("Processing transactions to aggregate savings...");
 
   event.Records.forEach((record) => {
-    if (record.eventName == 'INSERT') {
+    if (record.eventName === 'INSERT') {
       aggregateSavings(record.dynamodb.NewImage, 1);
-    } else if (record.eventName == 'REMOVE') {
+    } else if (record.eventName === 'REMOVE') {
       aggregateSavings(record.dynamodb.OldImage, -1);
     }
   });
 
-  callback(null, `Successfully processed ${event.Records.length} records.`);
+  console.log(`Successfully processed ${event.Records.length} records.`);
+  return `Successfully processed ${event.Records.length} records.`;
 };
 
 function aggregateSavings(image, sign) {
@@ -39,12 +49,18 @@ function aggregateSavings(image, sign) {
       ':amount': sign * amount,
       ':updated': new Date().getTime(),
       ':monthName': getMonthName(aggregatedMonth)
-    },
-    ReturnValues: 'UPDATED_NEW'
+    }
   };
 
-  dynamoDb.update(params, function (err, data) {
-    if (err) console.log(err);
+  dynamoDb.update(params, (error) => {
+    if (error) {
+      console.error(
+        `Internal Error: Error updating savings record with keys [${JSON.stringify(
+          params.Key
+        )}] and Attributes [${JSON.stringify(params.ExpressionAttributeValues)}]`
+      );
+      return;
+    };
   });
 }
 

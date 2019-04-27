@@ -21,6 +21,8 @@ module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
   const timestamp = new Date().getTime();
 
+  console.log("Processing Account Transactions event...");
+
   try {
     const headers = { Authorization: "Bearer " + message.access_token };
     //TODO: use this with real endpoint 
