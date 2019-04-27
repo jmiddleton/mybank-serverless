@@ -2,16 +2,6 @@ const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
 const userbankDao = require("../customer/userbank-auth-dao.js");
 
-var dynamodbOfflineOptions = {
-    region: "localhost",
-    endpoint: "http://localhost:8000"
-},
-    isOffline = () => process.env.IS_OFFLINE;
-
-const dynamoDb = isOffline()
-    ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
-    : new AWS.DynamoDB.DocumentClient();
-
 var snsOpts = {
     region: "ap-southeast-2"
 };
@@ -68,25 +58,5 @@ async function sendSNS(accountId, token) {
         sns.publish(messageData).promise();
     } catch (err) {
         console.log(err);
-    }
-}
-
-// Get account details endpoint
-async function getAccountById(accountId, customerId) {
-    const params = {
-        TableName: process.env.ACCOUNTS_TABLE,
-        ProjectionExpression: 'accountId, institution',
-        Key: {
-            customerId: customerId,
-            accountId: accountId,
-        }
-    };
-
-    try {
-        let data = await dynamoDb.get(params).promise();
-        return data.Item;
-    } catch (error) {
-        console.log(error);
-        return undefined;
     }
 }

@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
+const asyncForEach = require("../libs/async-helper").asyncForEach;
 
 const collectionHandlers = {
   "GET": getAccounts
@@ -193,7 +194,7 @@ async function deleteTransactions(customerId, accountId) {
   try {
     const transactions = await dynamoDb.query(params).promise();
     if (transactions && transactions.Items) {
-      transactions.Items.forEach(async txn => {
+      asyncForEach(transactions.Items, async txn => {
         const txnparams = {
           TableName: process.env.TRANSACTIONS_TABLE,
           Key: {
@@ -201,7 +202,7 @@ async function deleteTransactions(customerId, accountId) {
             accountId: txn.accountId,
           }
         };
-        dynamoDb.delete(txnparams).promise();
+        await dynamoDb.delete(txnparams).promise();
       });
 
       console.log("Transactions of account: " + accountId + " successfully deleted");

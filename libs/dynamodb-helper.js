@@ -12,5 +12,6 @@ const dynamoDb = isOffline()
     : new AWS.DynamoDB.DocumentClient();
 
 module.exports = {
-    dynamoDb
+    dynamoDb,
+    isOffline
 };

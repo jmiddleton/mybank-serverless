@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk');
 const axios = require("axios");
+const asyncForEach = require("../libs/async-helper").asyncForEach;
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -25,7 +26,7 @@ module.exports.handler = async (event) => {
     let response = await axios.get(message.cdr_url + "/balances", { headers: headers });
 
     if (response && response.data && response.data.data && response.data.data.balances) {
-      response.data.data.balances.forEach(async balance => {
+      asyncForEach(response.data.data.balances, async balance => {
         await updateBalance(balance, message);
       });
     } else {

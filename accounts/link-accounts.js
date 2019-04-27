@@ -3,23 +3,17 @@
 const AWS = require("aws-sdk");
 const jsonResponse = require("../libs/json-response");
 const userbankDao = require("../customer/userbank-auth-dao.js");
+const asyncForEach = require("../libs/async-helper").asyncForEach;
+const dynamoDbHelper = require('../libs/dynamodb-helper');
 const axios = require("axios");
 
-var dynamodbOfflineOptions = {
-    region: "localhost",
-    endpoint: "http://localhost:8000"
-},
-    isOffline = () => process.env.IS_OFFLINE;
-
-const dynamoDb = isOffline()
-    ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
-    : new AWS.DynamoDB.DocumentClient();
+const dynamoDb= dynamoDbHelper.dynamoDb;
 
 var snsOpts = {
     region: "ap-southeast-2"
 };
 
-if (isOffline()) {
+if (dynamoDbHelper.isOffline()) {
     snsOpts.endpoint = "http://127.0.0.1:4002";
 }
 
@@ -33,8 +27,8 @@ module.exports.handler = async (event) => {
         const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         if (userBankAuth) {
             const accounts = await getAccounts(userBankAuth);
-            accounts.forEach(async account => {
-                const status= await registerAccount(account, userBankAuth);
+            asyncForEach(accounts, async account => {
+                const status = await registerAccount(account, userBankAuth);
                 if (status == 0) {
                     sendSNS(account, userBankAuth);
                 }
