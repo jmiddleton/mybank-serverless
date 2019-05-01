@@ -25,6 +25,7 @@ const generatePolicy = (principalId, effect, resource) => {
 // Reusable Authorizer function, set on `authorizer` field in serverless.yml
 module.exports.auth = (event, context, callback) => {
   if (!event.authorizationToken) {
+    console.log("No authorization token");
     return callback('Unauthorized');
   }
 
@@ -33,6 +34,7 @@ module.exports.auth = (event, context, callback) => {
 
   if (!(tokenParts[0].toLowerCase() === 'bearer' && tokenValue)) {
     // no auth token!
+    console.log("No Bearer token");
     return callback('Unauthorized');
   }
   const options = {

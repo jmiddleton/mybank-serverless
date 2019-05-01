@@ -33,7 +33,7 @@ module.exports.handler = (event, context, callback) => {
     }
   });
 
-  callback(null, `Successfully processed ${event.Records.length} records.`);
+  callback(null, `Successfully processed spendings for ${event.Records.length} records.`);
 };
 
 //sign: -1 reverse txn, 1 create new txn

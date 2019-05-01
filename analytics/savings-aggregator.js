@@ -15,7 +15,7 @@ module.exports.handler = (event, context, callback) => {
     }
   });
 
-  callback(null, `Successfully processed ${event.Records.length} records.`);
+  callback(null, `Successfully processed savings for ${event.Records.length} records.`);
 };
 
 function aggregateSavings(image, sign) {
