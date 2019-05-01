@@ -26,7 +26,7 @@ module.exports.handler = async (event) => {
     let response = await axios.get(message.cdr_url + "/balances", { headers: headers });
 
     if (response && response.data && response.data.data && response.data.data.balances) {
-      asyncForEach(response.data.data.balances, async balance => {
+      await asyncForEach(response.data.data.balances, async balance => {
         await updateBalance(balance, message);
       });
     } else {

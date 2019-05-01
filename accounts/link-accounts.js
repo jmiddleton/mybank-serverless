@@ -27,7 +27,7 @@ module.exports.handler = async (event) => {
         const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         if (userBankAuth) {
             const accounts = await getAccounts(userBankAuth);
-            asyncForEach(accounts, async account => {
+            await asyncForEach(accounts, async account => {
                 const status = await registerAccount(account, userBankAuth);
                 if (status == 0) {
                     sendSNS(account, userBankAuth);

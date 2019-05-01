@@ -194,7 +194,7 @@ async function deleteTransactions(customerId, accountId) {
   try {
     const transactions = await dynamoDb.query(params).promise();
     if (transactions && transactions.Items) {
-      asyncForEach(transactions.Items, async txn => {
+      await asyncForEach(transactions.Items, async txn => {
         const txnparams = {
           TableName: process.env.TRANSACTIONS_TABLE,
           Key: {

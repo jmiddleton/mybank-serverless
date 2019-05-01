@@ -30,10 +30,14 @@ module.exports.handler = async (event) => {
     //let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
     let response = await axios.get(message.cdr_url + "/transactions/" + message.accountId, { headers: headers });
 
-    if (response && response.data && response.data.data && response.data.data.transactions) {
-      asyncForEach(response.data.data.transactions, async txn => {
+    const hasTransactions = response !== undefined && response.data !== undefined && response.data.data !== undefined && response.data.data.transactions !== undefined;
+    console.log("Found transactions to process: " + hasTransactions);
 
+    if (hasTransactions) {
+      await asyncForEach(response.data.data.transactions, async txn => {
         let id = txn.accountId + "#" + txn.valueDateTime + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
+        console.log("Processing txn: " + id);
+
         txn.updated = timestamp;
         txn.customerId = message.customerId;
         txn.accountId = id;
@@ -44,29 +48,37 @@ module.exports.handler = async (event) => {
           Item: txn
         };
 
+        console.log("Transaction to persist: " + JSON.stringify(params));
+
         try {
           await dynamoDb.put(params).promise();
-          console.log("Transactions for account: " + txn.accountId + " synched successfully");
+          console.log("Txn: " + id + " synched successfully");
         } catch (error) {
           console.error(error);
         }
       });
     } else {
+      console.log(JSON.stringify(response));
       console.log("No Transactions found.");
     }
   } catch (err) {
-    console.log("-> Error retrieving transactions: " + err.response.statusText);
+    console.log(err);
+    console.log("-> Error retrieving transactions: ");
   }
+  console.log("Transactions processing finished.");
 };
 
 async function getCategory(record) {
   const merchantCode = record.merchantCategoryCode;
   if (merchantCode) {
-    const categoryPromise = mcccodes.getMCCCategoryByCode(merchantCode);
-    const dbCategory = await categoryPromise;
-
-    if (dbCategory) {
-      return dbCategory.category;
+    try {
+      const dbCategory = await mcccodes.getMCCCategoryByCode(merchantCode);
+      if (dbCategory) {
+        return dbCategory.category;
+      }
+    } catch (err) {
+      console.log("Error retrieving MCC codes: " + err.response.statusText);
+      console.log(err);
     }
   }
   return "Uncategorized";
