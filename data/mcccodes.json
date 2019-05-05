@@ -7,5 +7,7 @@
     {"code": "5661", "category": "Shopping"},
     {"code": "4829", "category": "Cash"},
     {"code": "5812", "category": "EatingOut"},
-    {"code": "5814", "category": "EatingOut"}
+    {"code": "5814", "category": "EatingOut"},
+    {"code": "1234", "category": "Entertainment"},
+    {"code": "0732", "category": "Income"}
   ]

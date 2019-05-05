@@ -39,7 +39,7 @@ module.exports.handler = (event, context, callback) => {
 //sign: -1 reverse txn, 1 create new txn
 function aggregateSpending(record, sign, sum) {
   const amount = new Number(record.amount);
-  const monthCategory = record.valueDateTime.substring(0, 7) + '#' + record.category;
+  const monthCategory = getValidDate(record) + '#' + record.category;
 
   //credit doesn't count as spending.
   if (amount >= 0) {
@@ -71,4 +71,15 @@ function aggregateSpending(record, sign, sum) {
   dynamoDb.update(params, function (err, data) {
     if (err) console.log(err);
   });
+}
+
+function getValidDate(txn) {
+  if (txn.postingDateTime && txn.postingDateTime != null && txn.postingDateTime != "null") {
+    return txn.postingDateTime.substring(0, 7);
+  }
+
+  if (txn.valueDateTime) {
+    return txn.valueDateTime.substring(0, 7);
+  }
+  return moment().format("YYYY-MM");
 }

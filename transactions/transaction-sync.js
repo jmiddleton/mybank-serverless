@@ -5,6 +5,7 @@ const axios = require("axios");
 const shortid = require('shortid');
 const mcccodes = require("../category/mcccodes.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
+const clean = require('obj-clean');
 
 //TODO: use const clean = require('obj-clean'); to remove empty elements not allowed by dynamoDB.
 
@@ -35,7 +36,7 @@ module.exports.handler = async (event) => {
 
     if (hasTransactions) {
       await asyncForEach(response.data.data.transactions, async txn => {
-        let id = txn.accountId + "#" + txn.valueDateTime + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
+        let id = txn.accountId + "#" + getValidDate(txn) + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
         console.log("Processing txn: " + id);
 
         txn.updated = timestamp;
@@ -45,10 +46,8 @@ module.exports.handler = async (event) => {
 
         const params = {
           TableName: process.env.TRANSACTIONS_TABLE,
-          Item: txn
+          Item: clean(txn)
         };
-
-        console.log("Transaction to persist: " + JSON.stringify(params));
 
         try {
           await dynamoDb.put(params).promise();
@@ -82,4 +81,15 @@ async function getCategory(record) {
     }
   }
   return "Uncategorized";
+}
+
+function getValidDate(txn) {
+  if (txn.postingDateTime && txn.postingDateTime != null && txn.postingDateTime != "null") {
+    return txn.postingDateTime.substring(0, 7);
+  }
+
+  if (txn.valueDateTime) {
+    return txn.valueDateTime.substring(0, 7);
+  }
+  return moment().format("YYYY-MM");
 }

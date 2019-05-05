@@ -21,7 +21,7 @@ module.exports.handler = (event, context, callback) => {
 function aggregateSavings(image, sign) {
   const record = AWS.DynamoDB.Converter.unmarshall(image);
   const amount = new Number(record.amount);
-  const aggregatedMonth = record.valueDateTime.substring(0, 7);
+  const aggregatedMonth = getValidDate(record);
 
   const params = {
     TableName: process.env.SAVINGS_TABLE,
@@ -53,4 +53,15 @@ function getMonthName(month) {
     return moment(month, "YYYY-MM").format("MMMM");
   }
   return "";
+}
+
+function getValidDate(txn) {
+  if (txn.postingDateTime && txn.postingDateTime != null && txn.postingDateTime != "null") {
+    return txn.postingDateTime.substring(0, 7);
+  }
+
+  if (txn.valueDateTime) {
+    return txn.valueDateTime.substring(0, 7);
+  }
+  return moment().format("YYYY-MM");
 }

@@ -10,6 +10,7 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "moment": "^2.24.0",
+    "obj-clean": "^2.0.0",
     "querystring": "^0.2.0",
     "serverless-http": "^1.9.1",
     "serverless-offline-dynamodb-streams": "^1.5.1",
