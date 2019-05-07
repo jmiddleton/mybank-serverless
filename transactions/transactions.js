@@ -29,28 +29,44 @@ module.exports.handler = (event, context, callback) => {
 };
 
 function getTransactions(event, context, callback) {
-
-  const pagesize = event.queryStringParameters ? event.queryStringParameters['page-size'] : 50;
-  const nextkey = event.queryStringParameters ? event.queryStringParameters.nextkey : "";
+  const pagesize = getQueryParam(event, 'page-size', 50);
+  const category = getQueryParam(event, 'category', undefined);
+  const month = getQueryParam(event, 'month', undefined);
+  const nextkey = getQueryParam(event, 'nextkey', '');
+  const accountId = event.pathParameters.accountId;
 
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
-    KeyConditionExpression: 'customerId = :customerId and begins_with(accountId, :accountId)',
-    ScanIndexForward: false,
-    ExpressionAttributeValues: {
-      ':customerId': event.requestContext.authorizer.principalId,
-      ':accountId': event.pathParameters.accountId,
-    }
+    Limit: pagesize
   };
-  params.Limit = pagesize;
 
-  if (nextkey !== "") {
+  let filter = getFilter(category, month);
+
+  if (!category) {
+    params.KeyConditionExpression = 'customerId = :customerId and begins_with(accountId, :accountId)';
+    params.ExpressionAttributeValues = {
+      ':customerId': event.requestContext.authorizer.principalId,
+      ':accountId': accountId + "#" + filter
+    }
+  } else {
+    params.IndexName = 'accountIndex';
+    params.KeyConditionExpression = 'customerId = :customerId and begins_with(accountFilter, :accountFilter)';
+    params.ExpressionAttributeValues = {
+      ':customerId': event.requestContext.authorizer.principalId,
+      ':accountFilter': accountId + "#" + filter
+    }
+  }
+
+  if (nextkey && nextkey.length > 0) {
     params.ExclusiveStartKey = decodeAsJson(nextkey);
   }
 
+  console.log(JSON.stringify(params));
+
   dynamoDb.query(params, (error, result) => {
     if (error) {
-      callback(null, jsonResponse.notFound({ error: "Couldn\'t find accounts" }));
+      console.log(error);
+      callback(null, jsonResponse.notFound({ error: "Couldn\'t find transactions" }));
       return;
     }
 
@@ -63,7 +79,7 @@ function getTransactions(event, context, callback) {
 
       callback(null, jsonResponse.ok(body));
     } else {
-      callback(null, jsonResponse.notFound({ error: "Accounts not found" }));
+      callback(null, jsonResponse.notFound({ error: "Transactions not found" }));
     }
   });
 };
@@ -139,4 +155,22 @@ function decodeAsJson(data) {
     return JSON.parse(buff.toString('ascii'));
   }
   return {};
+}
+
+function getQueryParam(event, key, defaultValue) {
+  if (event.queryStringParameters && event.queryStringParameters[key]) {
+    return event.queryStringParameters[key];
+  }
+  return defaultValue;
+}
+
+function getFilter(category, month) {
+  let filter = '';
+  if (category) {
+    filter = category + "#"
+  }
+  if (month) {
+    filter = filter + month
+  }
+  return filter;
 }

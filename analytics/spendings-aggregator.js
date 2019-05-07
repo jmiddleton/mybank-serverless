@@ -39,13 +39,13 @@ module.exports.handler = (event, context, callback) => {
 //sign: -1 reverse txn, 1 create new txn
 function aggregateSpending(record, sign, sum) {
   const amount = new Number(record.amount);
-  const monthCategory = getValidDate(record) + '#' + record.category;
 
   //credit doesn't count as spending.
-  if (amount >= 0) {
+  if (record.category === 'Income' || record.category === 'Transfers') {
     return;
   }
 
+  const monthCategory = getValidDate(record) + '#' + record.category;
   const params = {
     TableName: process.env.SPENDING_TABLE,
     Key: {

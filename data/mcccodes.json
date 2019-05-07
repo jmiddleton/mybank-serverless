@@ -9,5 +9,18 @@
     {"code": "5812", "category": "EatingOut"},
     {"code": "5814", "category": "EatingOut"},
     {"code": "1234", "category": "Entertainment"},
-    {"code": "0732", "category": "Income"}
+    {"code": "0732", "category": "Income"},
+
+    {"code": "Travel", "category": "Travel"},
+    {"code": "Cash", "category": "Cash"},
+    {"code": "Transfer", "category": "Transfers"},
+    {"code": "Auto & transport", "category": "Transport"},
+    {"code": "Exclude", "category": "Transfers"},
+    {"code": "Entertainment", "category": "Entertainment"},
+    {"code": "Groceries & household", "category": "Groceries"},
+    {"code": "Food & dining", "category": "EatingOut"},
+    {"code": "Retail shopping", "category": "Shopping"},
+    {"code": "Income", "category": "Income"},
+    {"code": "Fitness & beauty", "category": "PersonalCare"}
+
   ]

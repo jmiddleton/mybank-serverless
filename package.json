@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "serverless-offline": "^4.9.0",
-    "serverless-dynamodb-local": "^0.2.36"
+    "serverless-dynamodb-local": "^0.2.36",
+    "csvtojson": "^2.0.8"
   }
 }

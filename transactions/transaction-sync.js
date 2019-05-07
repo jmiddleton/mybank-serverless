@@ -36,13 +36,16 @@ module.exports.handler = async (event) => {
 
     if (hasTransactions) {
       await asyncForEach(response.data.data.transactions, async txn => {
-        let id = txn.accountId + "#" + getValidDate(txn) + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
+        const validDate = getValidDate(txn);
+        let id = txn.accountId + "#" + validDate + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
         console.log("Processing txn: " + id);
 
         txn.updated = timestamp;
         txn.customerId = message.customerId;
-        txn.accountId = id;
         txn.category = await getCategory(txn);
+        txn.categoryFilter = txn.category + "#" + validDate.substring(0, 7);
+        txn.accountFilter = txn.accountId + "#" + txn.categoryFilter;
+        txn.accountId = id;
 
         const params = {
           TableName: process.env.TRANSACTIONS_TABLE,
@@ -85,11 +88,11 @@ async function getCategory(record) {
 
 function getValidDate(txn) {
   if (txn.postingDateTime && txn.postingDateTime != null && txn.postingDateTime != "null") {
-    return txn.postingDateTime.substring(0, 7);
+    return txn.postingDateTime;
   }
 
   if (txn.valueDateTime) {
-    return txn.valueDateTime.substring(0, 7);
+    return txn.valueDateTime;
   }
-  return moment().format("YYYY-MM");
+  return moment().format();
 }

@@ -598,19 +598,36 @@ resources:
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: customerId
+          - AttributeName: customerId
             AttributeType: S
-          - 
-            AttributeName: accountId
+          - AttributeName: accountId
+            AttributeType: S
+          - AttributeName: categoryFilter
+            AttributeType: S
+          - AttributeName: accountFilter
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: customerId
+          - AttributeName: customerId
             KeyType: HASH
-          -
-            AttributeName: accountId
+          - AttributeName: accountId
             KeyType: RANGE
+        LocalSecondaryIndexes:
+          - IndexName: categoryIndex
+            KeySchema:
+              - AttributeName: customerId
+                KeyType: HASH
+              - AttributeName: categoryFilter
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: accountIndex
+            KeySchema:
+              - AttributeName: customerId
+                KeyType: HASH
+              - AttributeName: accountFilter
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

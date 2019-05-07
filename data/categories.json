@@ -1,87 +1,97 @@
 [
   {
-    "code": "Groceries",
-    "name": "Groceries",
-    "description": "Groceries"
+      "code": "Groceries",
+      "name": "Groceries",
+      "description": "Groceries"
   },
   {
-    "code": "Transport",
-    "name": "Transport",
-    "description": "Transport spendings including train, tolls, ships, parking, etc."
+      "code": "Transport",
+      "name": "Transport",
+      "description": "Transport spendings including train, tolls, ships, parking, etc."
   },
   {
-    "code": "Shopping",
-    "name": "Shopping",
-    "description": "Shopping"
+      "code": "Shopping",
+      "name": "Shopping",
+      "description": "Shopping"
   },
   {
-    "code": "Cash",
-    "name": "Cash",
-    "description": "Cash gifts, atm extract, etc."
+      "code": "Cash",
+      "name": "Cash",
+      "description": "Cash gifts, atm extract, etc."
   },
   {
-    "code": "Income",
-    "name": "Income",
-    "description": "Salary income, investment or credit interest, etc."
+      "code": "Income",
+      "name": "Income",
+      "description": "Salary income, investment or credit interest, etc."
   },
   {
-    "code": "EatingOut",
-    "name": "Eating Out",
-    "description": "Eating Out"
+      "code": "EatingOut",
+      "name": "Eating Out",
+      "description": "Eating Out"
   },
   {
-    "code": "Utilities",
-    "name": "Utilities",
-    "description": "Utilities like electricity bills, phone, etc."
+      "code": "Utilities",
+      "name": "Utilities",
+      "description": "Utilities like electricity bills, phone, etc."
   },
   {
-    "code": "Health",
-    "name": "Health",
-    "description": "Health category includes dental and cirguries"
+      "code": "Health",
+      "name": "Health",
+      "description": "Health category includes dental and cirguries"
   },
   {
-    "code": "General",
-    "name": "General",
-    "description": "General includes other spendings which no category has been defined"
+      "code": "General",
+      "name": "General",
+      "description": "General includes other spendings which no category has been defined"
   },
   {
-    "code": "Housing",
-    "name": "Housing",
-    "description": "Housing includes furniture, etc."
+      "code": "Housing",
+      "name": "Housing",
+      "description": "Housing includes furniture, etc."
   },
   {
-    "code": "Entertainment",
-    "name": "Entertainment",
-    "description": "Entertainment as cinema, concerts, events, etc."
+      "code": "Entertainment",
+      "name": "Entertainment",
+      "description": "Entertainment as cinema, concerts, events, etc."
   },
   {
-    "code": "PersonalCare",
-    "name": "Personal Care",
-    "description": "Personal Care like haircuts, manicure, etc."
+      "code": "PersonalCare",
+      "name": "Personal Care",
+      "description": "Personal Care like haircuts, manicure, etc."
   },
   {
-    "code": "Transfers",
-    "name": "Transfers",
-    "description": "Transfers of money, buy/sell foreign money."
+      "code": "Transfers",
+      "name": "Transfers",
+      "description": "Transfers of money, buy/sell foreign money."
   },
   {
-    "code": "Travel",
-    "name": "Travel",
-    "description": "Travel including holidays, weekend trips, package holidays, etc."
+      "code": "Travel",
+      "name": "Travel",
+      "description": "Travel including holidays, weekend trips, package holidays, etc."
   },
   {
-    "code": "Education",
-    "name": "Education",
-    "description": "Education like school supplies, school private payments, etc."
+      "code": "Education",
+      "name": "Education",
+      "description": "Education like school supplies, school private payments, etc."
   },
   {
-    "code": "Donations",
-    "name": "Donations",
-    "description": "Donations to OMGs"
+      "code": "Donations",
+      "name": "Donations",
+      "description": "Donations to OMGs"
   },
   {
-    "code": "FeesAndInterest",
-    "name": "Fees and Interest",
-    "description": "Fees and Interest including bank account fees or credit card interest."
+      "code": "FeesAndInterest",
+      "name": "Fees and Interest",
+      "description": "Fees and Interest including bank account fees or credit card interest."
+  },
+  {
+      "code": "Business",
+      "name": "Business",
+      "description": "Business expenses."
+  },
+  {
+      "code": "Uncategorized",
+      "name": "Uncategorized",
+      "description": "Uncategorized spending."
   }
 ]
