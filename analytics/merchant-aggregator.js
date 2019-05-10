@@ -4,61 +4,48 @@ const AWS = require('aws-sdk');
 const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
 
 module.exports.handler = (event, context, callback) => {
-  console.log("Processing transactions to aggregate spendings...");
+  console.log("Processing transactions to aggregate merchants...");
 
   event.Records.forEach((record) => {
-    let jsonRecord = undefined;
-    let oldRecord = undefined;
-    let amount = 0;
+    let jsonRecord;
 
     if (record.eventName == 'INSERT') {
       jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
-      amount = new Number(jsonRecord.amount);
-    } else if (record.eventName == 'MODIFY') {
-      jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
-      oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
-      amount = new Number(oldRecord.amount);
+      aggregate(jsonRecord, -1, 1);
     } else if (record.eventName == 'REMOVE') {
-      oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
-      amount = new Number(oldRecord.amount);
-    }
-
-    if (oldRecord !== undefined) {
-      aggregateSpending(oldRecord, 1, -1);
-    }
-    if (jsonRecord !== undefined) {
-      aggregateSpending(jsonRecord, -1, 1);
+      jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
+      aggregate(jsonRecord, 1, -1);
     }
   });
 
-  callback(null, `Successfully processed spendings for ${event.Records.length} records.`);
+  callback(null, `Successfully processed merchants for ${event.Records.length} records.`);
 };
 
 //sign: -1 reverse txn, 1 create new txn
-function aggregateSpending(record, sign, sum) {
+function aggregate(record, sign, sum) {
   const amount = new Number(record.amount);
 
   //credit doesn't count as spending.
-  if (record.category === 'Income' || record.category === 'Transfers') {
+  if (isNull(record.merchantName) || record.category === 'Income' || record.category === 'Transfers') {
     return;
   }
 
-  const monthCategory = getValidDate(record) + '#' + record.category;
+  const merchantMonth = getValidDate(record) + '#' + record.merchantName;
   const params = {
-    TableName: process.env.SPENDING_TABLE,
+    TableName: process.env.MERCHANT_TABLE,
     Key: {
       customerId: record.customerId,
-      month: monthCategory
+      month: merchantMonth
     },
-    UpdateExpression: 'SET #category = :category, #updated = :updated ADD #totalSpent :amount, #totalOfTrans :sumOfTrans',
+    UpdateExpression: 'SET #merchantName = :merchantName, #updated = :updated ADD #totalSpent :amount, #totalOfTrans :sumOfTrans',
     ExpressionAttributeNames: {
-      '#category': 'category',
+      '#merchantName': 'merchantName',
       '#totalSpent': 'totalSpent',
       '#updated': 'lastUpdated',
       '#totalOfTrans': 'totalOfTrans'
     },
     ExpressionAttributeValues: {
-      ':category': record.category,
+      ':merchantName': record.merchantName,
       ':amount': (sign * amount),
       ':updated': new Date().getTime(),
       ':sumOfTrans': sum
@@ -80,4 +67,7 @@ function getValidDate(txn) {
     return txn.valueDateTime.substring(0, 7);
   }
   return moment().format("YYYY-MM");
+}
+function isNull(value) {
+  return !value || value == null || value === "" || value === "null";
 }

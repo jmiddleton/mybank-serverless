@@ -21,6 +21,6 @@
     {"code": "Food & dining", "category": "EatingOut"},
     {"code": "Retail shopping", "category": "Shopping"},
     {"code": "Income", "category": "Income"},
-    {"code": "Fitness & beauty", "category": "PersonalCare"}
+    {"code": "Fitness & beauty", "category": "Shopping"}
 
   ]

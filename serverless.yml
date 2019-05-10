@@ -27,6 +27,7 @@ provider:
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
+    MERCHANT_TABLE: merchant-${opt:stage, self:provider.stage}
     MCC_CODES_TABLE: mcccodes-${opt:stage, self:provider.stage}
     CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
     BANKS_TABLE: banks-${opt:stage, self:provider.stage}
@@ -143,7 +144,15 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.USER_BANK_AUTH_TABLE}"
-
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MERCHANT_TABLE}"
 plugins:
   - serverless-dynamodb-local
   - serverless-offline-dynamodb-streams
@@ -325,6 +334,16 @@ functions:
               - TransactionsDynamoDbTable
               - StreamArn
           batchSize: 10
+  merchant-aggregator:
+    handler: analytics/merchant-aggregator.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - TransactionsDynamoDbTable
+              - StreamArn
+          batchSize: 10
   spendings:
     handler: analytics/spendings.handler
     events:
@@ -342,6 +361,18 @@ functions:
     events:
       - http: 
           path: '/mybank/v1/analytics/savings/{month}'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+  merchant-retrieve:
+    handler: analytics/merchant.handler
+    events:
+      - http: 
+          path: '/mybank/v1/analytics/merchants/{month}'
           method: get
           cors: true
           private: true
@@ -748,4 +779,23 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.USER_BANK_AUTH_TABLE}
-        
+    MerchantDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: month
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: month
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.MERCHANT_TABLE}
