@@ -24,7 +24,7 @@ provider:
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
-    TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
+    TRANSACTIONS_TABLE: txns-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
     MERCHANT_TABLE: merchant-${opt:stage, self:provider.stage}
@@ -178,7 +178,7 @@ custom:
             sources: [./data/accounts_details.json]
           - table: balances-dev
             sources: [./data/balances.json]
-          - table: transactions-dev
+          - table: txns-dev
             sources: [./data/transactions.json]
           - table: mcccodes-dev
             sources: [./data/mcccodes.json]

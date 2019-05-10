@@ -29,7 +29,7 @@ module.exports.handler = (event, context, callback) => {
 };
 
 function getTransactions(event, context, callback) {
-  const pagesize = getQueryParam(event, 'page-size', 50);
+  const pagesize = getQueryParam(event, 'page-size', 25);
   const category = getQueryParam(event, 'category', undefined);
   const month = getQueryParam(event, 'month', undefined);
   const nextkey = getQueryParam(event, 'nextkey', '');
@@ -61,6 +61,7 @@ function getTransactions(event, context, callback) {
     params.ExclusiveStartKey = decodeAsJson(nextkey);
   }
 
+  //TODO: delete console
   console.log(JSON.stringify(params));
 
   dynamoDb.query(params, (error, result) => {

@@ -3,6 +3,7 @@
 const moment = require('moment');
 const jsonResponse = require("../libs/json-response");
 const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
+const _ = require('lodash');
 
 module.exports.handler = async (event) => {
   let prefetch = 0;
@@ -20,7 +21,6 @@ module.exports.handler = async (event) => {
 
   const params = {
     TableName: process.env.MERCHANT_TABLE,
-    Limit: 10,
     KeyConditionExpression: 'customerId = :customerId AND #month BETWEEN :startdate AND :enddate',
     FilterExpression: '#totalOfTrans > :amount',
     ExpressionAttributeNames: {
@@ -35,15 +35,13 @@ module.exports.handler = async (event) => {
     }
   };
 
-  if (event.queryStringParameters && event.queryStringParameters['page-size']) {
-    params.Limit = parseInt(event.queryStringParameters['page-size']);
-  }
-
   try {
-    let result = await dynamoDb.query(params).promise();
+    const result = await dynamoDb.query(params).promise();
+    const merchants = _.chain(result.Items).sortBy('totalSpent').reverse().take(10);
+
     return jsonResponse.ok({
       data: {
-        merchants: result.Items
+        merchants: merchants
       }
     });
   } catch (error) {
