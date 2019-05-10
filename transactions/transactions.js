@@ -37,7 +37,8 @@ function getTransactions(event, context, callback) {
 
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
-    Limit: pagesize
+    Limit: pagesize,
+    ScanIndexForward: false
   };
 
   let filter = getFilter(category, month);

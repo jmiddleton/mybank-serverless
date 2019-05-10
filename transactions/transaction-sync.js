@@ -43,7 +43,7 @@ module.exports.handler = async (event) => {
         txn.updated = timestamp;
         txn.customerId = message.customerId;
         txn.category = await getCategory(txn);
-        txn.categoryFilter = txn.category + "#" + validDate.substring(0, 7);
+        txn.categoryFilter = txn.category + "#" + validDate;
         txn.accountFilter = txn.accountId + "#" + txn.categoryFilter;
         txn.accountId = id;
 

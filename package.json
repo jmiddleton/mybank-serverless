@@ -13,12 +13,12 @@
     "obj-clean": "^2.0.0",
     "querystring": "^0.2.0",
     "serverless-http": "^1.9.1",
-    "serverless-offline-dynamodb-streams": "^1.5.1",
-    "serverless-offline-sns": "^0.53.0",
     "shortid": "^2.2.14",
     "uuid": "^2.0.3"
   },
   "devDependencies": {
+    "serverless-offline-dynamodb-streams": "^1.5.1",
+    "serverless-offline-sns": "^0.53.0",
     "serverless-offline": "^4.9.0",
     "serverless-dynamodb-local": "^0.2.36",
     "csvtojson": "^2.0.8"

@@ -660,8 +660,8 @@ resources:
             Projection:
               ProjectionType: ALL
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
         TableName: ${self:provider.environment.TRANSACTIONS_TABLE}
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES

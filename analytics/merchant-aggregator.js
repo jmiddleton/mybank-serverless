@@ -30,7 +30,7 @@ function aggregate(record, sign, sum) {
     return;
   }
 
-  const merchantMonth = getValidDate(record) + '#' + record.merchantName;
+  const merchantMonth = getValidDate(record) + '#' + getName(record.merchantName);
   const params = {
     TableName: process.env.MERCHANT_TABLE,
     Key: {
@@ -70,4 +70,7 @@ function getValidDate(txn) {
 }
 function isNull(value) {
   return !value || value == null || value === "" || value === "null";
+}
+function getName(str){
+  return str.replace(/\s+/g, '_');
 }
