@@ -20,7 +20,7 @@ module.exports.handler = async (event) => {
 
   const params = {
     TableName: process.env.SPENDING_TABLE,
-    Limit: 15,
+    Limit: 25,
     KeyConditionExpression: 'customerId = :customerId AND #month BETWEEN :startdate AND :enddate',
     FilterExpression: '#totalOfTrans > :amount',
     ExpressionAttributeNames: {

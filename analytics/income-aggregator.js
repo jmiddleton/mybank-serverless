@@ -5,7 +5,7 @@ const moment = require('moment');
 const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
 
 module.exports.handler = (event, context, callback) => {
-  console.log("Processing transactions to aggregate savings...");
+  console.log("Processing transactions to aggregate incomes...");
 
   event.Records.forEach((record) => {
     if (record.eventName == 'INSERT') {
@@ -15,24 +15,28 @@ module.exports.handler = (event, context, callback) => {
     }
   });
 
-  callback(null, `Successfully processed savings for ${event.Records.length} records.`);
+  callback(null, `Successfully processed incomes for ${event.Records.length} records.`);
 };
 
 function aggregateData(image, sign) {
   const record = AWS.DynamoDB.Converter.unmarshall(image);
+  //only income or direct credit.
+  if (record.category !== 'Income') {
+    return;
+  }
+
   const amount = new Number(record.amount);
   const aggregatedMonth = getValidDate(record);
-
   const params = {
-    TableName: process.env.SAVINGS_TABLE,
+    TableName: process.env.INCOME_TABLE,
     Key: {
       customerId: record.customerId,
       month: aggregatedMonth
     },
-    UpdateExpression: 'SET #updated = :updated, #monthName = :monthName ADD #totalSavings :amount',
+    UpdateExpression: 'SET #updated = :updated, #monthName = :monthName ADD #totalIncome :amount',
     ExpressionAttributeNames: {
       '#monthName': 'monthName',
-      '#totalSavings': 'totalSavings',
+      '#totalIncome': 'totalIncome',
       '#updated': 'lastUpdated'
     },
     ExpressionAttributeValues: {

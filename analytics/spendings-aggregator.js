@@ -7,42 +7,45 @@ module.exports.handler = (event, context, callback) => {
   console.log("Processing transactions to aggregate spendings...");
 
   event.Records.forEach((record) => {
-    let jsonRecord = undefined;
-    let oldRecord = undefined;
-    let amount = 0;
+    let jsonRecord;
+    let oldRecord;
 
     if (record.eventName == 'INSERT') {
       jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
-      amount = new Number(jsonRecord.amount);
     } else if (record.eventName == 'MODIFY') {
       jsonRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
       oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
-      amount = new Number(oldRecord.amount);
     } else if (record.eventName == 'REMOVE') {
       oldRecord = AWS.DynamoDB.Converter.unmarshall(record.dynamodb.OldImage);
-      amount = new Number(oldRecord.amount);
     }
 
-    if (oldRecord !== undefined) {
-      aggregateSpending(oldRecord, 1, -1);
-    }
-    if (jsonRecord !== undefined) {
-      aggregateSpending(jsonRecord, -1, 1);
-    }
+    reverseSpending(oldRecord);
+    aggregateSpending(jsonRecord);
   });
 
   callback(null, `Successfully processed spendings for ${event.Records.length} records.`);
 };
 
+function reverseSpending(record) {
+  aggregateData(record, 1, -1);
+}
+
+function aggregateSpending(record) {
+  aggregateData(record, -1, 1);
+}
+
 //sign: -1 reverse txn, 1 create new txn
-function aggregateSpending(record, sign, sum) {
-  const amount = new Number(record.amount);
+function aggregateData(record, sign, sum) {
+  if (!record) {
+    return;
+  }
 
   //credit doesn't count as spending.
   if (record.category === 'Income' || record.category === 'Transfers') {
     return;
   }
 
+  const amount = new Number(record.amount);
   const monthCategory = getValidDate(record) + '#' + record.category;
   const params = {
     TableName: process.env.SPENDING_TABLE,

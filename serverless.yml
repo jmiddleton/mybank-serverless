@@ -18,15 +18,17 @@ provider:
     throttle:
       burstLimit: 20
       rateLimit: 10
+  timeout: 30 # Timeout in seconds for this specific function. 
   environment:
     PAYEES_TABLE: payees-${opt:stage, self:provider.stage}
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
-    TRANSACTIONS_TABLE: txns-${opt:stage, self:provider.stage}
+    TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
+    INCOME_TABLE: income-${opt:stage, self:provider.stage}
     MERCHANT_TABLE: merchant-${opt:stage, self:provider.stage}
     MCC_CODES_TABLE: mcccodes-${opt:stage, self:provider.stage}
     CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
@@ -104,6 +106,15 @@ provider:
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SAVINGS_TABLE}"
     - Effect: Allow
       Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.INCOME_TABLE}"
+    - Effect: Allow
+      Action:
         - SNS:Publish
       Resource: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
     - Effect: Allow
@@ -154,6 +165,7 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MERCHANT_TABLE}"
 plugins:
+  - serverless-plugin-split-stacks
   - serverless-dynamodb-local
   - serverless-offline-dynamodb-streams
   - serverless-offline-sns
@@ -178,7 +190,7 @@ custom:
             sources: [./data/accounts_details.json]
           - table: balances-dev
             sources: [./data/balances.json]
-          - table: txns-dev
+          - table: transactions-dev
             sources: [./data/transactions.json]
           - table: mcccodes-dev
             sources: [./data/mcccodes.json]
@@ -194,6 +206,9 @@ custom:
   serverless-offline-sns:
     port: 4002
     debug: true
+  splitStacks:
+    perFunction: false
+    perType: true
 
 functions:
   auth-jwt-token:
@@ -334,6 +349,16 @@ functions:
               - TransactionsDynamoDbTable
               - StreamArn
           batchSize: 10
+  income-aggregator:
+    handler: analytics/income-aggregator.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - TransactionsDynamoDbTable
+              - StreamArn
+          batchSize: 10
   merchant-aggregator:
     handler: analytics/merchant-aggregator.handler
     events:
@@ -361,6 +386,18 @@ functions:
     events:
       - http: 
           path: '/mybank/v1/analytics/savings/{month}'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+  cashflow:
+    handler: analytics/cashflow.handler
+    events:
+      - http: 
+          path: '/mybank/v1/analytics/cashflow/{month}'
           method: get
           cors: true
           private: true
@@ -684,8 +721,8 @@ resources:
             AttributeName: month
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
         TableName: ${self:provider.environment.SPENDING_TABLE}
     SavingsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
@@ -706,9 +743,31 @@ resources:
             AttributeName: month
             KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
         TableName: ${self:provider.environment.SAVINGS_TABLE}
+    IncomeDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: customerId
+            AttributeType: S
+          - 
+            AttributeName: month
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: customerId
+            KeyType: HASH
+          -
+            AttributeName: month
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+        TableName: ${self:provider.environment.INCOME_TABLE}
     MCCCodesDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Delete

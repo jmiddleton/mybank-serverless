@@ -5,22 +5,22 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.419.0",
     "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4",
     "moment": "^2.24.0",
     "obj-clean": "^2.0.0",
     "querystring": "^0.2.0",
     "serverless-http": "^1.9.1",
     "shortid": "^2.2.14",
-    "uuid": "^2.0.3"
+    "uuid": "^2.0.3",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
+    "aws-sdk": "^2.290.0",
+    "csvtojson": "^2.0.8",
+    "serverless-dynamodb-local": "^0.2.37",
+    "serverless-offline": "^4.9.0",
     "serverless-offline-dynamodb-streams": "^1.5.1",
     "serverless-offline-sns": "^0.53.0",
-    "serverless-offline": "^4.9.0",
-    "serverless-dynamodb-local": "^0.2.36",
-    "csvtojson": "^2.0.8"
+    "serverless-plugin-split-stacks": "^1.7.2"
   }
 }
