@@ -11,6 +11,7 @@
     {"code": "1234", "category": "Entertainment"},
     {"code": "0732", "category": "Income"},
 
+    {"code": "Housing", "category": "Housing"},
     {"code": "Travel", "category": "Travel"},
     {"code": "Cash", "category": "Cash"},
     {"code": "Transfer", "category": "Transfers"},
@@ -22,6 +23,7 @@
     {"code": "Retail shopping", "category": "Shopping"},
     {"code": "Income", "category": "Income"},
     {"code": "Fitness & beauty", "category": "Shopping"},
-    {"code": "Loans", "category": "Transport"}
+    {"code": "Loans", "category": "Transport"},
+    {"code": "Health", "category": "Health"}
     
   ]

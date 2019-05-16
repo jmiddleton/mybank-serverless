@@ -23,7 +23,7 @@ module.exports.handler = async (event) => {
 
   try {
     const headers = { Authorization: "Bearer " + message.access_token };
-    let response = await axios.get(message.cdr_url + "/balances", { headers: headers });
+    let response = await axios.get(message.cdr_url + "/balances/" + message.bank_code, { headers: headers });
 
     if (response && response.data && response.data.data && response.data.data.balances) {
       await asyncForEach(response.data.data.balances, async balance => {

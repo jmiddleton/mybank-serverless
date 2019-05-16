@@ -46,7 +46,9 @@ module.exports.handler = async (event) => {
 
 async function getAccounts(token) {
     const headers = { Authorization: "Bearer " + token.access_token };
-    const accounts = await axios.get(token.cdr_url + "/accounts", { headers: headers });
+
+    //TODO: for real openbanking API, remove + token.bank
+    const accounts = await axios.get(token.cdr_url + "/accounts/" + token.bank, { headers: headers });
     if (accounts && accounts.data && accounts.data.data && accounts.data.data.accounts) {
         return accounts.data.data.accounts;
     }

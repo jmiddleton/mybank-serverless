@@ -3,6 +3,7 @@
 const moment = require('moment');
 const jsonResponse = require("../libs/json-response");
 const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
+const _ = require('lodash');
 
 module.exports.handler = async (event) => {
   let prefetch = 0;
@@ -41,9 +42,11 @@ module.exports.handler = async (event) => {
 
   try {
     let result = await dynamoDb.query(params).promise();
+    const spendings = _.chain(result.Items).sortBy('totalSpent').reverse();
+
     return jsonResponse.ok({
       data: {
-        spendings: result.Items
+        spendings: spendings
       }
     });
   } catch (error) {

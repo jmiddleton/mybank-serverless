@@ -175,7 +175,7 @@ custom:
   dynamodb:
     start:
       migrate: true
-      inMemory: true
+      inMemory: false
       seed: true
     seed:
       domain:
@@ -184,18 +184,18 @@ custom:
             sources: [./data/banks.json]
           - table: payees-dev
             sources: [./data/payees.json]
-          - table: accounts-dev
-            sources: [./data/accounts.json]
-          - table: accounts-details-dev
-            sources: [./data/accounts_details.json]
-          - table: balances-dev
-            sources: [./data/balances.json]
-          - table: transactions-dev
-            sources: [./data/transactions.json]
           - table: mcccodes-dev
             sources: [./data/mcccodes.json]
           - table: categories-dev
             sources: [./data/categories.json]
+          # - table: accounts-dev
+          #   sources: [./data/accounts.json]
+          # - table: accounts-details-dev
+          #   sources: [./data/accounts_details.json]
+          # - table: balances-dev
+          #   sources: [./data/balances.json]
+          # - table: transactions-dev
+          #   sources: [./data/transactions.json]
   serverless-offline-dynamodb-streams:
     apiVersion: 'latest'
     endpoint: http://localhost:8000

@@ -62,9 +62,6 @@ function getTransactions(event, context, callback) {
     params.ExclusiveStartKey = decodeAsJson(nextkey);
   }
 
-  //TODO: delete console
-  console.log(JSON.stringify(params));
-
   dynamoDb.query(params, (error, result) => {
     if (error) {
       console.log(error);
@@ -105,6 +102,9 @@ function createTransaction(event, context, callback) {
 
 function updateTransaction(event, context, callback) {
   const data = JSON.parse(event.body);
+
+  data.categoryFilter = data.category + "#" + data.postingDateTime;
+  data.accountFilter = data.accountId + "#" + data.categoryFilter;
 
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
