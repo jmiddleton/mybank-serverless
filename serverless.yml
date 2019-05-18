@@ -24,6 +24,7 @@ provider:
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
+    CUSTOMER_SNS_TOPIC: customer-topic-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
@@ -119,6 +120,10 @@ provider:
       Resource: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
     - Effect: Allow
       Action:
+        - SNS:Publish
+      Resource: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.CUSTOMER_SNS_TOPIC}"
+    - Effect: Allow
+      Action:
         - dynamodb:Query
         - dynamodb:GetItem
         - dynamodb:PutItem
@@ -175,7 +180,8 @@ custom:
   dynamodb:
     start:
       migrate: true
-      inMemory: false
+      #dbPath: ${env:PWD}
+      inMemory: true
       seed: true
     seed:
       domain:
@@ -228,6 +234,7 @@ functions:
             type: token
     environment:
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+      customerTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.CUSTOMER_SNS_TOPIC}"
   account-refresh:
     handler: accounts/account-refresh.handler
     events:
@@ -438,7 +445,26 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-#payees functions          
+#payees functions 
+  link-payees:
+    handler: payees/link-payees.handler
+    events:
+      - http:
+          path: '/mybank/v1/link-payees'
+          method: post
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+    environment:
+      customerTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.CUSTOMER_SNS_TOPIC}"
+  payees-sync:
+    handler: payees/payees-sync.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.CUSTOMER_SNS_TOPIC}
   list:
     handler: payees/list.list
     events:

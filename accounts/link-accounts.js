@@ -26,11 +26,12 @@ module.exports.handler = async (event) => {
     try {
         const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         if (userBankAuth) {
+            publishCustomerToken(userBankAuth);
             const accounts = await getAccounts(userBankAuth);
             await asyncForEach(accounts, async account => {
                 const status = await registerAccount(account, userBankAuth);
                 if (status == 0) {
-                    sendSNS(account, userBankAuth);
+                    publishAccountLinked(account, userBankAuth);
                 }
             });
         } else {
@@ -55,7 +56,7 @@ async function getAccounts(token) {
     return [];
 }
 
-async function sendSNS(account, token) {
+async function publishAccountLinked(account, token) {
     let messageData = {
         Message: JSON.stringify({
             accountId: account.accountId,
@@ -68,6 +69,25 @@ async function sendSNS(account, token) {
     };
 
     console.log("PUBLISHING ACCOUNT MESSAGE TO SNS:", messageData);
+    try {
+        await sns.publish(messageData).promise();
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function publishCustomerToken(token) {
+    let messageData = {
+        Message: JSON.stringify({
+            customerId: token.customerId,
+            cdr_url: token.cdr_url,
+            bank_code: token.bank,
+            access_token: token.access_token
+        }),
+        TopicArn: process.env.customerTopicArn,
+    };
+
+    console.log("PUBLISHING CUSTOMER MESSAGE TO SNS:", messageData);
     try {
         await sns.publish(messageData).promise();
     } catch (err) {
