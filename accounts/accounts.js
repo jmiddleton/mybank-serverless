@@ -22,18 +22,19 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = (event, context, callback) => {
+module.exports.handler = async (event) => {
   let handlers = (event["pathParameters"] == null) ? collectionHandlers : methodHandlers;
 
   let httpMethod = event["httpMethod"];
   if (httpMethod in handlers) {
-    return handlers[httpMethod](event, callback);
+    const response = await handlers[httpMethod](event);
+    return jsonResponse.ok(response);
   }
 
-  callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
+  return jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` });
 };
 
-function getAccounts(event, callback) {
+async function getAccounts(event) {
   const params = {
     TableName: process.env.ACCOUNTS_TABLE,
     Limit: 500,
@@ -44,12 +45,8 @@ function getAccounts(event, callback) {
     }
   };
 
-  dynamoDb.query(params, (error, result) => {
-    if (error) {
-      callback(null, jsonResponse.notFound({ error: "Couldn\'t find accounts" }));
-      return;
-    }
-
+  try {
+    let result = await dynamoDb.query(params).promise();
     // create a response
     if (result && result.Items && result.Items.length > 0) {
       const body = {
@@ -68,18 +65,17 @@ function getAccounts(event, callback) {
           totalPages: 1
         }
       }
-
-      callback(null, jsonResponse.ok(body));
-    } else {
-      callback(null, jsonResponse.notFound({
-        error: "Accounts not found"
-      }));
+      return body;
     }
-  });
+    return { error: "Accounts not found" };
+  } catch (error) {
+    console.log(error);
+    return { error: "Error accounts not found" };
+  }
 }
 
 // Get account details endpoint
-function getAccountById(event, callback) {
+async function getAccountById(event) {
 
   const params = {
     TableName: process.env.ACCOUNTS_DETAILS_TABLE,
@@ -90,30 +86,23 @@ function getAccountById(event, callback) {
     }
   };
 
-  dynamoDb.get(params, (error, result) => {
-    if (error) {
-      callback(null, jsonResponse.notFound({
-        error: "Could not get accounts"
-      }));
-      return;
-    }
+  try {
+    let result = await dynamoDb.get(params).promise();
 
     // create a response
     if (result && result.Item) {
-      const data = {
+      return {
         data: result.Item
-      }
-
-      callback(null, jsonResponse.ok(data));
-    } else {
-      callback(null, jsonResponse.notFound({
-        error: "Accounts not found"
-      }));
+      };
     }
-  });
+    return { error: "Account not found" };
+  } catch (error) {
+    console.log(error);
+    return { error: "Error when retrieving an account" };
+  }
 }
 
-async function deleteAccount(event, callback) {
+async function deleteAccount(event) {
   //TODO: send an SNS to functions to delete the data
   const principalId = event.requestContext.authorizer.principalId;
   const accountId = event.pathParameters.accountId;
@@ -123,9 +112,8 @@ async function deleteAccount(event, callback) {
   deleteBalance(principalId, accountId);
   deleteTransactions(principalId, accountId);
 
-  callback(null, jsonResponse.ok({ message: "Account has been successfully deleted" }));
+  return jsonResponse.ok({ message: "Account has been successfully deleted" });
 }
-
 
 async function deleteAccountById(customerId, accountId) {
   const params = {
@@ -139,8 +127,7 @@ async function deleteAccountById(customerId, accountId) {
   try {
     dynamoDb.delete(params).promise();
     console.log("Account: " + accountId + " successfully deleted");
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
   }
 }
@@ -157,8 +144,7 @@ async function deleteAccountDetails(customerId, accountId) {
   try {
     dynamoDb.delete(params).promise();
     console.log("Account details: " + accountId + " successfully deleted");
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
   }
 }
@@ -175,8 +161,7 @@ async function deleteBalance(customerId, accountId) {
   try {
     dynamoDb.delete(params).promise();
     console.log("Balance for account: " + accountId + " successfully deleted");
-  }
-  catch (error) {
+  }catch (error) {
     console.error(error);
   }
 }

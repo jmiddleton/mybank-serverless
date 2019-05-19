@@ -19,16 +19,17 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = (event, context, callback) => {
+module.exports.handler = async (event) => {
   let httpMethod = event["httpMethod"];
   if (httpMethod in handlers) {
-    return handlers[httpMethod](event, context, callback);
+    const response = await handlers[httpMethod](event);
+    return jsonResponse.ok(response);
   }
 
-  callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
+  return jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` });
 };
 
-function getTransactions(event, context, callback) {
+async function getTransactions(event) {
   const pagesize = getQueryParam(event, 'page-size', 25);
   const category = getQueryParam(event, 'category', undefined);
   const month = getQueryParam(event, 'month', undefined);
@@ -62,12 +63,8 @@ function getTransactions(event, context, callback) {
     params.ExclusiveStartKey = decodeAsJson(nextkey);
   }
 
-  dynamoDb.query(params, (error, result) => {
-    if (error) {
-      console.log(error);
-      callback(null, jsonResponse.notFound({ error: "Couldn\'t find transactions" }));
-      return;
-    }
+  try {
+    let result = await dynamoDb.query(params).promise();
 
     // create a response - "2019-03-19T08:19:31.432Z",
     if (result && result.Items) {
@@ -76,48 +73,42 @@ function getTransactions(event, context, callback) {
       }
       addPaginationLinks(body, event.pathParameters, event.queryStringParameters, result);
 
-      callback(null, jsonResponse.ok(body));
-    } else {
-      callback(null, jsonResponse.notFound({ error: "Transactions not found" }));
+      return body;
     }
-  });
+    return { error: "Transactions not found" };
+  } catch (error) {
+    console.log(error);
+    return { error: "Error retrieving transactions" };
+  }
 };
 
-function createTransaction(event, context, callback) {
+async function createTransaction(event) {
   const data = JSON.parse(event.body);
-
-  const params = {
-    TableName: process.env.TRANSACTIONS_TABLE,
-    Item: data
-  };
-
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      callback(null, jsonResponse.error({ error: "Couldn\'t create a transaction" }));
-      return;
-    }
-    callback(null, jsonResponse.ok(params.Item));
-  });
+  
+  return internalCreateTxn(data);
 }
 
-function updateTransaction(event, context, callback) {
+async function updateTransaction(event) {
   const data = JSON.parse(event.body);
-
   data.categoryFilter = data.category + "#" + data.postingDateTime;
   data.accountFilter = data.accountId + "#" + data.categoryFilter;
 
+  return internalCreateTxn(data);
+}
+
+async function internalCreateTxn(data) {
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
     Item: data
   };
 
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      callback(null, jsonResponse.error({ error: "Couldn\'t update a transaction" }));
-      return;
-    }
-    callback(null, jsonResponse.ok(params.Item));
-  });
+  try {
+    await dynamoDb.put(params).promise();
+    return params.Item;
+  } catch (error) {
+    console.log(error);
+    return { error: "Error creating a transaction" };
+  }
 }
 
 function addPaginationLinks(body, pathParameters, query, result) {

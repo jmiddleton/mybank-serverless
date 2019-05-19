@@ -17,18 +17,19 @@ const dynamoDb = isOffline()
   ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
   : new AWS.DynamoDB.DocumentClient();
 
-module.exports.handler = (event, context, callback) => {
+module.exports.handler = async (event) => {
   let handlers = (event["pathParameters"] == null) ? collectionHandlers : methodHandlers;
 
   let httpMethod = event["httpMethod"];
   if (httpMethod in handlers) {
-    return handlers[httpMethod](event, context, callback);
+    const response = await handlers[httpMethod](event);
+    return jsonResponse.ok(response);
   }
 
-  callback(null, jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` }));
+  return jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` });
 };
 
-function getBalances(event, context, callback) {
+async function getBalances(event) {
   const params = {
     TableName: process.env.BALANCES_TABLE,
     Limit: 500,
@@ -38,13 +39,8 @@ function getBalances(event, context, callback) {
     }
   };
 
-  dynamoDb.query(params, (error, result) => {
-    if (error) {
-      callback(null, jsonResponse.notFound({ error: "Could not find balances" }));
-      return;
-    }
-
-    // create a response
+  try {
+    let result = await dynamoDb.query(params).promise();
     if (result && result.Items && result.Items.length > 0) {
       const body = {
         data: {
@@ -62,10 +58,10 @@ function getBalances(event, context, callback) {
           totalPages: 1
         }
       }
-
-      callback(null, jsonResponse.ok(body));
-    } else {
-      callback(null, jsonResponse.notFound({ error: "Balances not found" }));
+      return body;
     }
-  });
+  } catch (error) {
+    console.log(error);
+    return { error: "Balances not found" };
+  }
 }

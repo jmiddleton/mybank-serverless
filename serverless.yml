@@ -2,9 +2,12 @@ service: mybank-backend
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
+package:
+  individually: false
+
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   region: ap-southeast-2
   stage: dev
   accountId: 828628298567

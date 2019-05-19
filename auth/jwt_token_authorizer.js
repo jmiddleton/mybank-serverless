@@ -23,10 +23,10 @@ const generatePolicy = (principalId, effect, resource) => {
 };
 
 // Reusable Authorizer function, set on `authorizer` field in serverless.yml
-module.exports.auth = (event, context, callback) => {
+module.exports.auth = async (event) => {
   if (!event.authorizationToken) {
     console.log("No authorization token");
-    return callback('Unauthorized');
+    return "Unauthorized";
   }
 
   const tokenParts = event.authorizationToken.split(' ');
@@ -35,55 +35,55 @@ module.exports.auth = (event, context, callback) => {
   if (!(tokenParts[0].toLowerCase() === 'bearer' && tokenValue)) {
     // no auth token!
     console.log("No Bearer token");
-    return callback('Unauthorized');
+    return "Unauthorized";
   }
   const options = {
     audience: AUTH0_CLIENT_ID,
   };
 
   try {
-    jwt.verify(tokenValue, AUTH0_CLIENT_PUBLIC_KEY, options, (verifyError, decoded) => {
-      if (verifyError) {
-        console.log('verifyError', verifyError);
-        // 401 Unauthorized
-        console.log(`Token invalid. ${verifyError}`);
-        return callback('Unauthorized');
-      }
-      //arn is used for caching of the validation
-      //as mentioned here: https://medium.com/asked-io/serverless-custom-authorizer-issues-on-aws-57a40176f63f
-      const arn = event.methodArn.split('/').slice(0, 2).join('/') + '/*';
-      return callback(null, generatePolicy(decoded.sub, 'Allow', arn));
-    });
+    var decoded = await jwt.verify(tokenValue, AUTH0_CLIENT_PUBLIC_KEY, options);
+
+    //arn is used for caching of the validation
+    //as mentioned here: https://medium.com/asked-io/serverless-custom-authorizer-issues-on-aws-57a40176f63f
+    const arn = event.methodArn.split('/').slice(0, 2).join('/') + '/*';
+    return await generatePolicy(decoded.sub, 'Allow', arn);
   } catch (err) {
-    console.log('catch error. Invalid token', err);
-    return callback('Unauthorized');
+    console.log('verifyError', verifyError);
+    // 401 Unauthorized
+    console.log(`Token invalid. ${verifyError}`);
+    return "Unauthorized";
   }
 };
 
 // Public API
-module.exports.publicEndpoint = (event, context, callback) => callback(null, {
-  statusCode: 200,
-  headers: {
-    /* Required for CORS support to work */
-    'Access-Control-Allow-Origin': '*',
-    /* Required for cookies, authorization headers with HTTPS */
-    'Access-Control-Allow-Credentials': true,
-  },
-  body: JSON.stringify({
-    message: 'Hi ⊂◉‿◉つ from Public API',
-  }),
-});
+module.exports.publicEndpoint = async (event) => {
+  return {
+    statusCode: 200,
+    headers: {
+      /* Required for CORS support to work */
+      'Access-Control-Allow-Origin': '*',
+      /* Required for cookies, authorization headers with HTTPS */
+      'Access-Control-Allow-Credentials': true,
+    },
+    body: JSON.stringify({
+      message: 'Hi ⊂◉‿◉つ from Public API',
+    })
+  };
+};
 
 // Private API
-module.exports.privateEndpoint = (event, context, callback) => callback(null, {
-  statusCode: 200,
-  headers: {
-    /* Required for CORS support to work */
-    'Access-Control-Allow-Origin': '*',
-    /* Required for cookies, authorization headers with HTTPS */
-    'Access-Control-Allow-Credentials': true,
-  },
-  body: JSON.stringify({
-    message: 'Hi ⊂◉‿◉つ from Private API. Only logged in users can see this',
-  }),
-});
+module.exports.privateEndpoint = async (event) => {
+  return {
+    statusCode: 200,
+    headers: {
+      /* Required for CORS support to work */
+      'Access-Control-Allow-Origin': '*',
+      /* Required for cookies, authorization headers with HTTPS */
+      'Access-Control-Allow-Credentials': true,
+    },
+    body: JSON.stringify({
+      message: 'Hi ⊂◉‿◉つ from Private API. Only logged in users can see this',
+    }),
+  };
+}

@@ -38,7 +38,6 @@ module.exports.handler = async (event) => {
       await asyncForEach(response.data.data.transactions, async txn => {
         const validDate = getValidDate(txn);
         let id = txn.accountId + "#" + validDate + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
-        console.log("Processing txn: " + id);
 
         txn.updated = timestamp;
         txn.customerId = message.customerId;
@@ -54,7 +53,6 @@ module.exports.handler = async (event) => {
 
         try {
           await dynamoDb.put(params).promise();
-          console.log("Txn: " + id + " synched successfully");
         } catch (error) {
           console.error(error);
         }

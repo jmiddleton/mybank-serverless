@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.290.0",
-    "csvtojson": "^2.0.8",
     "serverless-dynamodb-local": "^0.2.37",
     "serverless-offline": "^4.9.0",
     "serverless-offline-dynamodb-streams": "^1.5.1",
