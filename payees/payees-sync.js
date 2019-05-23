@@ -89,6 +89,8 @@ async function updatePayee(payee, message) {
 
   payee.updated = new Date().getTime();
   payee.customerId = message.customerId;
+  payee.institution = message.bank_code;
+
   const params = {
     TableName: process.env.PAYEES_TABLE,
     Item: payee

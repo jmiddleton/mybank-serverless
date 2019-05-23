@@ -48,10 +48,8 @@ module.exports.auth = async (event) => {
     //as mentioned here: https://medium.com/asked-io/serverless-custom-authorizer-issues-on-aws-57a40176f63f
     const arn = event.methodArn.split('/').slice(0, 2).join('/') + '/*';
     return await generatePolicy(decoded.sub, 'Allow', arn);
-  } catch (err) {
-    console.log('verifyError', verifyError);
-    // 401 Unauthorized
-    console.log(`Token invalid. ${verifyError}`);
+  } catch (error) {
+    console.log(error);
     return "Unauthorized";
   }
 };

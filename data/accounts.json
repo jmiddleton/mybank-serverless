@@ -9,7 +9,8 @@
         "isOwned": "true",
         "productCategory": "TRANS_AND_SAVINGS_ACCOUNTS",
         "productName": "Net Saver",
-        "institution": "cba"
+        "institution": "cba",
+        "updated": "2019-04-25T15:43:00"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -21,7 +22,8 @@
         "isOwned": "true",
         "productCategory": "TRANS_AND_SAVINGS_ACCOUNTS",
         "productName": "Day to Day Account",
-        "institution": "hsbc"
+        "institution": "hsbc",
+        "updated": "2019-04-25T15:43:00"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -33,7 +35,8 @@
         "isOwned": "true",
         "productCategory": "CRED_AND_CHRG_CARDS",
         "productName": "string",
-        "institution": "citi"
+        "institution": "citi",
+        "updated": "2019-04-25T15:43:00"
     },
     {
         "customerId": "test_123",
@@ -45,6 +48,7 @@
         "isOwned": "true",
         "productCategory": "TERM_DEPOSITS",
         "productName": "High Interest Savings Account",
-        "institution": "rabo"
+        "institution": "rabo",
+        "updated": "2019-04-25T15:43:00"
     }
 ]

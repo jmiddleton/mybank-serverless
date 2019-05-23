@@ -32,6 +32,11 @@ npm install
 
 ## Deploy
 
+Before to deploy the stack two topics need to be created:
+
+- accounts-topic-dev: notifies when an account has been linked
+- customer-topic-dev: notifies when the user wants to sync payees from his/her bank to mybank
+
 In order to deploy the endpoint simply run
 
 ```bash

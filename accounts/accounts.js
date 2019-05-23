@@ -38,7 +38,7 @@ async function getAccounts(event) {
   const params = {
     TableName: process.env.ACCOUNTS_TABLE,
     Limit: 500,
-    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, nickname, productCategory',
+    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, nickname, productCategory, lastUpdated',
     KeyConditionExpression: 'customerId = :customerId',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId
@@ -79,7 +79,7 @@ async function getAccountById(event) {
 
   const params = {
     TableName: process.env.ACCOUNTS_DETAILS_TABLE,
-    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, nickname, productCategory, bsb, accountNumber, specificAccountUType, depositRates, creditCard, termDeposit',
+    ProjectionExpression: 'accountId, institution, maskedNumber, openStatus, displayName, nickname, productCategory, bsb, accountNumber, specificAccountUType, depositRates, creditCard, termDeposit, loan',
     Key: {
       customerId: event.requestContext.authorizer.principalId,
       accountId: event.pathParameters.accountId,

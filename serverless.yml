@@ -173,6 +173,7 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MERCHANT_TABLE}"
 plugins:
+  - serverless-jetpack
   - serverless-plugin-split-stacks
   - serverless-dynamodb-local
   - serverless-offline-dynamodb-streams
@@ -180,6 +181,8 @@ plugins:
   - serverless-offline #serverless-offline needs to be last in the list
 
 custom:
+  serverless-jetpack:
+    mode: npm
   dynamodb:
     start:
       migrate: true
@@ -237,7 +240,6 @@ functions:
             type: token
     environment:
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
-      customerTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.CUSTOMER_SNS_TOPIC}"
   account-refresh:
     handler: accounts/account-refresh.handler
     events:
@@ -468,60 +470,21 @@ functions:
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.CUSTOMER_SNS_TOPIC}
-  list:
-    handler: payees/list.list
+  payees:
+    handler: payees/payees.handler
     events:
       - http:
           path: '/mybank/v1/payees'
-          method: get
+          method: ANY
           cors: true
           private: true
           authorizer: 
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-  get:
-    handler: payees/get.get
-    events:
       - http:
-          path: '/mybank/v1/payees/{id}'
-          method: get
-          cors: true
-          private: true
-          authorizer: 
-            name: auth-jwt-token
-            identitySource: method.request.header.Authorization
-            type: token
-  create:
-    handler: payees/create.create
-    events:
-      - http:
-          path: '/mybank/v1/payees'
-          method: post
-          cors: true
-          private: true
-          authorizer: 
-            name: auth-jwt-token
-            identitySource: method.request.header.Authorization
-            type: token
-  update:
-    handler: payees/update.update
-    events:
-      - http:
-          path: '/mybank/v1/payees/{id}'
-          method: put
-          cors: true
-          private: true
-          authorizer: 
-            name: auth-jwt-token
-            identitySource: method.request.header.Authorization
-            type: token
-  delete:
-    handler: payees/delete.delete
-    events:
-      - http:
-          path: '/mybank/v1/payees/{id}'
-          method: delete
+          path: '/mybank/v1/payees/{payeeId}'
+          method: ANY
           cors: true
           private: true
           authorizer: 

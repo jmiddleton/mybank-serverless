@@ -26,7 +26,6 @@ module.exports.handler = async (event) => {
     try {
         const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
         if (userBankAuth) {
-            publishCustomerToken(userBankAuth);
             const accounts = await getAccounts(userBankAuth);
             await asyncForEach(accounts, async account => {
                 const status = await registerAccount(account, userBankAuth);
@@ -76,29 +75,10 @@ async function publishAccountLinked(account, token) {
     }
 }
 
-async function publishCustomerToken(token) {
-    let messageData = {
-        Message: JSON.stringify({
-            customerId: token.customerId,
-            cdr_url: token.cdr_url,
-            bank_code: token.bank,
-            access_token: token.access_token
-        }),
-        TopicArn: process.env.customerTopicArn,
-    };
-
-    console.log("PUBLISHING CUSTOMER MESSAGE TO SNS:", messageData);
-    try {
-        await sns.publish(messageData).promise();
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 async function registerAccount(account, token) {
     const timestamp = new Date().getTime();
     account.customerId = token.customerId;
-    account.created = timestamp;
+    account.lastUpdated = timestamp;
     account.visible = true;
     account.institution = token.bank;
 
