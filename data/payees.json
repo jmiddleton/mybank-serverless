@@ -14,7 +14,8 @@
                 "bsb": "858547",
                 "accountNumber": "69557949"
             }
-        }
+        },
+        "institution": "cba"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -31,6 +32,7 @@
                 "bsb": "063000",
                 "accountNumber": "23234234"
             }
-        }
+        },
+        "institution": "cba"
     }
 ]

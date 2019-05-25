@@ -10,6 +10,10 @@ function notFound(data) {
   return json(404, data);
 }
 
+function unauthorized(data) {
+  return json(401, data);
+}
+
 function forbidden(data) {
   return json(403, data);
 }
@@ -40,5 +44,6 @@ module.exports = {
   notFound,
   json,
   invalid,
-  forbidden
+  forbidden,
+  unauthorized
 };

@@ -6,6 +6,7 @@ const shortid = require('shortid');
 const mcccodes = require("../category/mcccodes.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const clean = require('obj-clean');
+const moment = require('moment');
 
 //TODO: use const clean = require('obj-clean'); to remove empty elements not allowed by dynamoDB.
 
@@ -26,16 +27,12 @@ module.exports.handler = async (event) => {
   console.log("Processing Account Transactions event...");
 
   try {
-    const headers = { Authorization: "Bearer " + message.access_token };
-    //TODO: use this with real endpoint 
-    //let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
-    let response = await axios.get(message.cdr_url + "/transactions/" + message.accountId, { headers: headers });
-
-    const hasTransactions = response !== undefined && response.data !== undefined && response.data.data !== undefined && response.data.data.transactions !== undefined;
+    const transactions = await getTransactions(message);
+    const hasTransactions = transactions.length > 0;
     console.log("Found transactions to process: " + hasTransactions);
 
     if (hasTransactions) {
-      await asyncForEach(response.data.data.transactions, async txn => {
+      await asyncForEach(transactions, async txn => {
         const validDate = getValidDate(txn);
         let id = txn.accountId + "#" + validDate + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
 
@@ -58,7 +55,7 @@ module.exports.handler = async (event) => {
         }
       });
     } else {
-      console.log(JSON.stringify(response));
+      console.log(JSON.stringify(transactions));
       console.log("No Transactions found.");
     }
   } catch (err) {
@@ -67,6 +64,55 @@ module.exports.handler = async (event) => {
   }
   console.log("Transactions processing finished.");
 };
+
+async function getTransactions(message) {
+  let records = [];
+  let keepGoing = true;
+  let page = 1;
+  const headers = { Authorization: "Bearer " + message.access_token };
+
+  while (keepGoing) {
+    //TODO: use this with real endpoint 
+    //let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
+    let response = await axios.get(message.cdr_url + "/transactions", {
+      headers: headers, params: {
+        'accountId': message.accountId,
+        'start-time': moment().subtract(3, 'months').format(),
+        'end-time': moment().format(),
+        "page": page,
+        "page-size": 25,
+        "_page": page
+      }
+    });
+
+    //TODO: this is for openbanking
+    // if (response && response.data && response.data.data && response.data.data.transactions) {
+    //   response.data.data.transactions.forEach(p => {
+    //     records.push(p);
+    //   });
+    if (response && response.data && response.data.length > 0) {
+      response.data.forEach(p => {
+        records.push(p);
+      });
+    } else {
+      keepGoing = false;
+      return records;
+    }
+    page += 1;
+
+    //TODO: this is for openbanking
+    // if (!(response && response.meta && response.meta.totalPages)) {
+    //   keepGoing = false;
+    //   return records;
+    // }
+
+    // if (response.meta.totalPages > offset) {
+    //   keepGoing = false;
+    //   return records;
+    // }
+    console.log("page " + page + ", get more: " + keepGoing);
+  }
+}
 
 async function getCategory(record) {
   const merchantCode = record.merchantCategoryCode;

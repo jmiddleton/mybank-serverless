@@ -45,7 +45,7 @@ module.exports.handler = async (event) => {
 };
 
 async function getAccounts(token) {
-    const headers = { Authorization: "Bearer " + token.access_token };
+    const headers = { Authorization: "Bearer " + token.access_token, 'x-fapi-interaction-id': '1341341' };
 
     //TODO: for real openbanking API, remove + token.bank
     const accounts = await axios.get(token.cdr_url + "/accounts/" + token.bank, { headers: headers });

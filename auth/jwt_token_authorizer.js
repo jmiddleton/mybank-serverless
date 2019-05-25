@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const jsonResponse = require("../libs/json-response");
 
 // Set in `environment` of serverless.yml
 const AUTH0_CLIENT_ID = process.env.AUTH0_CLIENT_ID;
@@ -26,7 +27,9 @@ const generatePolicy = (principalId, effect, resource) => {
 module.exports.auth = async (event) => {
   if (!event.authorizationToken) {
     console.log("No authorization token");
-    return "Unauthorized";
+    //https://medium.com/asked-io/serverless-custom-authorizer-issues-on-aws-57a40176f63f
+    return generatePolicy('user', 'Deny', event.methodArn);
+    //return jsonResponse.unauthorized({ error: "Unauthorized", message: "No authorization header" });
   }
 
   const tokenParts = event.authorizationToken.split(' ');
@@ -35,7 +38,8 @@ module.exports.auth = async (event) => {
   if (!(tokenParts[0].toLowerCase() === 'bearer' && tokenValue)) {
     // no auth token!
     console.log("No Bearer token");
-    return "Unauthorized";
+    return generatePolicy('user', 'Deny', event.methodArn);
+    //return jsonResponse.forbidden({ error: "Unauthorized", message: "No Bearer token" });
   }
   const options = {
     audience: AUTH0_CLIENT_ID,
@@ -50,7 +54,8 @@ module.exports.auth = async (event) => {
     return await generatePolicy(decoded.sub, 'Allow', arn);
   } catch (error) {
     console.log(error);
-    return "Unauthorized";
+    return generatePolicy('user', 'Deny', event.methodArn);
+    //return jsonResponse.forbidden({ error: "Unauthorized", message: error.message });
   }
 };
 
