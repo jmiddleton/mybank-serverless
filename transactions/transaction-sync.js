@@ -110,7 +110,6 @@ async function getTransactions(message) {
     //   keepGoing = false;
     //   return records;
     // }
-    console.log("page " + page + ", get more: " + keepGoing);
   }
 }
 
@@ -123,7 +122,7 @@ async function getCategory(record) {
         return dbCategory.category;
       }
     } catch (err) {
-      console.log("Error retrieving MCC codes: " + err.response.statusText);
+      console.log("Error retrieving MCC codes: " + err.response);
       console.log(err);
     }
   }

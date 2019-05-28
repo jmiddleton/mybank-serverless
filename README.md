@@ -29,6 +29,19 @@ The idea behind the `todos` directory is that in case you want to create a servi
 ```bash
 npm install
 ```
+## Elasticsearch
+
+Download Open Distro for Elasticsearch Docker image and follow the instructions to run it locally [https://opendistro.github.io/for-elasticsearch-docs/docs/install/docker/]
+
+Create a docker compose file and then run it with:
+
+```bash
+docker-compose up
+```
+Shut down the cluster
+```bash
+docker-compose down
+```
 
 ## Deploy
 

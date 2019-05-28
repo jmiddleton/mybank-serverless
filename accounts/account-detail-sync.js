@@ -41,6 +41,6 @@ module.exports.handler = async (event) => {
       console.log("No Account Details found.");
     }
   } catch (err) {
-    console.log("-> Error retrieving account details: " + err.response.statusText);
+    console.log("-> Error retrieving account details: " + err);
   }
 };

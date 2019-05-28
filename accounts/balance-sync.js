@@ -33,7 +33,7 @@ module.exports.handler = async (event) => {
       console.log("No Balance found.");
     }
   } catch (err) {
-    console.log("-> Error retrieving balances: " + err.response.statusText);
+    console.log("-> Error retrieving balances: " + err);
   }
 };
 

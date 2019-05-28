@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
+const encodeHelper = require("../libs/encode-helper");
 
 const handlers = {
   "GET": getTransactions,
@@ -60,7 +61,7 @@ async function getTransactions(event) {
   }
 
   if (nextkey && nextkey.length > 0) {
-    params.ExclusiveStartKey = decodeAsJson(nextkey);
+    params.ExclusiveStartKey = encodeHelper.decodeKeyAsJson(nextkey);
   }
 
   try {
@@ -125,29 +126,13 @@ function addPaginationLinks(body, pathParameters, query, result) {
   const basepath = "/accounts/" + pathParameters.accountId + "/transactions?";
   links.self = basepath + "text=" + text + "&nextkey=" + nextkey;
   links.first = basepath + "text=" + text;
-  links.next = basepath + "text=" + text + "&nextkey=" + encodeJson(result.LastEvaluatedKey);
+  links.next = basepath + "text=" + text + "&nextkey=" + encodeHelper.encodeKeyAsJson(result.LastEvaluatedKey);
 
   //  prev: "",
   //  last: ""
 
   body.links = links;
   body.meta = meta;
-}
-
-function encodeJson(data) {
-  if (data) {
-    let buff = new Buffer(JSON.stringify(data));
-    return buff.toString('base64');
-  }
-  return "";
-}
-
-function decodeAsJson(data) {
-  if (data) {
-    let buff = new Buffer(data, 'base64');
-    return JSON.parse(buff.toString('ascii'));
-  }
-  return {};
 }
 
 function getQueryParam(event, key, defaultValue) {

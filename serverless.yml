@@ -178,6 +178,7 @@ plugins:
   - serverless-dynamodb-local
   - serverless-offline-dynamodb-streams
   - serverless-offline-sns
+  - serverless-offline-scheduler
   - serverless-offline #serverless-offline needs to be last in the list
 
 custom:
@@ -253,6 +254,13 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
     environment:
+      accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
+  account-refresh-cron:
+    handler: accounts/account-refresh-cron.handler
+    events:
+      - schedule: rate(10 minutes)
+    environment:
+      SYNC_HOURS: "2"
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   accounts:
     handler: accounts/accounts.handler
@@ -350,7 +358,7 @@ functions:
             Fn::GetAtt:
               - TransactionsDynamoDbTable
               - StreamArn
-          batchSize: 10
+          batchSize: 50
   spendings-aggregator:
     handler: analytics/spendings-aggregator.handler
     events:
@@ -360,7 +368,7 @@ functions:
             Fn::GetAtt:
               - TransactionsDynamoDbTable
               - StreamArn
-          batchSize: 10
+          batchSize: 50
   income-aggregator:
     handler: analytics/income-aggregator.handler
     events:
@@ -370,7 +378,7 @@ functions:
             Fn::GetAtt:
               - TransactionsDynamoDbTable
               - StreamArn
-          batchSize: 10
+          batchSize: 50
   merchant-aggregator:
     handler: analytics/merchant-aggregator.handler
     events:
@@ -380,7 +388,7 @@ functions:
             Fn::GetAtt:
               - TransactionsDynamoDbTable
               - StreamArn
-          batchSize: 10
+          batchSize: 50
   spendings:
     handler: analytics/spendings.handler
     events:
@@ -592,19 +600,26 @@ resources:
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: customerId
+          - AttributeName: customerId
             AttributeType: S
-          - 
-            AttributeName: accountId
+          - AttributeName: accountId
+            AttributeType: S
+          - AttributeName: institution
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: customerId
+          - AttributeName: customerId
             KeyType: HASH
-          -
-            AttributeName: accountId
+          - AttributeName: accountId
             KeyType: RANGE
+        LocalSecondaryIndexes:
+          - IndexName: bankIndex
+            KeySchema:
+              - AttributeName: customerId
+                KeyType: HASH
+              - AttributeName: institution
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

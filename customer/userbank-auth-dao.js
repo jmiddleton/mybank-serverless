@@ -1,19 +1,11 @@
 'use strict';
 
-const AWS = require("aws-sdk");
 const axios = require("axios");
 const banksDAO = require("./banks.js");
+const encodeHelper = require("../libs/encode-helper");
+const dynamoDbHelper = require('../libs/dynamodb-helper');
+const dynamoDb = dynamoDbHelper.dynamoDb;
 var qs = require('querystring');
-
-var dynamodbOfflineOptions = {
-    region: "localhost",
-    endpoint: "http://localhost:8000"
-},
-    isOffline = () => process.env.IS_OFFLINE;
-
-const dynamoDb = isOffline()
-    ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
-    : new AWS.DynamoDB.DocumentClient();
 
 async function registerUserBankAuth(bankcode, auth_code, principalId) {
     const timestamp = new Date().getTime();
@@ -38,6 +30,7 @@ async function registerUserBankAuth(bankcode, auth_code, principalId) {
                 const userBankAuth = {
                     customerId: principalId,
                     last_updated: timestamp,
+                    last_refreshed: timestamp,
                     bank: bank.code,
                     access_token: token_response.data.access_token,
                     id_token: token_response.data.id_token,
@@ -80,7 +73,50 @@ async function getUserBankAuth(bankcode, principalId) {
     }
 };
 
+
+/**
+ * Get all UserBankAuth that haven't been refreshed before time. 
+ * The function paginates the result using pagesize and nextkey.
+ * 
+ * @param {time} time 
+ * @param {page} page 
+ */
+async function getUserBankAuths(timestamp, pagesize, nextkey) {
+    const params = {
+        TableName: process.env.USER_BANK_AUTH_TABLE,
+        Limit: pagesize,
+        ScanIndexForward: false,
+        FilterExpression: 'last_refreshed <= :timestamp',
+        ExpressionAttributeValues: {
+            ':timestamp': timestamp
+        }
+    };
+
+    if (nextkey && nextkey.length > 0) {
+        params.ExclusiveStartKey = encodeHelper.decodeKeyAsJson(nextkey);
+    }
+
+    console.log(params);
+    try {
+        return await dynamoDb.scan(params).promise();
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+};
+
+async function updateRefreshTime(userBankAuth) {
+    userBankAuth.last_refreshed = new Date().getTime();
+
+    await dynamoDb.put({
+        TableName: process.env.USER_BANK_AUTH_TABLE,
+        Item: userBankAuth
+    }).promise();
+};
+
 module.exports = {
     getUserBankAuth,
-    registerUserBankAuth
+    registerUserBankAuth,
+    getUserBankAuths,
+    updateRefreshTime
 };
