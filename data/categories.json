@@ -1,97 +1,235 @@
 [
-  {
-      "code": "Groceries",
-      "name": "Groceries",
-      "description": "Groceries"
-  },
-  {
-      "code": "Transport",
-      "name": "Transport",
-      "description": "Transport spendings including train, tolls, ships, parking, etc."
-  },
-  {
-      "code": "Shopping",
-      "name": "Shopping",
-      "description": "Shopping"
-  },
-  {
-      "code": "Cash",
-      "name": "Cash",
-      "description": "Cash gifts, atm extract, etc."
-  },
-  {
-      "code": "Income",
-      "name": "Income",
-      "description": "Salary income, investment or credit interest, etc."
-  },
-  {
-      "code": "EatingOut",
-      "name": "Eating Out",
-      "description": "Eating Out"
-  },
-  {
-      "code": "Utilities",
-      "name": "Utilities",
-      "description": "Utilities like electricity bills, phone, etc."
-  },
-  {
-      "code": "Health",
-      "name": "Health",
-      "description": "Health category includes dental and cirguries"
-  },
-  {
-      "code": "General",
-      "name": "General",
-      "description": "General includes other spendings which no category has been defined"
-  },
-  {
-      "code": "Housing",
-      "name": "Housing",
-      "description": "Housing includes furniture, etc."
-  },
-  {
-      "code": "Entertainment",
-      "name": "Entertainment",
-      "description": "Entertainment as cinema, concerts, events, etc."
-  },
-  {
-      "code": "PersonalCare",
-      "name": "Personal Care",
-      "description": "Personal Care like haircuts, manicure, etc."
-  },
-  {
-      "code": "Transfers",
-      "name": "Transfers",
-      "description": "Transfers of money, buy/sell foreign money."
-  },
-  {
-      "code": "Travel",
-      "name": "Travel",
-      "description": "Travel including holidays, weekend trips, package holidays, etc."
-  },
-  {
-      "code": "Education",
-      "name": "Education",
-      "description": "Education like school supplies, school private payments, etc."
-  },
-  {
-      "code": "Donations",
-      "name": "Donations",
-      "description": "Donations to OMGs"
-  },
-  {
-      "code": "FeesAndInterest",
-      "name": "Fees and Interest",
-      "description": "Fees and Interest including bank account fees or credit card interest."
-  },
-  {
-      "code": "Business",
-      "name": "Business",
-      "description": "Business expenses."
-  },
-  {
-      "code": "Uncategorized",
-      "name": "Uncategorized",
-      "description": "Uncategorized spending."
-  }
+    {
+        "code": "Groceries",
+        "name": "Groceries",
+        "description": "Groceries stores",
+        "seoAlias": "groceries",
+        "active": true,
+        "parent": "null"
+    },
+    {
+        "code": "Transport",
+        "name": "Transport",
+        "description": "Transport spendings including train, tolls, ships, parking, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Shopping",
+        "name": "Shopping",
+        "description": "Shopping",
+        "parent": "null"
+    },
+    {
+        "code": "Cash",
+        "name": "Cash",
+        "description": "Cash gifts, atm extract, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Income",
+        "name": "Income",
+        "description": "Salary income, investment or credit interest, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "EatingOut",
+        "name": "Eating Out",
+        "description": "Eating Out",
+        "parent": "null"
+    },
+    {
+        "code": "Utilities",
+        "name": "Utilities",
+        "description": "Utilities like electricity bills, phone, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Health",
+        "name": "Health",
+        "description": "Health category includes dental and cirguries",
+        "parent": "null"
+    },
+    {
+        "code": "General",
+        "name": "General",
+        "description": "General includes other spendings which no category has been defined",
+        "parent": "null"
+    },
+    {
+        "code": "Housing",
+        "name": "Housing",
+        "description": "Housing includes furniture, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Entertainment",
+        "name": "Entertainment",
+        "description": "Entertainment as cinema, concerts, events, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "PersonalCare",
+        "name": "Personal Care",
+        "description": "Personal Care like haircuts, manicure, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Transfers",
+        "name": "Transfers",
+        "description": "Transfers of money, buy/sell foreign money.",
+        "parent": "null"
+    },
+    {
+        "code": "Travel",
+        "name": "Travel",
+        "description": "Travel including holidays, weekend trips, package holidays, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Education",
+        "name": "Education",
+        "description": "Education like school supplies, school private payments, etc.",
+        "parent": "null"
+    },
+    {
+        "code": "Donations",
+        "name": "Donations",
+        "description": "Donations to OMGs",
+        "parent": "null"
+    },
+    {
+        "code": "FeesAndInterest",
+        "name": "Fees and Interest",
+        "description": "Fees and Interest including bank account fees or credit card interest.",
+        "parent": "null"
+    },
+    {
+        "code": "Business",
+        "name": "Business",
+        "description": "Business expenses.",
+        "parent": "null"
+    },
+    {
+        "code": "Uncategorized",
+        "name": "Uncategorized",
+        "description": "Uncategorized spending.",
+        "parent": "null"
+    },
+    {
+        "code": "BakeryBakeries",
+        "keywords": "bakery, bakeries, bakers, baker, hot bread shop, break makers, patisseries, retail bakery, bakehouse, bread shop, sourdough bakery, bread, cake makers",
+        "description": "Bakery, Bakeries",
+        "seoAlias": "bakeries",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "CakeShop",
+        "keywords": "cake shops, cake decoration centre, cake and pastry shop, wedding cakes, christening cakes, birthday cakes, cheesecakes, cake supplies, cake recipes",
+        "name": "Cake Shop",
+        "seoAlias": "cake-shop",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "DairyProducts",
+        "keywords": "dairy products manufacturers suppliers retailers wholesalers frozen distributers yoghurt cheese milk goats cows ice cream",
+        "name": "Dairy Products",
+        "seoAlias": "dairy-products",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "VineyardsWineries",
+        "keywords": "bottle shops, booze, mixers, beer, wine, whiskey, party drinks, vodka, cocktail mixers",
+        "name": "Vineyards & Wineries",
+        "seoAlias": "vineyards-wineries",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "SupermarketGroceryStores",
+        "keywords": "supermarkets, grocery stores, fruits, vegetables, daily household items, food, microwavable food",
+        "name": "Supermarket & Grocery Stores",
+        "seoAlias": "supermarket-grocery",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "BottleShops",
+        "keywords": "bottle shops, booze, mixers, beer, wine, whiskey, party drinks, vodka, cocktail mixers",
+        "name": "Bottle Shops",
+        "seoAlias": "bottle-shops",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "FruitsVegetables",
+        "keywords": "agriculture, agricultural services, agricultural society, farm research, farming machinery repair and contractors, agricultural companies, aerial agriculture, farm tractor, machinery",
+        "name": "Fruits & Vegetables",
+        "seoAlias": "fruits-vegetables",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "Breweries",
+        "keywords": "plaster, plastering, wall plaster, board plaster, plasterer, ceiling cornice, decorative plaster, house, home, local, moulding, cement",
+        "name": "Breweries",
+        "seoAlias": "breweries",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "DairyProducts",
+        "keywords": "dairy products manufacturers suppliers retailers wholesalers frozen distributers yoghurt cheese milk goats cows ice cream",
+        "name": "Dairy Products",
+        "seoAlias": "dairy-products",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "Butchers",
+        "keywords": "butcher, butchers, butcheries, home delivery butchers, smallgoods butchers, halal butchers, continental butchers, meat delivery, gourmet meat, wholesale butcher, organic butcher",
+        "name": "Butchers",
+        "seoAlias": "butchers",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "Chocolatiers",
+        "keywords": "chocolate chocolatiers makers fountains lollies sweets factory supplies retailers",
+        "name": "Chocolatiers",
+        "seoAlias": "chocolatiers",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "CoffeeTeaSuppliers",
+        "keywords": "café, cafes in, Sydney, Melbourne, Perth, Brisbane, Adelaide, internet café, coffee bar, coffee shop, café restaurant, coffee houses in, café restaurant",
+        "name": "Coffee & Tea Suppliers",
+        "seoAlias": "coffe-tea-suppliers",
+        "active": true,
+        "parent": "EatingOut"
+    },
+    {
+        "code": "MobilePhonesRetailers",
+        "name": "Mobile Phones Retailers",
+        "seoAlias": "mobile-phones-retailers",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "InternetServices",
+        "name": "Internet Services",
+        "seoAlias": "internet-services",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "Bookkeeping",
+        "name": "Bookkeeping",
+        "seoAlias": "bookkeeping",
+        "active": true,
+        "parent": "Business"
+    }
 ]

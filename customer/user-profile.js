@@ -1,6 +1,7 @@
 'use strict';
 
-//This module will be used to configure user's profile: categories and dashboard components
+//This module will be used to configure user's profile: 
+//categories, notifications and dashboard components
 
 const jsonResponse = require("../libs/json-response");
 const dynamoDbHelper = require('../libs/dynamodb-helper');

@@ -96,7 +96,6 @@ async function getUserBankAuths(timestamp, pagesize, nextkey) {
         params.ExclusiveStartKey = encodeHelper.decodeKeyAsJson(nextkey);
     }
 
-    console.log(params);
     try {
         return await dynamoDb.scan(params).promise();
     } catch (error) {

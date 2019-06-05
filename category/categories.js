@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
+const _ = require('lodash');
 
 const handlers = {
     "GET": getCategories,
@@ -34,7 +35,10 @@ async function getCategories() {
 
     try {
         let data = await dynamoDb.scan(params).promise();
-        return jsonResponse.ok(data.Items);
+        if (data && data.Items) {
+            const rootCategories = _.filter(data.Items, { parent: "null" });
+            return jsonResponse.ok(rootCategories);
+        }
     } catch (error) {
         console.log(error);
         return jsonResponse.notFound({

@@ -6,19 +6,16 @@ const dynamoDb = require('../libs/dynamodb-helper').dynamoDb;
 const _ = require('lodash');
 
 const limit = 6;
+const monthFormat = "YYYY-MM";
 
+/**
+ * Returns current cashflow: savings, income and spendings of the current month.
+ */
 module.exports.handler = async (event) => {
-
-  if (!event.pathParameters.month || event.pathParameters.month.length != 7) {
-    return jsonResponse.notFound({
-      error: "BadRequest",
-      message: "Month is mandatory"
-    });
-  }
-
+  const month = moment().format(monthFormat);
   const principalId = event.requestContext.authorizer.principalId;
-  const startMonth = getMonth(event.pathParameters.month, (-1) * limit);
-  const endMonth = getMonth(event.pathParameters.month, 1);
+  const startMonth = getMonth(month, (-1) * limit);
+  const endMonth = getMonth(month, 1);
 
   const savings = await getSavings(principalId, startMonth);
   const incomes = await getIncomes(principalId, startMonth);
@@ -115,14 +112,14 @@ async function getSpendings(principalId, from, to) {
 
 function getMonth(month, add) {
   if (month) {
-    return moment(month, "YYYY-MM").add(add, "months").format("YYYY-MM");
+    return moment(month, monthFormat).add(add, "months").format(monthFormat);
   }
   return "";
 }
 
 function getMonthName(month) {
   if (month) {
-    return moment(month, "YYYY-MM").format("MMMM");
+    return moment(month, monthFormat).format("MMMM");
   }
   return "";
 }

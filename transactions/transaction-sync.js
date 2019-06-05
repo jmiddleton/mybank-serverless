@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const axios = require("axios");
 const shortid = require('shortid');
 const mcccodes = require("../category/mcccodes.js");
+const trueLocal = require("../category/true-local-client.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const clean = require('obj-clean');
 const moment = require('moment');
@@ -29,7 +30,7 @@ module.exports.handler = async (event) => {
   try {
     const transactions = await getTransactions(message);
     const hasTransactions = transactions.length > 0;
-    console.log("Found transactions to process: " + hasTransactions);
+    console.log("Found " + transactions.length + " transactions to process: ");
 
     if (hasTransactions) {
       await asyncForEach(transactions, async txn => {
@@ -49,7 +50,7 @@ module.exports.handler = async (event) => {
         };
 
         try {
-          await dynamoDb.put(params).promise();
+          dynamoDb.put(params).promise();
         } catch (error) {
           console.error(error);
         }
@@ -90,6 +91,7 @@ async function getTransactions(message) {
     //   response.data.data.transactions.forEach(p => {
     //     records.push(p);
     //   });
+
     if (response && response.data && response.data.length > 0) {
       response.data.forEach(p => {
         records.push(p);
@@ -113,20 +115,105 @@ async function getTransactions(message) {
   }
 }
 
-async function getCategory(record) {
-  const merchantCode = record.merchantCategoryCode;
-  if (merchantCode) {
-    try {
-      const dbCategory = await mcccodes.getMCCCategoryByCode(merchantCode);
-      if (dbCategory) {
-        return dbCategory.category;
-      }
-    } catch (err) {
-      console.log("Error retrieving MCC codes: " + err.response);
-      console.log(err);
+/**
+ * Dependiendo del tipo, ejecutar lo siguiente:
+ * 
+ * .- type 	FEE mapear a FeesAndInterest
+ * .- type 	INTEREST_CHARGED mapear a FeesAndInterest
+ * .- type 	INTEREST_PAID mapear a Income
+ * .- type 	TRANSFER_OUTGOING mapear a Transfer
+ * .- type 	TRANSFER_INCOMING mapear a Transfer
+ * .- type 	DIRECT_DEBIT mapear a Uncategorized
+ * .- type 	OTHER mapear a Uncategorized
+ * 
+ * .- type 	PAYMENT (ejecutar la siguiente logica):
+ *    si hay merchant name:
+ *       primero ver si esta en la tabla merchant-categories,
+ *       sino buscar en truelocal usando el merchantName y guardarlo en la tabla merchant-categories.
+ * 
+ *    sino hay merchant, ver si hay merchantCategoryCode:
+ *       si hay merchantCategoryCode, buscarlo en MCCCodes tabla
+ *    sino buscar la description en truelocal y guardarlo en la tabla merchant-categories.
+ *    si no se encuentra nada, retornar Uncategorized
+ * @param {*} txn 
+ */
+async function getCategory(txn) {
+  let category;
+  const merchantName = txn.merchantName;
+
+  if (txn.type !== "PAYMENT") {
+    return "Uncategorized";
+  }
+
+  try {
+    if (merchantName) {
+      console.log(">>>>>>>>>m " + merchantName);
+      category = await getCategoryByMerchantName(merchantName);
+    } else {
+      console.log(">>>>>>>>>d " + txn.description);
+      category = await getCategoryByDescription(txn.description);
     }
+
+    console.log(">>>>>>>>>cat " + category);
+    if (category) {
+      return category;
+    }
+  } catch (err) {
+    console.log("Error retrieving category: " + err.response);
+    console.log(err);
   }
   return "Uncategorized";
+}
+
+async function getCategoryByMerchantName(merchantName) {
+  try {
+    const merchantCategory = await mcccodes.getMerchantCategory(merchantName);
+    console.log(">>>>>>>>>mc " + merchantCategory);
+    if (merchantCategory) {
+      return merchantCategory.category;
+    }
+
+    //buscar en truelocal
+    const trueLocalResponse = await trueLocal.search(merchantName, merchantName);
+    console.log(">>>>>>>>>tl " + trueLocalResponse.category);
+
+    if (trueLocalResponse) {
+      return await processCategory(trueLocalResponse, merchantName);
+    }
+  } catch (err) {
+    console.log("Error finding category by merchant name.");
+    console.log(err);
+  }
+  return undefined;
+}
+
+async function getCategoryByDescription(description) {
+  try {
+    //buscar en truelocal
+    const trueLocalResponse = await trueLocal.search(description);
+    if (trueLocalResponse) {
+      return await processCategory(trueLocalResponse, description);
+    }
+  } catch (err) {
+    console.log("Error finding category by description.");
+    console.log(err);
+  }
+  return undefined;
+}
+
+async function processCategory(trueLocalResponse, merchantName) {
+  if (trueLocalResponse && trueLocalResponse.category) {
+
+    const category = await mcccodes.getCategoryByCode(trueLocalResponse.category);
+    if (category) {
+      mcccodes.addMerchantCategory({
+        merchantName: merchantName,
+        category: category.parent,
+        subcategory: trueLocalResponse.category
+      });
+      return category.parent;
+    }
+  }
 }
 
 function getValidDate(txn) {

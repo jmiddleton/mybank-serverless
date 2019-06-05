@@ -93,7 +93,52 @@ async function getMCCCategoryByCode(mcode) {
     }
 };
 
+async function getMerchantCategory(merchantName) {
+    const params = {
+        TableName: process.env.MERCHANT_CATEGORY_TABLE,
+        Key: {
+            merchantName: merchantName
+        }
+    };
+
+    try {
+        let data = await dynamoDb.get(params).promise();
+        return data.Item;
+    } catch (error) {
+        throw error;
+    }
+};
+
+async function addMerchantCategory(data) {
+    data.last_updated = new Date().getTime();
+
+    await dynamoDb.put({
+        TableName: process.env.MERCHANT_CATEGORY_TABLE,
+        Item: data
+    }).promise();
+};
+
+async function getCategoryByCode(code) {
+    const params = {
+        TableName: process.env.CATEGORIES_TABLE,
+        Key: {
+            code: code
+        }
+    };
+
+    try {
+        let data = await dynamoDb.get(params).promise();
+        console.log(data);
+        return data.Item;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     handler,
-    getMCCCategoryByCode
+    getMCCCategoryByCode,
+    getMerchantCategory,
+    addMerchantCategory,
+    getCategoryByCode
 };

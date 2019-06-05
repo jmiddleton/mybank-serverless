@@ -1,0 +1,27 @@
+[
+    {
+        "merchantName": "TRANSPORTFORNSW OPAL",
+        "category": "Transport",
+        "subcategory": "PublicTransportation"
+    },
+    {
+        "merchantName": "AFTERPAY PTY LTD",
+        "category": "Shopping",
+        "subcategory": "OnlinePayments"
+    },
+    {
+        "merchantName": "MEDIBANK PHI DEBIT",
+        "category": "Health",
+        "subcategory": "Private Insurance"
+    },
+    {
+        "merchantName": "ALLIANZ INSURE C6",
+        "category": "Transport",
+        "subcategory": "Insurance"
+    },
+    {
+        "merchantName": "DECATHLON (AUSTRALIA",
+        "category": "Shopping",
+        "subcategory": "Retail Shopping"
+    }
+]

@@ -18,17 +18,15 @@ if (isOffline()) {
 let sns = new AWS.SNS(snsOpts);
 
 module.exports.handler = async (event) => {
-    const hours = new Number(process.env.SYNC_HOURS);
-    const timestamp = moment().subtract(hours, "hours").valueOf();
     let nextKey = undefined;
+    const timestamp = getSyncRefreshTimestamp();
 
-    console.log("Account refresh cron job started...");
-    try {    
+    console.log("Account refresh cron job started, scanning for users not refreshed before " + moment(timestamp).format());
+    try {
         do {
             const userAuths = await userbankDao.getUserBankAuths(timestamp, 100, nextKey);
-            console.log(userAuths);
-            if (userAuths) {
 
+            if (userAuths) {
                 nextKey = userAuths.LastEvaluatedKey;
                 console.log("Synchronizing " + userAuths.Count + " users...");
 
@@ -77,4 +75,11 @@ async function sendSNS(accountId, token) {
     } catch (err) {
         console.log(err);
     }
+}
+
+function getSyncRefreshTimestamp() {
+    const syncSpace = process.env.SYNC_REFRESH_DURATION.indexOf(' ');
+    const numberOfUnit = new Number(process.env.SYNC_REFRESH_DURATION.substring(0, syncSpace));
+    const timeUnit = process.env.SYNC_REFRESH_DURATION.substring(syncSpace + 1);
+    return moment().subtract(numberOfUnit, timeUnit).valueOf();
 }

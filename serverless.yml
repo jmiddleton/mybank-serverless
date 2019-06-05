@@ -34,6 +34,7 @@ provider:
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
     INCOME_TABLE: income-${opt:stage, self:provider.stage}
     MERCHANT_TABLE: merchant-${opt:stage, self:provider.stage}
+    MERCHANT_CATEGORY_TABLE: merchant-category-${opt:stage, self:provider.stage}
     MCC_CODES_TABLE: mcccodes-${opt:stage, self:provider.stage}
     CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
     BANKS_TABLE: banks-${opt:stage, self:provider.stage}
@@ -172,6 +173,15 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MERCHANT_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MERCHANT_CATEGORY_TABLE}"
 plugins:
   - serverless-jetpack
   - serverless-plugin-split-stacks
@@ -180,7 +190,6 @@ plugins:
   - serverless-offline-sns
   - serverless-offline-scheduler
   - serverless-offline #serverless-offline needs to be last in the list
-
 custom:
   serverless-jetpack:
     mode: npm
@@ -201,6 +210,8 @@ custom:
             sources: [./data/mcccodes.json]
           - table: categories-dev
             sources: [./data/categories.json]
+          - table: merchant-category-dev
+            sources: [./data/merchant-category.json]
           # - table: accounts-dev
           #   sources: [./data/accounts.json]
           # - table: accounts-details-dev
@@ -260,7 +271,7 @@ functions:
     events:
       - schedule: rate(10 minutes)
     environment:
-      SYNC_HOURS: "2"
+      SYNC_REFRESH_DURATION: "20 minutes"
       accountsTopicArn: "arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}"
   accounts:
     handler: accounts/accounts.handler
@@ -417,7 +428,7 @@ functions:
     handler: analytics/cashflow.handler
     events:
       - http: 
-          path: '/mybank/v1/analytics/cashflow/{month}'
+          path: '/mybank/v1/analytics/cashflow'
           method: get
           cors: true
           private: true
@@ -780,12 +791,10 @@ resources:
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: code
+          - AttributeName: code
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: code
+          - AttributeName: code
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -796,12 +805,10 @@ resources:
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: code
+          - AttributeName: code
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: code
+          - AttributeName: code
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -812,12 +819,10 @@ resources:
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: code
+          - AttributeName: code
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: code
+          - AttributeName: code
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -865,3 +870,17 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.MERCHANT_TABLE}
+    MerchantCategoryDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: merchantName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: merchantName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.MERCHANT_CATEGORY_TABLE}
