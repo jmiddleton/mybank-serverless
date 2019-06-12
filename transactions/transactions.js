@@ -86,7 +86,7 @@ async function getTransactions(event) {
 async function createTransaction(event) {
   const data = JSON.parse(event.body);
   
-  return internalCreateTxn(data);
+  return saveTransaction(data);
 }
 
 async function updateTransaction(event) {
@@ -94,10 +94,13 @@ async function updateTransaction(event) {
   data.categoryFilter = data.category + "#" + data.postingDateTime;
   data.accountFilter = data.accountId + "#" + data.categoryFilter;
 
-  return internalCreateTxn(data);
+  //TODO: update also keyword-category table
+  //TODO: if "Apply to All" then update the category of transactions with the same description.
+  
+  return saveTransaction(data);
 }
 
-async function internalCreateTxn(data) {
+async function saveTransaction(data) {
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
     Item: data

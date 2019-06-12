@@ -82,7 +82,7 @@
     {
         "code": "Travel",
         "name": "Travel",
-        "description": "Travel including holidays, weekend trips, package holidays, etc.",
+        "description": "Travel including holidays, weekend trips, package holidays, accomodation, hotels, etc.",
         "parent": "null"
     },
     {
@@ -212,6 +212,86 @@
         "parent": "EatingOut"
     },
     {
+        "code": "Confectionery",
+        "keywords": "candies, candy, candy lollies, candy sweets, confection, confectioner, confectionery, confections, lollie, lollies, lolly, lollys, sweet lollies, sweets, sweets confectionery, sweets lollies",
+        "name": "Confectionery",
+        "seoAlias": "confectionary",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "ConvenienceStores",
+        "keywords": "convenience shop, convenience store, corner shop, corner store, store",
+        "name": "Convenience Stores",
+        "seoAlias": "convenience",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "Delis",
+        "keywords": "carvery, deli, delicatessen",
+        "name": "Delis",
+        "seoAlias": "delis",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "FarmersMarket",
+        "keywords": "farmers market, farmers markets, farm produce, farming produce, markets, livestock auction",
+        "name": "Farmers Market",
+        "seoAlias": "farmers-market",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "Gourmet",
+        "keywords": "gourmet shop",
+        "name": "Gourmet",
+        "seoAlias": "gourmet",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "HealthMarkets",
+        "keywords": "health food, organic food, health foods, diet food wholesaler, diet food wholesaling, health food wholesaler, health food wholesaling, whole food wholesaler, whole food wholesaling",
+        "name": "Health Markets",
+        "seoAlias": "health-markets",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "IceCreamFrozenYogurt",
+        "keywords": "gelato, ice cream shop, ice cream store, ice creamery, ice-cream, sorbet, ice cream manufacturer, ice cream manufacturing,frozen yogurt, frozen yoghurt",
+        "name": "Ice Cream & Frozen Yogurt",
+        "seoAlias": "ice-cream",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "JuiceBars",
+        "keywords": "fruit juices, juice",
+        "name": "Juice Bars",
+        "seoAlias": "juice-bars",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "Seafood",
+        "keywords": "fish, seafood",
+        "name": "Seafood",
+        "seoAlias": "seafood",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
+        "code": "SpecialtyFood",
+        "keywords": "specialised food",
+        "name": "Specialty Food",
+        "seoAlias": "special-food",
+        "active": true,
+        "parent": "Groceries"
+    },
+    {
         "code": "MobilePhonesRetailers",
         "name": "Mobile Phones Retailers",
         "seoAlias": "mobile-phones-retailers",
@@ -219,17 +299,2195 @@
         "parent": "Utilities"
     },
     {
-        "code": "InternetServices",
-        "name": "Internet Services",
-        "seoAlias": "internet-services",
+        "code": "Hotels",
+        "keywords": "accommodation, hotel, hotel booking, hotel booking agent, hotel lists, hotel reservations, hotels",
+        "name": "Hotels",
+        "seoAlias": "hotels",
         "active": true,
-        "parent": "Utilities"
+        "parent": "Travel"
+    },
+    {
+        "code": "Motels",
+        "keywords": "motel, motels, accommodation",
+        "name": "Motels",
+        "seoAlias": "motels",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "BedBreakfast",
+        "keywords": "accommodation",
+        "name": "Bed & Breakfast",
+        "seoAlias": "bed-breakfast",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "HolidayResorts",
+        "keywords": "resort, accommodation",
+        "name": "Holiday Resorts",
+        "seoAlias": "resorts",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "ServicedApartments",
+        "keywords": "self catering, serviced apartments",
+        "name": "Serviced Apartments",
+        "seoAlias": "self-catering",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "CampgroundsCaravanParks",
+        "keywords": "camping",
+        "name": "Campgrounds & Caravan Parks",
+        "seoAlias": "camping-grounds-caravans",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "Hostels",
+        "keywords": "hostel, hostels, accommodation",
+        "name": "Hostels",
+        "seoAlias": "hostels",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "AgedCareAccommodation",
+        "keywords": "aged care, aged care accommodation,",
+        "name": "Aged Care Accommodation",
+        "seoAlias": "aged-care",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "MobileHomes",
+        "keywords": "mobile homes, transportable homes",
+        "name": "Mobile Homes",
+        "seoAlias": "mobile-homes",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "CrisisCareAccommodation",
+        "keywords": "crisis care accommodation, crisis accommodation",
+        "name": "Crisis Care Accommodation",
+        "seoAlias": "crisis-care",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "Mechanic",
+        "keywords": "mechanic, mechanics, vehicle repair, vehicle repairer, vehicle repairing, auto repair, car repair, car service, servicing, motor vehicle servicing",
+        "name": "Mechanic",
+        "seoAlias": "mechanic",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Parking",
+        "keywords": "car park, car parking, car station,",
+        "name": "Parking",
+        "seoAlias": "car-parking",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Towing",
+        "keywords": "breakdown, tow truck, towing, tow, vehicle towing",
+        "name": "Towing",
+        "seoAlias": "towing",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "CarDealers",
+        "keywords": "cars, car dealer, car dealers, car dealership, car dealing, car yard, car sale, car sales, car retailer, car retailing, motor vehicle retailer, motor vehicle retailing, vehicle retail, vehicle retailer, vehicle retailing",
+        "name": "Car Dealers",
+        "seoAlias": "car-dealers",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "CarWash",
+        "keywords": "car cleaning, car wash",
+        "name": "Car Wash",
+        "seoAlias": "car-wash",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "MotorcycleScooterDealers",
+        "keywords": "dealers, dealership, shop, retail, retailer",
+        "name": "Motorcycle & Scooter Dealers",
+        "seoAlias": "motor-cycle-dealers",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "MotorcycleScooterRepair",
+        "keywords": "repair, repairer, repairing, service, servicing, mechanic,",
+        "name": "Motorcycle & Scooter Repair",
+        "seoAlias": "motor-cycle-repair",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "MufflersExhaustSystems",
+        "keywords": "exhaust, muffler",
+        "name": "Mufflers & Exhaust Systems",
+        "seoAlias": "mufflers-exhaust",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "PetrolServiceStations",
+        "keywords": "petrol stations, service stations, fuel stations, petrol, petrol prices, fuel prices",
+        "name": "Petrol & Service Stations",
+        "seoAlias": "petrol-service-stations",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "RoadsideAssistance",
+        "keywords": "roadside assistance, breakdown, vehicle rescue",
+        "name": "Roadside Assistance",
+        "seoAlias": "road-assistance",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "TowbarFitting",
+        "keywords": "towbar, towbar fitting, towball",
+        "name": "Towbar Fitting",
+        "seoAlias": "towbar",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Tyres",
+        "keywords": "tyre, tyres, tyre retail, tyre retailer, tyre retailing, wheel, wheel retail, wheel retailer, wheel retailing, vehicle tyre, vehicle tyre retail, vehicle tyre retailer, vehicle tyre retailing, vehicle wheel, vehicle wheel retail, vehicle wheel retailer, v",
+        "name": "Tyres",
+        "seoAlias": "tyres",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleBatteries",
+        "keywords": "motor vehicle batteries, motor vehicle battery",
+        "name": "Vehicle Batteries",
+        "seoAlias": "motor-vehicle-battery",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleBodyWork",
+        "keywords": "car body work, auto body work, automotive body work, motor body work, vehicle body work",
+        "name": "Vehicle Body Work",
+        "seoAlias": "body-work",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleBrakeClutchRepairs",
+        "keywords": "automotive brake repairs, automotive clutch repairs, vehicle brake repairs, vehicle clutch repairs",
+        "name": "Vehicle Brake & Clutch Repairs",
+        "seoAlias": "brake-clutch-repairs",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleElectricalRepairs",
+        "keywords": "auto electrical mechanic, auto electrical repair, auto electrical repairer, auto electrical repairing, auto electrician, electrical parts, electrical instruments, vehicle electrical repair, vehicle electrical repairer, vehicle electrical repairing,",
+        "name": "Vehicle Electrical Repairs",
+        "seoAlias": "auto-electrical",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleInspections",
+        "keywords": "vehicle inspection testing, vehicle inspection, vehicle testing",
+        "name": "Vehicle Inspections",
+        "seoAlias": "vehicle-inspections",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleRadiators",
+        "keywords": "radiator, radiator repair, radiator repairer, radiator repairing",
+        "name": "Vehicle Radiators",
+        "seoAlias": "radiators",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleSpareParts",
+        "keywords": "automotive spare parts, automotive accessories, vehicle spare parts, vehicle accessories,car parts",
+        "name": "Vehicle Spare Parts",
+        "seoAlias": "spare-parts",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "VehicleTransmissionGearboxRepairs",
+        "keywords": "differential, gearbox, transmission, automatic transmission,",
+        "name": "Vehicle Transmission & Gearbox Repairs",
+        "seoAlias": "gearbox-repair",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Windscreens",
+        "keywords": "windscreen, windscreens,auto glass",
+        "name": "Windscreens",
+        "seoAlias": "windscreens",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "WheelRepair",
+        "keywords": "tyre, tyres, tyre retail, tyre retailer, tyre retailing, wheel, wheel retail, wheel retailer, wheel retailing, vehicle tyre, vehicle tyre retail, vehicle tyre retailer, vehicle tyre retailing, vehicle wheel, vehicle wheel retail, vehicle wheel retailer",
+        "name": "Wheel Repair",
+        "seoAlias": "wheel-repair",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "ChildCareDayCare",
+        "keywords": "children's services, child services",
+        "name": "Child Care & Day Care",
+        "seoAlias": "childcare",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "DryCleaningLaundry",
+        "keywords": "dry cleaning, laundry",
+        "name": "Dry Cleaning & Laundry",
+        "seoAlias": "dry-cleaning-laundry",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "PestControl",
+        "keywords": "exterminator, pest control, hunter, hunting,  trapper, trapping",
+        "name": "Pest Control",
+        "seoAlias": "pest-control",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "AppliancesRepair",
+        "keywords": "appliance repair, appliance repairer, appliance repairing",
+        "name": "Appliances & Repair",
+        "seoAlias": "home-appliance-repair",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "CommunityServiceNonProfit",
+        "keywords": "community service, non-profit",
+        "name": "Community Service/Non-Profit",
+        "seoAlias": "non-profit",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "FuneralServicesCemeteries",
+        "keywords": "funeral, funerals",
+        "name": "Funeral Services & Cemeteries",
+        "seoAlias": "funeral-services",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "HomeMinding",
+        "keywords": "home minder, home minding, home sitting, home sitter, house minder, house minding, house sitting, house sitter",
+        "name": "Home Minding",
+        "seoAlias": "home-minding",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "RubbishWasteRemoval",
+        "keywords": "disposal, garbage, rubbish, rubbish collection, rubbish collector, rubbish removal, rubbish removalist, waste, waste collection, waste collector, waste removal, waste removalist, garbage collection, garbage disposal, garbo, rubbish collection, rubbish dis",
+        "name": "Rubbish & Waste Removal",
+        "seoAlias": "rubbish-waste-removal",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "SewingAlterations",
+        "keywords": "sewing, clothing alterations",
+        "name": "Sewing & Alterations",
+        "seoAlias": "sewing-alterations",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "ShoeRepair",
+        "keywords": "shoe repair, shoe repairer, shoe repairing, shoe replacement, shoe replacing",
+        "name": "Shoe Repair",
+        "seoAlias": "shoe-repair",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "Storage",
+        "keywords": "general storage, storage, temporary storage,",
+        "name": "Storage",
+        "seoAlias": "self-storage",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "TrophiesEngraving",
+        "keywords": "trophies, engraving",
+        "name": "Trophies & Engraving",
+        "seoAlias": "trophies-engraving",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "UpholsteringPolishing",
+        "keywords": "upholstering services",
+        "name": "Upholstering & Polishing",
+        "seoAlias": "upholstering-polishing",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "WatchRepair",
+        "keywords": "watch repairs, watch restorations, watch fixing",
+        "name": "Watch Repair",
+        "seoAlias": "watch-repair",
+        "active": true,
+        "parent": "Housing"
+    },
+    {
+        "code": "Schools",
+        "keywords": "school, schools, education, teaching, classes",
+        "name": "Schools",
+        "seoAlias": "schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "TAFE",
+        "keywords": "tafe, tafe courses, technical college, technical academy, technical institute, technical school",
+        "name": "TAFE",
+        "seoAlias": "tafe",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "Universities",
+        "keywords": "graduate, post graduate, undergraduate, uni, university, universities",
+        "name": "Universities",
+        "seoAlias": "university",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "AdultEducation",
+        "keywords": "adult college, adult education, continuing education, workplace training",
+        "name": "Adult Education",
+        "seoAlias": "adult-education",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "ArtSchools",
+        "keywords": "art college, art school, art student, art teacher, art teaching, art course",
+        "name": "Art Schools",
+        "seoAlias": "art-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "Colleges",
+        "keywords": "college, courses",
+        "name": "Colleges",
+        "seoAlias": "colleges",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "CookingSchools",
+        "keywords": "cooking class, cooking classes, cooking school, cooking teacher, cooking tuition, cooking course",
+        "name": "Cooking Schools",
+        "seoAlias": "cooking-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "DanceSchools",
+        "keywords": "dance class, dance classes, dance school, dance schools",
+        "name": "Dance Schools",
+        "seoAlias": "dance-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "DramaSchool",
+        "keywords": "acting school, drama school",
+        "name": "Drama School",
+        "seoAlias": "drama-school",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "DrivingSchools",
+        "keywords": "driving academy, driving lesson, driving lessons, driving school, driving schools, driving course",
+        "name": "Driving Schools",
+        "seoAlias": "driving-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "FirstAidTraining",
+        "keywords": "first aid training, first aid, first aid supply, first aid trainer",
+        "name": "First Aid Training",
+        "seoAlias": "first-aid",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "FlyingSchools",
+        "keywords": "flight school, flight training, flying school, flying training, pilot school, pilot training",
+        "name": "Flying Schools",
+        "seoAlias": "flying-school",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "KindergartenPreschools",
+        "keywords": "kinder, kindergarten, kindy, pre school, preschool, pre-school",
+        "name": "Kindergarten & Preschools",
+        "seoAlias": "preschools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "LanguageSchools",
+        "keywords": "language education, tesol, english school, language course",
+        "name": "Language Schools",
+        "seoAlias": "language-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "MotorcycleTraining",
+        "keywords": "motorcycle training, rider training",
+        "name": "Motorcycle Training",
+        "seoAlias": "motorcycle-training",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "MusicSchools",
+        "keywords": "music academy, music conservatorium, music institute, music school, music teacher, music teaching, music course",
+        "name": "Music Schools",
+        "seoAlias": "music-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "SpecialSchools",
+        "keywords": "specialty school",
+        "name": "Special Schools",
+        "seoAlias": "specialty-schools",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "Tutoring",
+        "keywords": "academic tutor, academic tutoring, teaching, tuition, lessons, learning,",
+        "name": "Tutoring",
+        "seoAlias": "tutoring",
+        "active": true,
+        "parent": "Education"
+    },
+    {
+        "code": "PubsBars",
+        "keywords": "bar, bars, pub, pubs,",
+        "name": "Pubs & Bars",
+        "seoAlias": "pubs-bars",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Cinema",
+        "keywords": "cinema, cinemas, flicks, movies, movie theatre,",
+        "name": "Cinema",
+        "seoAlias": "cinemas",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "ArtGalleries",
+        "keywords": "art, artist, artiste, art curating, art curation, art curator, art gallery, art galleries, sculptor, commercial display, commercial art",
+        "name": "Art Galleries",
+        "seoAlias": "galleries",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "AmusementParks",
+        "keywords": "amusement centre, amusement park,theme park",
+        "name": "Amusement Parks",
+        "seoAlias": "amusement-parks",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Aquariums",
+        "keywords": "aquarium, aquariums",
+        "name": "Aquariums",
+        "seoAlias": "aquariums",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "AstrologySpiritualGenealogy",
+        "keywords": "astrology, spiritual",
+        "name": "Astrology, Spiritual & Genealogy",
+        "seoAlias": "astrology-services",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Bingo",
+        "keywords": "bingo, bingo hall",
+        "name": "Bingo",
+        "seoAlias": "bingo",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Bookies",
+        "keywords": "bookie, bookies, bookmaker, betting shop, sports tab, syndicates, tab, tab agency, tabcorp, totalisator agency, gambling",
+        "name": "Bookies",
+        "seoAlias": "bookies",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "BotanicalGardens",
+        "keywords": "botanic garden, garden, reserve",
+        "name": "Botanical Gardens",
+        "seoAlias": "gardens",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Casinos",
+        "keywords": "casino, casinos, gambling, gambling den",
+        "name": "Casinos",
+        "seoAlias": "casinos",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Circus",
+        "keywords": "circus",
+        "name": "Circus",
+        "seoAlias": "circus",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "ComedyClubs",
+        "keywords": "comedy clubs, comedy venue",
+        "name": "Comedy Clubs",
+        "seoAlias": "comedy-clubs",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "InterestGroups",
+        "keywords": "interest group, leisure groups, society, hobby, hobbies",
+        "name": "Interest Groups",
+        "seoAlias": "hobbies",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "LandmarksHistoricalBuildings",
+        "keywords": "landmarks, tourist attractions",
+        "name": "Landmarks & Historical Buildings",
+        "seoAlias": "landmarks",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Museums",
+        "keywords": "museum, museums",
+        "name": "Museums",
+        "seoAlias": "museums",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "MusicVenues",
+        "keywords": "music clubs, music venues, music theatre",
+        "name": "Music Venues",
+        "seoAlias": "music-venues",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Nightclub",
+        "keywords": "night club, dance clubs, disco, discotheque, nightclub, nightclubs",
+        "name": "Nightclub",
+        "seoAlias": "night-club",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "StadiumsArenas",
+        "keywords": "stadiums, arenas",
+        "name": "Stadiums & Arenas",
+        "seoAlias": "stadiums-arenas",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Theatres",
+        "keywords": "theatre, theatres",
+        "name": "Theatres",
+        "seoAlias": "theatres",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Zoos",
+        "keywords": "animal sanctuary, safari park, zoo, zoological",
+        "name": "Zoos",
+        "seoAlias": "zoos",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "WeddingPlanning",
+        "keywords": "wedding, weddings",
+        "name": "Wedding Planning",
+        "seoAlias": "wedding-planning",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "WeddingSupplies",
+        "keywords": "wedding supplies",
+        "name": "Wedding Supplies",
+        "seoAlias": "wedding-supplies",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "PartySupplies",
+        "keywords": "party equipment, party hire, party hiring, party lease, party leasing, party rental, party renting, party supplies,",
+        "name": "Party Supplies",
+        "seoAlias": "party-supplies",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "PartyEventPlanning",
+        "keywords": "event, events, party planner, event planning",
+        "name": "Party & Event Planning",
+        "seoAlias": "event-planning",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "BoatCharters",
+        "keywords": "boat charters, boat hire, boat hiring, boat rental,",
+        "name": "Boat Charters",
+        "seoAlias": "boat-charters",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Caterers",
+        "keywords": "caterer, caters, catering, hospitality",
+        "name": "Caterers",
+        "seoAlias": "catering",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "CostumesFormalWear",
+        "keywords": "costume, fancy dress, wigs, formal wear",
+        "name": "Costumes & Formal Wear",
+        "seoAlias": "costume-hire",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "DJs",
+        "keywords": "disk jockey, dj, disc jockey",
+        "name": "DJs",
+        "seoAlias": "dj",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "FilmProduction",
+        "keywords": "production",
+        "name": "Film Production",
+        "seoAlias": "film-production",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "Photographers",
+        "keywords": "photograph, photographer, photographers, photography,",
+        "name": "Photographers",
+        "seoAlias": "photographers",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "VenuesEventSpaces",
+        "keywords": "venue, event, function",
+        "name": "Venues & Event Spaces",
+        "seoAlias": "venues",
+        "active": true,
+        "parent": "Entertainment"
+    },
+    {
+        "code": "ATM",
+        "keywords": "atm, cash machine, hole-in-the-wall, cash point",
+        "name": "ATM",
+        "seoAlias": "atm",
+        "active": true,
+        "parent": "Business"
     },
     {
         "code": "Bookkeeping",
+        "keywords": "bookkeeper, bookkeeping, financial services",
         "name": "Bookkeeping",
         "seoAlias": "bookkeeping",
         "active": true,
         "parent": "Business"
-    }
+    },
+    {
+        "code": "Banks",
+        "keywords": "bank, banks, banking, financial services",
+        "name": "Banks",
+        "seoAlias": "banks",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "MortgageBrokers",
+        "keywords": "mortgage, mortgage broker, mortgage broking, mortgage lending, home loan, financial services,fixed rate mortgages, variable rate mortgages, basic variable mortgages, tracker mortgages",
+        "name": "Mortgage Brokers",
+        "seoAlias": "mortgage",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "BuildingSocieties",
+        "keywords": "building society, financial services",
+        "name": "Building Societies",
+        "seoAlias": "building-societies",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "CreditUnions",
+        "keywords": "credit union, credit bureau, credit agency",
+        "name": "Credit Unions",
+        "seoAlias": "credit-unions",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "Insurance",
+        "keywords": "insurance, insurance brokers, financial services",
+        "name": "Insurance",
+        "seoAlias": "insurance",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Investing",
+        "keywords": "financial investments, investing, financial services",
+        "name": "Investing",
+        "seoAlias": "invest",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "DebtCollecting",
+        "keywords": "debt collecting, debt collection, debt collector, debt recovery, repossession",
+        "name": "Debt Collecting",
+        "seoAlias": "debt-collection",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "Refinancing",
+        "keywords": "refinancing, loans, debt consolidation, lenders",
+        "name": "Refinancing",
+        "seoAlias": "refinancing",
+        "active": true,
+        "parent": "Business"
+    },
+    {
+        "code": "ForeignCurrencyExchange",
+        "keywords": "currency exchange, foreign currency exchange, forex, fx",
+        "name": "Foreign Currency Exchange",
+        "seoAlias": "currency-exchange",
+        "active": true,
+        "parent": "Transfers"
+    },
+    {
+        "code": "BeautySalons",
+        "keywords": "beauty salon, beauty salons, beauticians, health spa, health retreat,",
+        "name": "Beauty Salons",
+        "seoAlias": "beauty-salons",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "DaySpas",
+        "keywords": "beauty, day spa, health spa, pampering, spa, spa resorts",
+        "name": "Day Spas",
+        "seoAlias": "spas",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "Hairdressers",
+        "keywords": "hair salon, hair salons, hairdresser, hairdressers, haircut",
+        "name": "Hairdressers",
+        "seoAlias": "hairdressers",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "HairRemoval",
+        "keywords": "hair reduction, hair removal, hair removalist, hair removing",
+        "name": "Hair Removal",
+        "seoAlias": "hair-removal",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "MakeupArtists",
+        "keywords": "beautician, makeup, make-up, make up, makeup artist",
+        "name": "Makeup Artists",
+        "seoAlias": "makeup-artists",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "Massage",
+        "keywords": "massage, masseur, masseuse, remedial massage, massage therapy",
+        "name": "Massage",
+        "seoAlias": "massage",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "NailSalon",
+        "keywords": "manicure, manicurist, nail painting, nail polishing, pedicure, artificial nails, manicurists, nail technicians, nail anatomy, acrylic, acrylic nails, gel, gel nails, nail salon",
+        "name": "Nail Salon",
+        "seoAlias": "manicure",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "Piercing",
+        "keywords": "body jewellery, body piercing, piercing",
+        "name": "Piercing",
+        "seoAlias": "piercing",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "SkinCare",
+        "keywords": "skin care, soap,",
+        "name": "Skin Care",
+        "seoAlias": "skin-care",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "TanningSalons",
+        "keywords": "tanning, tanning studio, solarium, tanning salon",
+        "name": "Tanning Salons",
+        "seoAlias": "tanning",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "Tattooists",
+        "keywords": "body art, ink work, tattoo, tattooist, tattoo parlours",
+        "name": "Tattooists",
+        "seoAlias": "tattoos",
+        "active": true,
+        "parent": "PersonalCare"
+    },
+    {
+        "code": "Couriers",
+        "keywords": "carrier, courier, delivery,",
+        "name": "Couriers",
+        "seoAlias": "couriers",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "InternetServices",
+        "keywords": "internet, world wide web, internet services",
+        "name": "Internet Services",
+        "seoAlias": "internet",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "TelephoneServices",
+        "keywords": "telephone company, telephone network, telephone provider, telecommunication services, telephone directory, phone directory, phone numbers, phone number service, telephone numbers, telephone service, network communication service, call centre",
+        "name": "Telephone Services",
+        "seoAlias": "telephone",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "InternetPublisher",
+        "keywords": "www, world wide web, internet publisher, online web service, online, website",
+        "name": "Internet Publisher",
+        "seoAlias": "internet-publisher",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "PostOffices",
+        "keywords": "mail, post, post office, postal services",
+        "name": "Post Offices",
+        "seoAlias": "post-offices",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "PrintMedia",
+        "keywords": "print media, publisher, publishers, publishing",
+        "name": "Print Media",
+        "seoAlias": "print-media",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "RadioStations",
+        "keywords": "radio broadcasting, radio, radio station, radio stations",
+        "name": "Radio Stations",
+        "seoAlias": "radio-stations",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "RecordedMediaPublishing",
+        "keywords": "recorded media",
+        "name": "Recorded Media & Publishing",
+        "seoAlias": "recorded-media",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "RecordingRehearsalStudios",
+        "keywords": "studio, recording studio, sound",
+        "name": "Recording & Rehearsal Studios",
+        "seoAlias": "recording-studios",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "TelevisionStations",
+        "keywords": "television station, television studio, tv station, tv studio, tv broadcasting, television services, pay tv station",
+        "name": "Television Stations",
+        "seoAlias": "tv-stations",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "WrittenCommunication",
+        "keywords": "writer,  writers, written communication",
+        "name": "Written Communication",
+        "seoAlias": "writer",
+        "active": true,
+        "parent": "Utilities"
+    },
+    {
+        "code": "Dentists",
+        "keywords": "dentist, dental, teeth, tooth ache, tooth pain",
+        "name": "Dentists",
+        "seoAlias": "dentists",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "MobilityAids",
+        "keywords": "mobility aid, mobility karts, walking frame",
+        "name": "Mobility Aids",
+        "seoAlias": "mobility-aids",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Doctors",
+        "keywords": "doctor, doctors, dr",
+        "name": "Doctors",
+        "seoAlias": "doctors",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "MedicalCentres",
+        "keywords": "medical, health,",
+        "name": "Medical Centres",
+        "seoAlias": "medical-centres",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Acupuncture",
+        "keywords": "acupuncture, acupuncturist, acupuncture service",
+        "name": "Acupuncture",
+        "seoAlias": "acupuncture",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "AlternativeMedicine",
+        "keywords": "alternative health, alternative therapy, natural therapy",
+        "name": "Alternative Medicine",
+        "seoAlias": "alternative-medicine",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Cardiologists",
+        "keywords": "cardiologists, cardiology, heart doctor",
+        "name": "Cardiologists",
+        "seoAlias": "cardiology",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Chiropodist",
+        "keywords": "chiropodist, chiropody",
+        "name": "Chiropodist",
+        "seoAlias": "chiropodist",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Chiropractors",
+        "keywords": "back pain, chiropractic, chiropractor",
+        "name": "Chiropractors",
+        "seoAlias": "chiropractors",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "CosmeticSurgeons",
+        "keywords": "cosmetic surgeon, cosmetic surgery, plastic surgeon, plastic surgery, reconstructive surgeon, reconstructive surgery",
+        "name": "Cosmetic Surgeons",
+        "seoAlias": "cosmetic-surgeons",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "CounsellingMentalHealth",
+        "keywords": "counselling, counsellor, counsel",
+        "name": "Counselling & Mental Health",
+        "seoAlias": "counselling",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Dermatologists",
+        "keywords": "dermatologist, dermatology, skin doctor, skin maladies, dermatopathologist, dermatopathology, skin disease",
+        "name": "Dermatologists",
+        "seoAlias": "dermatologist",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Hospitals",
+        "keywords": "hospital, hospitals",
+        "name": "Hospitals",
+        "seoAlias": "hospitals",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "PregnancyMaternityServices",
+        "keywords": "pregnancy,maternity,pregnancy help",
+        "name": "Pregnancy & Maternity Services",
+        "seoAlias": "pregnancy-maternity",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "ObstetriciansGynaecologists",
+        "keywords": "obstetrician, gynaecologist",
+        "name": "Obstetricians & Gynaecologists",
+        "seoAlias": "obstetrician-gynaecologist",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Ophthalmologists",
+        "keywords": "eye doctor, ophthalmologist, ophthalmology, eye care, orthoptic",
+        "name": "Ophthalmologists",
+        "seoAlias": "ophthalmologists",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Opticians",
+        "keywords": "opticians",
+        "name": "Opticians",
+        "seoAlias": "opticians",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "OralSurgeons",
+        "keywords": "maxillofacial surgeons, maxillofacial surgery, oral surgeons, oral surgery",
+        "name": "Oral Surgeons",
+        "seoAlias": "oral-surgeons",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Orthodontists",
+        "keywords": "orthodontist",
+        "name": "Orthodontists",
+        "seoAlias": "orthodontists",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Paediatricians",
+        "keywords": "paediatric, paediatrician, paediatrics",
+        "name": "Paediatricians",
+        "seoAlias": "paediatrician",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Pathologist",
+        "keywords": "pathologist, pathology,",
+        "name": "Pathologist",
+        "seoAlias": "pathology",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Physiotherapy",
+        "keywords": "physiotherapeutic, physiotherapist, physiotherapy, sports injuries",
+        "name": "Physiotherapy",
+        "seoAlias": "physiotherapist",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Podiatrists",
+        "keywords": "foot doctor, podiatrist, podiatry, chiropodist, feet doctor",
+        "name": "Podiatrists",
+        "seoAlias": "podiatrists",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "PregnancyTerminationService",
+        "keywords": "abortion, termination",
+        "name": "Pregnancy Termination Service",
+        "seoAlias": "abortions",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Psychiatrists",
+        "keywords": "psychiatrist, psychiatry, psychotherapist, psychotherapist, psychotherapy",
+        "name": "Psychiatrists",
+        "seoAlias": "psychiatrists",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SpecialistMedicalServices",
+        "keywords": "medical specialist",
+        "name": "Specialist Medical Services",
+        "seoAlias": "specialist-medical-services",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SportsMedicine",
+        "keywords": "sports medicine, sports injuries, exercise physiologists",
+        "name": "Sports Medicine",
+        "seoAlias": "sports-medicine",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "WeightLossTreatment",
+        "keywords": "weight loss treatment, weight loss programme, weight loss service, weight reduction, weight reducing treatments",
+        "name": "Weight Loss Treatment",
+        "seoAlias": "weight-loss",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "PetBoarding",
+        "keywords": "pet boarder, pet boarding, pet kennel, pet kennels, pet sitting, pet transport",
+        "name": "Pet Boarding",
+        "seoAlias": "pet-boarding",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "PetCare",
+        "keywords": "pet care",
+        "name": "Pet Care",
+        "seoAlias": "pet-care",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "PetTraining",
+        "keywords": "canine, dog obedience, dog obedience trainer, dog obedience training, obedience, obedience trainer, obedience training, pet obedience, pet obedience trainer, pet obedience training",
+        "name": "Pet Training",
+        "seoAlias": "pet-training",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "Veterinarians",
+        "keywords": "vet, vets, veterinary",
+        "name": "Veterinarians",
+        "seoAlias": "vet",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "DogWalkers",
+        "keywords": "dog walkers, dog walking",
+        "name": "Dog Walkers",
+        "seoAlias": "dog-walkers",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "PetFunerals",
+        "keywords": "pet burial, pet cremation",
+        "name": "Pet Funerals",
+        "seoAlias": "pet-funerals",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "PetGroomers",
+        "keywords": "pet groomer, pet grooming, pet wash, dog grooming",
+        "name": "Pet Groomers",
+        "seoAlias": "groomer",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "PetShops",
+        "keywords": "pet store, pet supplies, pet retail, pet shop, pet retailer, pet store",
+        "name": "Pet Shops",
+        "seoAlias": "pet-shop",
+        "active": true,
+        "parent": "General"
+    },
+    {
+        "code": "Cafes",
+        "keywords": "cafe, cafes,",
+        "name": "Cafes",
+        "seoAlias": "cafe",
+        "active": true,
+        "parent": "EatingOut"
+    },
+    {
+        "code": "Restaurants",
+        "keywords": "restaurant, restaurants, cuisine, dining, diner, bistro",
+        "name": "Restaurants",
+        "seoAlias": "restaurants",
+        "active": true,
+        "parent": "EatingOut"
+    },
+    {
+        "code": "Takeaways",
+        "keywords": "take away, take out, takeaway, take-away, takeout, take-out, take away food,",
+        "name": "Takeaways",
+        "seoAlias": "take-away",
+        "active": true,
+        "parent": "EatingOut"
+    },
+    {
+        "code": "Florists",
+        "keywords": "bouquet, floral, florist, florists, flower arranger, flower arranging, flowers, flower shop",
+        "name": "Florists",
+        "seoAlias": "florists",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "MobilePhonesRetailers",
+        "keywords": "cell phone retail, cell phone retailing, cell retail, cell retailer, cell retailing, cellphone retail, mobile retail, mobile retailer, mobile retailing, phone retail, phone retailer, phone retailing, telephone, telephone retail, telephone retailer, teleph",
+        "name": "Mobile Phones Retailers",
+        "seoAlias": "mobile-phones",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ShoppingCentres",
+        "keywords": "shopping arcade, shopping centre, shopping mall, shopping plaza, shopping precinct",
+        "name": "Shopping Centres",
+        "seoAlias": "shopping-centres",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "AntiquesRetailers",
+        "keywords": "antique, antiques, collectables, memorabilia, vintage,",
+        "name": "Antiques Retailers",
+        "seoAlias": "antiques",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ArtsCraftsRetailers",
+        "keywords": "art, craft,",
+        "name": "Arts & Crafts Retailers",
+        "seoAlias": "arts-crafts",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ArtSuppliesRetailers",
+        "keywords": "art supplies, art supplies shop, art supplies store, art supplies retailer, art supplies retail, art supplies shop",
+        "name": "Art Supplies Retailers",
+        "seoAlias": "art-supplies",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "StationeryRetailers",
+        "keywords": "stationery, stationery retail, stationery retailing, stationery shop, stationery store, stationery supplier, stationers",
+        "name": "Stationery Retailers",
+        "seoAlias": "stationery",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "FabricStores",
+        "keywords": "fabric shop, textiles, material shop, material store, haberdashery, fabric store, fabric retailer, fabric retail",
+        "name": "Fabric Stores",
+        "seoAlias": "fabric-stores",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "Framing",
+        "keywords": "framing, artwork framer, artwork framing, photo frame, photo framer, photo framing, picture frame, picture framer, picture framing, print framer, print framing, framing retail, framing retailer, framing retailing, framing shop, framing store",
+        "name": "Framing",
+        "seoAlias": "frames",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "Bookstores",
+        "keywords": "bookstore, bookstores, book shop, book store, book shops, bookshops, book stores, book retailer, book retailing",
+        "name": "Bookstores",
+        "seoAlias": "book-shop",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ComicBooksRetailers",
+        "keywords": "comic, comic books, comic store, comic shop, comic strip, comic retail, comic retailer",
+        "name": "Comic Books Retailers",
+        "seoAlias": "comic-books",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "Newsagents",
+        "keywords": "newsagency, newsagent",
+        "name": "Newsagents",
+        "seoAlias": "newsagent",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "MoviesVideoGameRental",
+        "keywords": "dvd hire, dvd rental",
+        "name": "Movies & Video Game Rental",
+        "seoAlias": "movie-games-rental",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "BridalWearRetailers",
+        "keywords": "bridal, bride, groom, weddings, bridal shop, bridal retail, bridal retailer, wedding shop, wedding retail",
+        "name": "Bridal Wear Retailers",
+        "seoAlias": "bridal",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ComputersRetailers",
+        "keywords": "computer retail, computing retail, computer retailer, computing retailer, computer retailing, computing retailing, computer shop, computing shop, computer store, computing store",
+        "name": "Computers Retailers",
+        "seoAlias": "computers",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "CosmeticsBeautyRetailers",
+        "keywords": "cosmetics retail, beauty supply retail, cosmetics retailer, beauty supply retailer, cosmetics retailing, beauty supply retailing, cosmetics shop, beauty supply shop, cosmetics store, beauty supply store, beauty supplier",
+        "name": "Cosmetics & Beauty Retailers",
+        "seoAlias": "cosmetics",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "DepartmentStores",
+        "keywords": "department store, retail store",
+        "name": "Department Stores",
+        "seoAlias": "department-store",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "Chemists",
+        "keywords": "chemist, chemists, pharmacies, drugs, drugstore, drug store, medicine, pharmacy, pharmaceutical retailer, pharmaceutical retailing, pharmacist, medical supplies",
+        "name": "Chemists",
+        "seoAlias": "pharmacy",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "HouseholdAppliancesRetailers",
+        "keywords": "appliances, household appliances, white goods, home appliance retail, home appliance retailer, home appliance shop, home appliance store, household appliance retail, household appliance retailer, household appliance shop, household appliance store, applia",
+        "name": "Household Appliances Retailers",
+        "seoAlias": "household-appliances",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "HomeEntertainmentRetailers",
+        "keywords": "household electrical goods, household electronics retail, household electronics retailer, household electronics shop, household electronics store, electrical goods, brown goods, electronics",
+        "name": "Home Entertainment Retailers",
+        "seoAlias": "home-entertainment",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "EyewearRetailers",
+        "keywords": "eye wear retail, eyewear retail, eye wear retailer, eyewear retailer, eye wear retailing, eyewear retailing, eye wear shop, eyewear shop, eye wear store, eyewear store",
+        "name": "Eyewear Retailers",
+        "seoAlias": "eyewear",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ClothingRetailers",
+        "keywords": "clothes, clothes retail, clothes retailer, clothes retailing, clothing, clothing retail, clothing retailer, clothing retailing, fashion, clothes shop, clothes store",
+        "name": "Clothing Retailers",
+        "seoAlias": "clothing-retailers",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "LeatherGoodsRetailers",
+        "keywords": "leather goods retail, leather goods retailer, leather goods retailing, leather goods shop, leather goods store",
+        "name": "Leather Goods Retailers",
+        "seoAlias": "leather",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "LingerieRetailers",
+        "keywords": "basque shop, brassiere shop, lingerie shop, sleepwear shop, underwear shop, basque store, brassiere store, lingerie store, sleepwear store, underwear store, basque retail, brassiere retail, lingerie retail, sleepwear retail, underwear retail, basque retai",
+        "name": "Lingerie Retailers",
+        "seoAlias": "lingerie",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "MaternityRetailers",
+        "keywords": "maternity wear retail, maternity wear retailer, maternity wear retailing, maternity wear shop, maternity wear store, pregnancy wear retail, pregnancy wear retailer, pregnancy wear retailing, pregnancy wear shop, pregnancy wear store",
+        "name": "Maternity Retailers",
+        "seoAlias": "maternity",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ShoeStores",
+        "keywords": "footwear, shoes, shoe shop, shoe retail, shoe retailer, shoe retailing, shoe store, footwear retail, footwear retailer, footwear retailing, footwear shop, footwear store",
+        "name": "Shoe Stores",
+        "seoAlias": "shoes",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "UsedVintageConsignmentClothingRetailers",
+        "keywords": "2nd hand clothing, 2nd hand clothing retail, 2nd hand clothing retailer, 2nd hand clothing retailing, 2nd hand clothing shop, 2nd hand clothing store, preloved clothes, recycled clothing, second hand clothing, second hand clothing retail, second hand clot",
+        "name": "Used, Vintage & Consignment Clothing Retailers",
+        "seoAlias": "second-hand-clothes",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "CardsGiftShops",
+        "keywords": "gift, gifts, gift shop, gift retail, gift retailer, gift retailing, gift store, card shop, card retail, card retailer, card retailing, card store, souvenir shop",
+        "name": "Cards & Gift Shops",
+        "seoAlias": "cards-gift-shop",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "HobbyShops",
+        "keywords": "hobby, hobbies, hobby shop, hobby store, hobby retail, hobby retailer, hobby retailing",
+        "name": "Hobby Shops",
+        "seoAlias": "hobby-shops",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "FurnitureStores",
+        "keywords": "furniture, furniture shop, furniture store, furniture stores, furniture retail, furniture retailer, furniture retailing",
+        "name": "Furniture Stores",
+        "seoAlias": "furniture",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "HardwareStores",
+        "keywords": "hardware, hardware shop, hardware store, hardware retail, hardware retailer, hardware retailing, power tools, powertools, tools, garden fork, garden shovel, garden spade, garden tools, shovel, spade, houseware retailing,",
+        "name": "Hardware Stores",
+        "seoAlias": "hardware",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "HomeDecorRetailers",
+        "keywords": "home decor, home decorating, home design, diy, home decor retail, home decor retailer, home decor retailing, home decor shop, home decor store",
+        "name": "Home Decor Retailers",
+        "seoAlias": "home-decor",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "KitchenBathRetailers",
+        "keywords": "kitchen store, kitchen shop, kitchen retail, kitchen retailer, kitchen retailing, bathroom store, bathroom shop, bathroom retail, bathroom retailer, bathroom retailing",
+        "name": "Kitchen & Bath Retailers",
+        "seoAlias": "kitchen-bath",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "NurseriesGardeningRetailers",
+        "keywords": "nursery, nurseries, plants, flowers",
+        "name": "Nurseries & Gardening Retailers",
+        "seoAlias": "nurseries-gardening",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "JewelleryWatchRetailers",
+        "keywords": "jeweller, watches",
+        "name": "Jewellery & Watch Retailers",
+        "seoAlias": "jewellery-watches",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "LuggageRetailers",
+        "keywords": "luggage, luggage shop, luggage retail, luggage retailer, luggage retailing, luggage store, travel goods, suitcase",
+        "name": "Luggage Retailers",
+        "seoAlias": "luggage",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "MusicalInstrumentsRetailers",
+        "keywords": "musical instrument, musical equipment, musical instrument parts, musical instrument repairing, musical instrument repairs, music store, music shop, musical instrument retail, musical instrument retailer, musical instrument retailing, musical instrument sh",
+        "name": "Musical Instruments Retailers",
+        "seoAlias": "musical-instruments",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "OfficeEquipmentRetailers",
+        "keywords": "office equipment, office supplies, office desks, office chairs",
+        "name": "Office Equipment Retailers",
+        "seoAlias": "office-equipment",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "PhotographyStores",
+        "keywords": "camera retail, photo equipment retail, camera retailer, photo equipment retailer, camera retailing, photo equipment retailing, camera shop, photo equipment shop, camera store, photo equipment store",
+        "name": "Photography Stores",
+        "seoAlias": "camera-stores",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "BikeShops",
+        "keywords": "bicycle, bicycle shop, bicycle store, bike, bike shop, bike store, cycle, cycle shop, cycle store, cycling, cycling accessories, cycling shop, cycling store, bicycle retail, bicycle retailer, bicycle retailing, bike retail, bike retailer, bike retailing,",
+        "name": "Bike Shops",
+        "seoAlias": "bike",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "OutdoorGearRetailers",
+        "keywords": "outdoors, camping shop, camping store, camping retail, camping retailer, camping retailing",
+        "name": "Outdoor Gear Retailers",
+        "seoAlias": "outdoor-gear",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "SportingGoodsRetailers",
+        "keywords": "sports, sporting, sports store, sports stores, sport store, sporting goods retailer, sports shop",
+        "name": "Sporting Goods Retailers",
+        "seoAlias": "sports-goods",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "TobaccoShops",
+        "keywords": "tobacconist shop, tobacco retailer, tobacco store",
+        "name": "Tobacco Shops",
+        "seoAlias": "tobacco-shops",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ToysComputerGamesRetailers",
+        "keywords": "toys, games, toy retailer, games retailer, retail, retailer, retailing, shop, store",
+        "name": "Toys & Computer Games Retailers",
+        "seoAlias": "toys-computer-games",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "PhotoFilmProcessing",
+        "keywords": "photo, photographic",
+        "name": "Photo Film Processing",
+        "seoAlias": "photo",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "Wholesalers",
+        "keywords": "wholesaler, wholesalers, wholesaling",
+        "name": "Wholesalers",
+        "seoAlias": "wholesalers",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "BoatDealers",
+        "keywords": "boat retailer, boat sale, boats, boat shop, boat shops, boat sales, boat dealer",
+        "name": "Boat Dealers",
+        "seoAlias": "boat",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "FactoryOutlets",
+        "keywords": "factory outlets, reject store, outlet store, outlet warehouse",
+        "name": "Factory Outlets",
+        "seoAlias": "factory-outlets",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "UsedGoodsRetailers",
+        "keywords": "pawnbroking, pawnshop, pawnbroker, hockshop, second-hand goods, used goods retailing",
+        "name": "Used Goods Retailers",
+        "seoAlias": "used-goods-retailers",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "GeneralRetailers",
+        "keywords": "general retail, general retailing,",
+        "name": "General Retailers",
+        "seoAlias": "general-retailing",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "PromotionalProducts",
+        "keywords": "promotional products, promo goods",
+        "name": "Promotional Products",
+        "seoAlias": "promotional-products",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "CaravanDealers",
+        "keywords": "caravan, campervan, caravan dealer, campervan dealer, caravan retailer, campervan retailer",
+        "name": "Caravan Dealers",
+        "seoAlias": "caravan",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "MusicDVDsRetailers",
+        "keywords": "music, dvd",
+        "name": "Music & DVD's Retailers",
+        "seoAlias": "music-video-dvd",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "TrailerDealers",
+        "keywords": "trailers, trailer, trailer dealer, trailer retailer",
+        "name": "Trailer Dealers",
+        "seoAlias": "trailer-retailer",
+        "active": true,
+        "parent": "Shopping"
+    },
+    {
+        "code": "ExtremeSports",
+        "keywords": "extreme sports",
+        "name": "Extreme Sports",
+        "seoAlias": "extreme-sports",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "GymsFitnessCentres",
+        "keywords": "fitness centre, fitness club, gym, gyms, gymnasium, leisure centre",
+        "name": "Gyms & Fitness Centres",
+        "seoAlias": "gyms",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SurfSchool",
+        "keywords": "surf school",
+        "name": "Surf School",
+        "seoAlias": "surf-school",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "PersonalTrainers",
+        "keywords": "fitness trainers , personal fitness, personal trainers, personal fitness trainers",
+        "name": "Personal Trainers",
+        "seoAlias": "personal-trainer",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SwimmingPools",
+        "keywords": "swimming pool, swimming pools",
+        "name": "Swimming Pools",
+        "seoAlias": "swimming-pools",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Beaches",
+        "keywords": "beach, beaches, coves",
+        "name": "Beaches",
+        "seoAlias": "beaches",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Parks",
+        "keywords": "park, parks",
+        "name": "Parks",
+        "seoAlias": "parks",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Playgrounds",
+        "keywords": "playground",
+        "name": "Playgrounds",
+        "seoAlias": "play-grounds",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Racing",
+        "keywords": "race club, race course, race track, racecourse, racetrack, racing, racing club",
+        "name": "Racing",
+        "seoAlias": "racing",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Boating",
+        "keywords": "boat, boats, boating, sailing, yacht, yachting,",
+        "name": "Boating",
+        "seoAlias": "boats-yachts",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Bowling",
+        "keywords": "bowling, bowling centre, bowling club, bowls club",
+        "name": "Bowling",
+        "seoAlias": "bowling",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "MartialArts",
+        "keywords": "martial arts, self-defence",
+        "name": "Martial Arts",
+        "seoAlias": "martial-arts",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Pilates",
+        "keywords": "pilates",
+        "name": "Pilates",
+        "seoAlias": "pilates",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "PoolHalls",
+        "keywords": "pool, snooker",
+        "name": "Pool Halls",
+        "seoAlias": "pool-snooker",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Yoga",
+        "keywords": "yoga",
+        "name": "Yoga",
+        "seoAlias": "yoga",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "GoKarting",
+        "keywords": "go karting, go-kart, karting, go karts",
+        "name": "Go Karting",
+        "seoAlias": "go-karting",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Golf",
+        "keywords": "golf",
+        "name": "Golf",
+        "seoAlias": "golf",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Parachuting",
+        "keywords": "parachute, parachuting, sky dive",
+        "name": "Parachuting",
+        "seoAlias": "parachuting",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "HorsesEquestrian",
+        "keywords": "horses, equestrian, ponies, pony, riding, horse stables, saddle club, equine, thoroughbred",
+        "name": "Horses & Equestrian",
+        "seoAlias": "horses",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "ScubaDiving",
+        "keywords": "scuba, scuba dive,",
+        "name": "Scuba Diving",
+        "seoAlias": "scuba-diving",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SkatingRinks",
+        "keywords": "skating rink, ice skating",
+        "name": "Skating Rinks",
+        "seoAlias": "skating-rinks",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SportsClubs",
+        "keywords": "sporting association, sporting club, sports association, sports club",
+        "name": "Sports Clubs",
+        "seoAlias": "sports-club",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Squash",
+        "keywords": "squash",
+        "name": "Squash",
+        "seoAlias": "squash",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "SkiingSnowboarding",
+        "keywords": "skiing, snowboarding",
+        "name": "Skiing & Snowboarding",
+        "seoAlias": "ski-snowboard",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Tennis",
+        "keywords": "tennis, tennis club",
+        "name": "Tennis",
+        "seoAlias": "tennis",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "BikeRentals",
+        "keywords": "bike, rental, hire, renting, hiring,",
+        "name": "Bike Rentals",
+        "seoAlias": "bike-rentals",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Fishing",
+        "keywords": "fishing, fishermen",
+        "name": "Fishing",
+        "seoAlias": "fishing",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Paintball",
+        "keywords": "paintball, paintballing",
+        "name": "Paintball",
+        "seoAlias": "paintball",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Archery",
+        "keywords": "archery, archer, bowman, toxophilite",
+        "name": "Archery",
+        "seoAlias": "archery",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Badminton",
+        "keywords": "badminton",
+        "name": "Badminton",
+        "seoAlias": "badminton",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "Gymnastics",
+        "keywords": "gymnastics",
+        "name": "Gymnastics",
+        "seoAlias": "gymnastics",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "WaterSkiing",
+        "keywords": "water skiing",
+        "name": "Water Skiing",
+        "seoAlias": "water-skiing",
+        "active": true,
+        "parent": "Health"
+    },
+    {
+        "code": "CarRental",
+        "keywords": "car hiring, car lease, car leasing, car rental, car renting, rental car, renter car, rent a car, renting car, lease car, hire car, hire cars, motor vehicle hiring , car hire",
+        "name": "Car Rental",
+        "seoAlias": "car-rental",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "AirportShuttles",
+        "keywords": "airport bus, airport shuttle, airport transfer, airport taxi",
+        "name": "Airport Shuttles",
+        "seoAlias": "airport-shuttle",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "Taxis",
+        "keywords": "cab, taxi",
+        "name": "Taxis",
+        "seoAlias": "taxi-cab",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Airlines",
+        "keywords": "airline",
+        "name": "Airlines",
+        "seoAlias": "airlines",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "Airports",
+        "keywords": "airport",
+        "name": "Airports",
+        "seoAlias": "airports",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "BusesCoaches",
+        "keywords": "bus, buses, coach, coaches",
+        "name": "Buses & Coaches",
+        "seoAlias": "bus-coaches",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "CaravanCampervanHire",
+        "keywords": "caravan, campervan",
+        "name": "Caravan & Campervan Hire",
+        "seoAlias": "caravan-hire",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "FreightTransportation",
+        "keywords": "freight transport, freight control, haulage, transportation consultants",
+        "name": "Freight Transportation",
+        "seoAlias": "freight-transport",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Limos",
+        "keywords": "chauffer driven limousines, chauffeur, chauffeur limo, chauffeur limousine, limo hire, limousine hire, stretch limo, stretch limousine",
+        "name": "Limos",
+        "seoAlias": "limos",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "PortsHarbours",
+        "keywords": "ports, harbours, wharfs",
+        "name": "Ports & Harbours",
+        "seoAlias": "ports-harbours",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "PublicTransportation",
+        "keywords": "public transport, transport",
+        "name": "Public Transportation",
+        "seoAlias": "public-transport",
+        "active": true,
+        "parent": "Transport"
+    },
+    {
+        "code": "Ships",
+        "keywords": "ships, boats",
+        "name": "Ships",
+        "seoAlias": "ships",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "TouristAttractions",
+        "keywords": "tourist attractions",
+        "name": "Tourist Attractions",
+        "seoAlias": "tourist-attractions",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "Tours",
+        "keywords": "trips, tour, touring, tour guide",
+        "name": "Tours",
+        "seoAlias": "tours",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "TrailerHire",
+        "keywords": "trailers, trailer hire, trailer hiring",
+        "name": "Trailer Hire",
+        "seoAlias": "trailer-hire",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "TravelTourism",
+        "keywords": "travel services, tourism",
+        "name": "Travel & Tourism",
+        "seoAlias": "travel-tourism",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "TravelAgents",
+        "keywords": "holiday, holidays, travel, travel agent, holiday agent, package holidays, adventure holidays travel",
+        "name": "Travel Agents",
+        "seoAlias": "travel-agents",
+        "active": true,
+        "parent": "Travel"
+    },
+    {
+        "code": "ElectricitySupply",
+        "keywords": "electric utility, electricity, electricity retail, electricity supplier, electricity supply, electricity utility, energy",
+        "name": "Electricity Supply",
+        "seoAlias": "electricity",
+        "active": true,
+        "parent": "Housing"
+      },
+      {
+        "code": "GasSupply",
+        "keywords": "gas company, gas provider, gas retail, gas supplier, gas supply, gas utility, gas works, gasworks",
+        "name": "Gas Supply",
+        "seoAlias": "gas",
+        "active": true,
+        "parent": "Housing"
+      },
+      {
+        "code": "WasteTreatment",
+        "keywords": "sewage, sewerage, waste treatment, wastewater",
+        "name": "Waste Treatment",
+        "seoAlias": "sewage",
+        "active": true,
+        "parent": "Housing"
+      },
+      {
+        "code": "WaterUtility",
+        "keywords": "water utility, water supply, water filtration",
+        "name": "Water Utility",
+        "seoAlias": "water",
+        "active": true,
+        "parent": "Housing"
+      }
 ]

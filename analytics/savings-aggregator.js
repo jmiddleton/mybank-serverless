@@ -10,6 +10,9 @@ module.exports.handler = (event, context, callback) => {
   event.Records.forEach((record) => {
     if (record.eventName == 'INSERT') {
       aggregateData(record.dynamodb.NewImage, 1);
+    } else if (record.eventName == 'MODIFY') {
+      aggregateData(record.dynamodb.OldImage, -1);
+      aggregateData(record.dynamodb.NewImage, 1);
     } else if (record.eventName == 'REMOVE') {
       aggregateData(record.dynamodb.OldImage, -1);
     }

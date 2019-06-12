@@ -93,11 +93,11 @@ async function getMCCCategoryByCode(mcode) {
     }
 };
 
-async function getMerchantCategory(merchantName) {
+async function getCategoryByKey(keyword) {
     const params = {
-        TableName: process.env.MERCHANT_CATEGORY_TABLE,
+        TableName: process.env.KEYWORD_CATEGORY_TABLE,
         Key: {
-            merchantName: merchantName
+            keyword: keyword
         }
     };
 
@@ -109,11 +109,11 @@ async function getMerchantCategory(merchantName) {
     }
 };
 
-async function addMerchantCategory(data) {
+async function addKeywordCategory(data) {
     data.last_updated = new Date().getTime();
 
     await dynamoDb.put({
-        TableName: process.env.MERCHANT_CATEGORY_TABLE,
+        TableName: process.env.KEYWORD_CATEGORY_TABLE,
         Item: data
     }).promise();
 };
@@ -138,7 +138,7 @@ async function getCategoryByCode(code) {
 module.exports = {
     handler,
     getMCCCategoryByCode,
-    getMerchantCategory,
-    addMerchantCategory,
+    getCategoryByKey,
+    addKeywordCategory,
     getCategoryByCode
 };

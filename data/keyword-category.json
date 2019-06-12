@@ -1,0 +1,37 @@
+[
+    {
+        "keyword": "TRANSPORTFORNSW OPAL",
+        "category": "Transport",
+        "subcategory": "PublicTransportation"
+    },
+    {
+        "keyword": "AFTERPAY PTY LTD",
+        "category": "Shopping",
+        "subcategory": "OnlinePayments"
+    },
+    {
+        "keyword": "MEDIBANK PHI DEBIT",
+        "category": "Health",
+        "subcategory": "Insurance"
+    },
+    {
+        "keyword": "ALLIANZ INSURE C6",
+        "category": "Transport",
+        "subcategory": "Insurance"
+    },
+    {
+        "keyword": "DECATHLON (AUSTRALIA",
+        "category": "Shopping",
+        "subcategory": "RetailShopping"
+    },
+    {
+        "keyword":"OPTUS BILLING AUTOPAY",
+        "category": "Utilities",
+        "subcategory": "TelephoneServices"
+    },
+    {
+        "keyword":"SVOROSUMO",
+        "category": "EatingOut",
+        "subcategory": "Takeaways"
+    }
+]

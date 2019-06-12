@@ -137,12 +137,23 @@ async function getTransactions(message) {
  *    si no se encuentra nada, retornar Uncategorized
  * @param {*} txn 
  */
+
+const transactionTypes = new Map();
+transactionTypes.set("FEE", "FeesAndInterest");
+transactionTypes.set("INTEREST_CHARGED", "FeesAndInterest");
+transactionTypes.set("INTEREST_PAID", "Income");
+transactionTypes.set("TRANSFER_OUTGOING", "Transfers");
+transactionTypes.set("TRANSFER_INCOMING", "Transfers");
+transactionTypes.set("DIRECT_DEBIT", "Uncategorized");
+transactionTypes.set("OTHER", "Uncategorized");
+
 async function getCategory(txn) {
   let category;
   const merchantName = txn.merchantName;
 
-  if (txn.type !== "PAYMENT") {
-    return "Uncategorized";
+  const type = transactionTypes.get(txn.type);
+  if (type) {
+    return type;
   }
 
   try {
@@ -151,7 +162,7 @@ async function getCategory(txn) {
       category = await getCategoryByMerchantName(merchantName);
     } else {
       console.log(">>>>>>>>>d " + txn.description);
-      category = await getCategoryByDescription(txn.description);
+      category = await getCategoryByKeyword(txn.description);
     }
 
     console.log(">>>>>>>>>cat " + category);
@@ -167,47 +178,42 @@ async function getCategory(txn) {
 
 async function getCategoryByMerchantName(merchantName) {
   try {
-    const merchantCategory = await mcccodes.getMerchantCategory(merchantName);
+    //TODO: split the keyword by space and search each word in dynamodb
+    //once found, add it.
+    const merchantCategory = await mcccodes.getCategoryByKey(merchantName);
     console.log(">>>>>>>>>mc " + merchantCategory);
     if (merchantCategory) {
       return merchantCategory.category;
     }
 
-    //buscar en truelocal
-    const trueLocalResponse = await trueLocal.search(merchantName, merchantName);
-    console.log(">>>>>>>>>tl " + trueLocalResponse.category);
+    return await getCategoryByKeyword(merchantName);
 
-    if (trueLocalResponse) {
-      return await processCategory(trueLocalResponse, merchantName);
-    }
   } catch (err) {
     console.log("Error finding category by merchant name.");
     console.log(err);
   }
-  return undefined;
 }
 
-async function getCategoryByDescription(description) {
+//buscar en truelocal
+async function getCategoryByKeyword(keyword) {
   try {
-    //buscar en truelocal
-    const trueLocalResponse = await trueLocal.search(description);
-    if (trueLocalResponse) {
-      return await processCategory(trueLocalResponse, description);
-    }
+    const trueLocalResponse = await trueLocal.search(keyword);
+    console.log(">>>>>>>>>tl " + trueLocalResponse ? trueLocalResponse.category : "null");
+
+    return await createKeywordCategory(trueLocalResponse, keyword);
   } catch (err) {
-    console.log("Error finding category by description.");
+    console.log("Error finding category by " + keyword);
     console.log(err);
   }
-  return undefined;
 }
 
-async function processCategory(trueLocalResponse, merchantName) {
+async function createKeywordCategory(trueLocalResponse, keyword) {
   if (trueLocalResponse && trueLocalResponse.category) {
 
     const category = await mcccodes.getCategoryByCode(trueLocalResponse.category);
     if (category) {
-      mcccodes.addMerchantCategory({
-        merchantName: merchantName,
+      mcccodes.addKeywordCategory({
+        keyword: keyword,
         category: category.parent,
         subcategory: trueLocalResponse.category
       });

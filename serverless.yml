@@ -34,7 +34,7 @@ provider:
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
     INCOME_TABLE: income-${opt:stage, self:provider.stage}
     MERCHANT_TABLE: merchant-${opt:stage, self:provider.stage}
-    MERCHANT_CATEGORY_TABLE: merchant-category-${opt:stage, self:provider.stage}
+    KEYWORD_CATEGORY_TABLE: keyword-category-${opt:stage, self:provider.stage}
     MCC_CODES_TABLE: mcccodes-${opt:stage, self:provider.stage}
     CATEGORIES_TABLE: categories-${opt:stage, self:provider.stage}
     BANKS_TABLE: banks-${opt:stage, self:provider.stage}
@@ -181,7 +181,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.MERCHANT_CATEGORY_TABLE}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.KEYWORD_CATEGORY_TABLE}"
 plugins:
   - serverless-jetpack
   - serverless-plugin-split-stacks
@@ -210,8 +210,8 @@ custom:
             sources: [./data/mcccodes.json]
           - table: categories-dev
             sources: [./data/categories.json]
-          - table: merchant-category-dev
-            sources: [./data/merchant-category.json]
+          - table: keyword-category-dev
+            sources: [./data/keyword-category.json]
           # - table: accounts-dev
           #   sources: [./data/accounts.json]
           # - table: accounts-details-dev
@@ -870,17 +870,17 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.MERCHANT_TABLE}
-    MerchantCategoryDynamoDbTable:
+    IndexKeyCategoryDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Delete
       Properties:
         AttributeDefinitions:
-          - AttributeName: merchantName
+          - AttributeName: keyword
             AttributeType: S
         KeySchema:
-          - AttributeName: merchantName
+          - AttributeName: keyword
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.MERCHANT_CATEGORY_TABLE}
+        TableName: ${self:provider.environment.KEYWORD_CATEGORY_TABLE}
