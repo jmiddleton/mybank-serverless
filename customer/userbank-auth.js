@@ -72,7 +72,7 @@ async function refreshUserBankAuth(event) {
   const principalId = event.requestContext.authorizer.principalId;
 
   try {
-    userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
+    userbankDao.registerUserBankAuth(data, principalId);
   } catch (error) {
     console.error(error);
     return jsonResponse.serverError({ error: "DBError", message: error.message });

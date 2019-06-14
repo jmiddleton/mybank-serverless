@@ -7,14 +7,14 @@ const dynamoDbHelper = require('../libs/dynamodb-helper');
 const dynamoDb = dynamoDbHelper.dynamoDb;
 var qs = require('querystring');
 
-async function registerUserBankAuth(bankcode, auth_code, principalId) {
+async function registerUserBankAuth(data, principalId) {
     const timestamp = new Date().getTime();
 
     try {
-        const bank = await banksDAO.getBankByCode(bankcode);
+        const bank = await banksDAO.getBankByCode(data.bank_code);
         if (bank) {
             const token_request = {
-                code: auth_code,
+                code: data.auth_code,
                 client_id: bank.oidc_config.client_id,
                 client_secret: bank.oidc_config.client_secret,
                 redirect_uri: bank.oidc_config.redirect_uri,
@@ -36,7 +36,9 @@ async function registerUserBankAuth(bankcode, auth_code, principalId) {
                     id_token: token_response.data.id_token,
                     expires_in: token_response.data.expires_in,
                     token_type: token_response.data.token_type,
-                    cdr_url: bank.cdr_url
+                    cdr_url: bank.cdr_url,
+                    consent_duration: data.consent_duration,
+                    consent_scopes: data.consent_scopes
                 };
 
                 await dynamoDb.put({

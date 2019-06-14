@@ -15,7 +15,7 @@ module.exports.handler = async (event) => {
     const principalId = event.requestContext.authorizer.principalId;
 
     try {
-        const userBankAuth = await userbankDao.registerUserBankAuth(data.bank_code, data.auth_code, principalId);
+        const userBankAuth = await userbankDao.registerUserBankAuth(data, principalId);
         if (userBankAuth) {
             publishCustomerToken(userBankAuth);
         } else {
@@ -35,7 +35,9 @@ async function publishCustomerToken(token) {
             customerId: token.customerId,
             cdr_url: token.cdr_url,
             bank_code: token.bank,
-            access_token: token.access_token
+            access_token: token.access_token,
+            consent_duration: token.consent_duration,
+            consent_scopes: token.consent_scopes
         }),
         TopicArn: process.env.customerTopicArn,
     };

@@ -3,6 +3,7 @@
 const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
 const encodeHelper = require("../libs/encode-helper");
+const mcccodes = require("../category/mcccodes.js");
 
 const handlers = {
   "GET": getTransactions,
@@ -96,7 +97,11 @@ async function updateTransaction(event) {
 
   //TODO: update also keyword-category table
   //TODO: if "Apply to All" then update the category of transactions with the same description.
-  
+  mcccodes.addKeywordCategory({
+    keyword: data.merchantName,
+    category: data.category
+  });
+
   return saveTransaction(data);
 }
 
