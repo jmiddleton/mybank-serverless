@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 const axios = require("axios");
 const shortid = require('shortid');
 const mcccodes = require("../category/mcccodes.js");
-const trueLocal = require("../category/true-local-client.js");
+const externalClient = require("../category/truelocal-client.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const clean = require('obj-clean');
 const moment = require('moment');
@@ -73,13 +73,11 @@ async function getTransactions(message) {
   const headers = { Authorization: "Bearer " + message.access_token };
 
   while (keepGoing) {
-    //TODO: use this with real endpoint 
-    //let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { headers: headers });
-    let response = await axios.get(message.cdr_url + "/transactions", {
+    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { 
       headers: headers, params: {
         'accountId': message.accountId,
-        'start-time': moment().subtract(3, 'months').format(),
-        'end-time': moment().format(),
+        'oldest-time': moment().subtract(3, 'months').format(),
+        'newest-time': moment().format(),
         "page": page,
         "page-size": 25,
         "_page": page
@@ -129,11 +127,11 @@ async function getTransactions(message) {
  * .- type 	PAYMENT (ejecutar la siguiente logica):
  *    si hay merchant name:
  *       primero ver si esta en la tabla merchant-categories,
- *       sino buscar en truelocal usando el merchantName y guardarlo en la tabla merchant-categories.
+ *       si no buscar en truelocal usando el merchantName y guardarlo en la tabla merchant-categories.
  * 
- *    sino hay merchant, ver si hay merchantCategoryCode:
+ *    si no hay merchant, ver si hay merchantCategoryCode:
  *       si hay merchantCategoryCode, buscarlo en MCCCodes tabla
- *    sino buscar la description en truelocal y guardarlo en la tabla merchant-categories.
+ *    si no buscar la description en truelocal y guardarlo en la tabla merchant-categories.
  *    si no se encuentra nada, retornar Uncategorized
  * @param {*} txn 
  */
@@ -150,6 +148,7 @@ transactionTypes.set("OTHER", "Uncategorized");
 async function getCategory(txn) {
   let category;
   const merchantName = txn.merchantName;
+  const merchantCategoryCode = txn.merchantCategoryCode;
 
   const type = transactionTypes.get(txn.type);
   if (type) {
@@ -157,12 +156,19 @@ async function getCategory(txn) {
   }
 
   try {
-    if (merchantName) {
-      console.log(">>>>>>>>>m " + merchantName);
-      category = await getCategoryByMerchantName(merchantName);
+
+    if (merchantCategoryCode) {
+      console.log(">>>>>>>>>mcc " + merchantCategoryCode);
+      const mcccode = await mcccodes.getMCCCategoryByCode(merchantCategoryCode);
+      category = mcccode.category;
     } else {
-      console.log(">>>>>>>>>d " + txn.description);
-      category = await getCategoryByKeyword(txn.description);
+      if (merchantName) {
+        console.log(">>>>>>>>>m " + merchantName);
+        category = await getCategoryByMerchantName(merchantName);
+      } else {
+        console.log(">>>>>>>>>d " + txn.description);
+        category = await getCategoryByKeyword(txn.description);
+      }
     }
 
     console.log(">>>>>>>>>cat " + category);
@@ -197,25 +203,25 @@ async function getCategoryByMerchantName(merchantName) {
 //buscar en truelocal
 async function getCategoryByKeyword(keyword) {
   try {
-    const trueLocalResponse = await trueLocal.search(keyword);
-    console.log(">>>>>>>>>tl " + trueLocalResponse ? trueLocalResponse.category : "null");
+    const categoryFound = await externalClient.search(keyword);
+    console.log(">>>>>>>>>tl " + categoryFound);
 
-    return await createKeywordCategory(trueLocalResponse, keyword);
+    return await createKeywordCategory(categoryFound, keyword);
   } catch (err) {
     console.log("Error finding category by " + keyword);
     console.log(err);
   }
 }
 
-async function createKeywordCategory(trueLocalResponse, keyword) {
-  if (trueLocalResponse && trueLocalResponse.category) {
+async function createKeywordCategory(categoryFound, keyword) {
+  if (categoryFound) {
 
-    const category = await mcccodes.getCategoryByCode(trueLocalResponse.category);
+    const category = await mcccodes.getCategoryByCode(categoryFound);
     if (category) {
       mcccodes.addKeywordCategory({
         keyword: keyword,
         category: category.parent,
-        subcategory: trueLocalResponse.category
+        subcategory: categoryFound
       });
       return category.parent;
     }

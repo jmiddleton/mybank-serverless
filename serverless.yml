@@ -29,6 +29,8 @@ provider:
     ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
     CUSTOMER_SNS_TOPIC: customer-topic-${opt:stage, self:provider.stage}
     BALANCES_TABLE: balances-${opt:stage, self:provider.stage}
+    SCHEDULED_PAYMENTS_TABLE: scheduled-payments-${opt:stage, self:provider.stage}
+    DIRECT_DEBITS_TABLE: direct-debits-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
@@ -41,6 +43,10 @@ provider:
     USER_BANK_AUTH_TABLE: user-bank-auth-${opt:stage, self:provider.stage}
     AUTH0_CLIENT_ID: ${file(./dev-mybank-secrets.json):AUTH0_CLIENT_ID}
     AUTH0_CLIENT_PUBLIC_KEY: ${file(./dev-mybank.cer)}
+    MASTERCARD_P12: ./mastercard-merchant-sandbox.p12
+    MASTERCARD_CONSUMER_KEY: ${file(./dev-mybank-secrets.json):MASTERCARD_CONSUMER_KEY}
+    MARTERCARD_KEY_PASS: ${file(./dev-mybank-secrets.json):MARTERCARD_KEY_PASS}
+    MARTERCARD_KEY_ALIAS: ${file(./dev-mybank-secrets.json):MARTERCARD_KEY_ALIAS}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -69,6 +75,24 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.BALANCES_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.SCHEDULED_PAYMENTS_TABLE}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DIRECT_DEBITS_TABLE}"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -304,6 +328,21 @@ functions:
     events:
       - sns: 
           arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+  scheduled-payments-sync:
+    handler: regular-payments/scheduled-payments-sync.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+  direct-debits-sync:
+    handler: regular-payments/direct-debits-sync.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
+  transaction-sync:
+    handler: transactions/transaction-sync.handler
+    events:
+      - sns: 
+          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
   balances:
     handler: accounts/balances.handler
     events:
@@ -319,6 +358,30 @@ functions:
       - http: 
           path: '/mybank/v1/accounts/balances'
           method: GET
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+  scheduledPayments:
+    handler: regular-payments/scheduled-payments.handler
+    events:
+      - http: 
+          path: '/mybank/v1/accounts/{accountId}/payments'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+  directDebits:
+    handler: regular-payments/direct-debits.handler
+    events:
+      - http: 
+          path: '/mybank/v1/accounts/{accountId}/direct-debits'
+          method: get
           cors: true
           private: true
           authorizer: 
@@ -355,11 +418,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-  transaction-sync:
-    handler: transactions/transaction-sync.handler
-    events:
-      - sns: 
-          arn: arn:aws:sns:${opt:region, self:provider.region}:${self:provider.accountId}:${self:provider.environment.ACCOUNTS_SNS_TOPIC}
   savings-aggregator:
     handler: analytics/savings-aggregator.handler
     events:
@@ -679,6 +737,42 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.BALANCES_TABLE}
+    ScheduledPaymentsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: accountId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: customerId
+            KeyType: HASH
+          - AttributeName: accountId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.SCHEDULED_PAYMENTS_TABLE}
+    DirectDebitsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: accountId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: customerId
+            KeyType: HASH
+          - AttributeName: accountId
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DIRECT_DEBITS_TABLE}
     TransactionsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Delete

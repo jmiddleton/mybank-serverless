@@ -5,7 +5,7 @@ const dynamoDbHelper = require('../libs/dynamodb-helper');
 const dynamoDb = dynamoDbHelper.dynamoDb;
 
 const collectionHandlers = {
-  "GET": getBalances,
+  "GET": getDirectDebits,
 }
 
 module.exports.handler = async (event) => {
@@ -18,13 +18,14 @@ module.exports.handler = async (event) => {
   return jsonResponse.invalid({ error: `Invalid HTTP Method: ${httpMethod}` });
 };
 
-async function getBalances(event) {
+async function getDirectDebits(event) {
   const params = {
-    TableName: process.env.BALANCES_TABLE,
+    TableName: process.env.DIRECT_DEBITS_TABLE,
     Limit: 500,
-    KeyConditionExpression: 'customerId = :customerId',
+    KeyConditionExpression: 'customerId = :customerId and accountId, :accountId',
     ExpressionAttributeValues: {
-      ':customerId': event.requestContext.authorizer.principalId
+      ':customerId': event.requestContext.authorizer.principalId,
+      ':accountId': event.pathParameters.accountId
     }
   };
 
@@ -33,10 +34,10 @@ async function getBalances(event) {
     if (result && result.Items && result.Items.length > 0) {
       const body = {
         data: {
-          balances: result.Items
+          directDebit: result.Items
         },
         links: {
-          self: "/accounts/balances?page=0",
+          self: "/accounts/" + event.pathParameters.accountId + "/direct-debits?page=0",
           first: "",
           prev: "",
           next: "",
@@ -51,6 +52,6 @@ async function getBalances(event) {
     }
   } catch (error) {
     console.log(error);
-    return { error: "Balances not found" };
+    return { error: "Direct Debits not found" };
   }
 }

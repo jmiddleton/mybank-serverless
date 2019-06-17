@@ -21,7 +21,7 @@ module.exports.handler = async (event) => {
 
   try {
     const headers = { Authorization: "Bearer " + message.access_token };
-    let response = await axios.get(message.cdr_url + "/accountDetails/" + message.accountId, { headers: headers });
+    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId, { headers: headers });
 
     //if (response && response.data) { //this endpoint should return a data element
     if (response && response.data && response.data.accountId) {

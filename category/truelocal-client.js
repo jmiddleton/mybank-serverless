@@ -28,7 +28,7 @@ async function search(value, location) {
                 categoryCode = categoryCode.replace(/[^a-zA-Z0-9]/g, '');
                 console.log("Category found for " + value + " is: " + categoryCode);
 
-                return { category: categoryCode };
+                return categoryCode;
             }
         }
         console.log("Search in TrueLocal complete.");
