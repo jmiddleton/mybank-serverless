@@ -4,6 +4,5 @@ package-lock.json
 yarn.lock
 dev-mybank-secrets.json
 dev-mybank.cer
-Merchant_lookup-sandbox.p12
 .serverless/
 .dynamodb/
