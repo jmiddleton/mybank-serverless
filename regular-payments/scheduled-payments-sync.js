@@ -37,7 +37,7 @@ async function updatePayment(payment, message) {
 
   payment.updated = new Date().getTime();
   payment.customerId = message.customerId;
-  payment.accountId = message.accountId;
+  payment.accountId = message.accountId + "#" + payment.scheduledPaymentId;
 
   const params = {
     TableName: process.env.SCHEDULED_PAYMENTS_TABLE,

@@ -43,10 +43,10 @@ provider:
     USER_BANK_AUTH_TABLE: user-bank-auth-${opt:stage, self:provider.stage}
     AUTH0_CLIENT_ID: ${file(./dev-mybank-secrets.json):AUTH0_CLIENT_ID}
     AUTH0_CLIENT_PUBLIC_KEY: ${file(./dev-mybank.cer)}
-    MASTERCARD_P12: ./mastercard-merchant-sandbox.p12
-    MASTERCARD_CONSUMER_KEY: ${file(./dev-mybank-secrets.json):MASTERCARD_CONSUMER_KEY}
-    MARTERCARD_KEY_PASS: ${file(./dev-mybank-secrets.json):MARTERCARD_KEY_PASS}
-    MARTERCARD_KEY_ALIAS: ${file(./dev-mybank-secrets.json):MARTERCARD_KEY_ALIAS}
+#    MASTERCARD_P12: ./mastercard-merchant-sandbox.p12
+#    MASTERCARD_CONSUMER_KEY: ${file(./dev-mybank-secrets.json):MASTERCARD_CONSUMER_KEY}
+#    MARTERCARD_KEY_PASS: ${file(./dev-mybank-secrets.json):MARTERCARD_KEY_PASS}
+#    MARTERCARD_KEY_ALIAS: ${file(./dev-mybank-secrets.json):MARTERCARD_KEY_ALIAS}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -369,6 +369,15 @@ functions:
     events:
       - http: 
           path: '/mybank/v1/accounts/{accountId}/payments'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
+      - http: 
+          path: '/mybank/v1/payments'
           method: get
           cors: true
           private: true

@@ -18,32 +18,35 @@ MasterCardAPI.init({
 
 
 async function search(value, location) {
-    console.log("Searching on Mastercard for merchant " + value + "...");
+    const nvalue = value.replace(/\s/g, '');
+    console.log("Searching on Mastercard for merchant " + nvalue + "...");
     try {
         const requestData = {
-            "MerchantId": value,
-            "Type": "FuzzyMatch"
+            "merchant_id": nvalue,
+            "type": "FuzzyMatch"
         };
 
-        merchantIdentifier.MerchantIdentifier.query(requestData, function (error, data) {
+        return merchantIdentifier.MerchantIds.query(requestData, function (error, data) {
             if (error) {
-                err("HttpStatus: " + error.getHttpStatus());
-                err("Message: " + error.getMessage());
-                err("ReasonCode: " + error.getReasonCode());
-                err("Source: " + error.getSource());
-                err(error);
+                console.log("HttpStatus: " + error.getHttpStatus());
+                console.log("Message: " + error.getMessage());
+                console.log("ReasonCode: " + error.getReasonCode());
+                console.log("Source: " + error.getSource());
+                console.log(error);
 
             }
             else {
-                console.log("MCC Code found for " + value + " is: " + data.MerchantIds.ReturnedMerchants.Merchant[0].MerchantCategory);
-                return data.MerchantIds.ReturnedMerchants.Merchant[0].MerchantCategory;
+                if (data && data.returnedMerchants && data.returnedMerchants.length > 0) {
+                    console.log("MCC Code found for " + nvalue + " is: " + data.returnedMerchants[0].merchantCategory);
+                    return data.returnedMerchants[0].merchantCategory;
+                }
+                return undefined;
             }
-            console.log("Search in Mastercard complete.");
         });
-
     } catch (error) {
         console.log(error);
     }
+    console.log("Search for " + nvalue + " in Mastercard complete.");
 };
 
 module.exports = {

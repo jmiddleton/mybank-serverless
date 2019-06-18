@@ -8,7 +8,6 @@
     "axios": "^0.18.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
-    "mastercard-merchant-identifier": "^1.0.3",
     "moment": "^2.24.0",
     "obj-clean": "^2.0.0",
     "querystring": "^0.2.0",
