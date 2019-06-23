@@ -37,7 +37,7 @@ async function updateDirectDebit(directDebit, message) {
 
   directDebit.updated = new Date().getTime();
   directDebit.customerId = message.customerId;
-  directDebit.accountId = message.accountId + "#"; //TODO:
+  directDebit.accountId = message.accountId + "#" + directDebit.authorisedEntity.description;
 
   const params = {
     TableName: process.env.DIRECT_DEBITS_TABLE,

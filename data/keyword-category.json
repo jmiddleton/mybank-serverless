@@ -25,13 +25,23 @@
         "subcategory": "RetailShopping"
     },
     {
-        "keyword":"OPTUS BILLING AUTOPAY",
+        "keyword": "OPTUS BILLING AUTOPAY",
         "category": "Utilities",
         "subcategory": "TelephoneServices"
     },
     {
-        "keyword":"SVOROSUMO",
+        "keyword": "SVOROSUMO",
         "category": "EatingOut",
         "subcategory": "Takeaways"
+    },
+    {
+        "keyword": "Transfer to other Bank NetBank 5583 MIDDLETON",
+        "category": "Housing",
+        "subcategory": "Housing"
+    },
+    {
+        "keyword":"Direct Debit 079021 LEASE PAY 001-0806451-002",
+        "category": "Transport",
+        "subcategory": "Loan"
     }
 ]

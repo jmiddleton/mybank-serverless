@@ -23,7 +23,6 @@ provider:
       rateLimit: 10
   timeout: 30 # Timeout in seconds for this specific function. 
   environment:
-    PAYEES_TABLE: payees-${opt:stage, self:provider.stage}
     ACCOUNTS_TABLE: accounts-${opt:stage, self:provider.stage}
     ACCOUNTS_DETAILS_TABLE: accounts-details-${opt:stage, self:provider.stage}
     ACCOUNTS_SNS_TOPIC: accounts-topic-${opt:stage, self:provider.stage}
@@ -32,6 +31,7 @@ provider:
     SCHEDULED_PAYMENTS_TABLE: scheduled-payments-${opt:stage, self:provider.stage}
     DIRECT_DEBITS_TABLE: direct-debits-${opt:stage, self:provider.stage}
     TRANSACTIONS_TABLE: transactions-${opt:stage, self:provider.stage}
+    PAYEES_TABLE: payees-${opt:stage, self:provider.stage}
     SPENDING_TABLE: spendings-${opt:stage, self:provider.stage}
     SAVINGS_TABLE: savings-${opt:stage, self:provider.stage}
     INCOME_TABLE: income-${opt:stage, self:provider.stage}
@@ -393,6 +393,15 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
+      - http: 
+          path: '/mybank/v1/direct-debits'
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: auth-jwt-token
+            identitySource: method.request.header.Authorization
+            type: token
   transactions:
     handler: transactions/transactions.handler
     events:
@@ -532,7 +541,6 @@ functions:
             name: auth-jwt-token
             identitySource: method.request.header.Authorization
             type: token
-#payees functions 
   link-payees:
     handler: payees/link-payees.handler
     events:

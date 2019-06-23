@@ -8,10 +8,16 @@ const collectionHandlers = {
   "GET": getDirectDebits,
 }
 
+const methodHandlers = {
+  "GET": getDirectDebitsByAccount
+}
+
 module.exports.handler = async (event) => {
+  let handlers = (event["pathParameters"] == null) ? collectionHandlers : methodHandlers;
+
   let httpMethod = event["httpMethod"];
-  if (httpMethod in collectionHandlers) {
-    const response = await collectionHandlers[httpMethod](event);
+  if (httpMethod in handlers) {
+    const response = await handlers[httpMethod](event);
     return jsonResponse.ok(response);
   }
 
@@ -22,7 +28,46 @@ async function getDirectDebits(event) {
   const params = {
     TableName: process.env.DIRECT_DEBITS_TABLE,
     Limit: 500,
-    KeyConditionExpression: 'customerId = :customerId and accountId, :accountId',
+    ProjectionExpression: 'authorisedEntity, lastDebitDateTime, lastDebitAmount',
+    KeyConditionExpression: 'customerId = :customerId',
+    ExpressionAttributeValues: {
+      ':customerId': event.requestContext.authorizer.principalId
+    }
+  };
+
+  try {
+    let result = await dynamoDb.query(params).promise();
+    if (result && result.Items && result.Items.length > 0) {
+      //TODO: ordenar de menor a mayor segun recurrence.nextPaymentDate
+      const body = {
+        data: {
+          directDebits: result.Items
+        },
+        links: {
+          self: "/direct-debits?page=0",
+          first: "",
+          prev: "",
+          next: "",
+          last: ""
+        },
+        meta: {
+          totalRecords: result.Items.length,
+          totalPages: 1
+        }
+      }
+      return body;
+    }
+  } catch (error) {
+    console.log(error);
+    return { error: "Direct Debits not found" };
+  }
+}
+
+async function getDirectDebitsByAccount(event) {
+  const params = {
+    TableName: process.env.DIRECT_DEBITS_TABLE,
+    Limit: 500,
+    KeyConditionExpression: 'customerId = :customerId and accountId = :accountId',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId,
       ':accountId': event.pathParameters.accountId
@@ -34,7 +79,7 @@ async function getDirectDebits(event) {
     if (result && result.Items && result.Items.length > 0) {
       const body = {
         data: {
-          directDebit: result.Items
+          directDebits: result.Items
         },
         links: {
           self: "/accounts/" + event.pathParameters.accountId + "/direct-debits?page=0",

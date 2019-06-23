@@ -152,26 +152,27 @@ async function getCategory(txn) {
 
   const type = transactionTypes.get(txn.type);
   if (type) {
+    //TODO: ver si hay algun mapeo de la description primero, sino devolver el default
+    const merchantCategory = await mcccodes.getCategoryByKey(txn.description);
+    if (merchantCategory) {
+      return merchantCategory.category;
+    }
     return type;
   }
 
   try {
 
     if (merchantCategoryCode) {
-      console.log(">>>>>>>>>mcc " + merchantCategoryCode);
       const mcccode = await mcccodes.getMCCCategoryByCode(merchantCategoryCode);
       category = mcccode.category;
     } else {
       if (merchantName) {
-        console.log(">>>>>>>>>m " + merchantName);
         category = await getCategoryByMerchantName(merchantName);
       } else {
-        console.log(">>>>>>>>>d " + txn.description);
         category = await getCategoryByKeyword(txn.description);
       }
     }
 
-    console.log(">>>>>>>>>cat " + category);
     if (category) {
       return category;
     }
@@ -187,7 +188,6 @@ async function getCategoryByMerchantName(merchantName) {
     //TODO: split the keyword by space and search each word in dynamodb
     //once found, add it.
     const merchantCategory = await mcccodes.getCategoryByKey(merchantName);
-    console.log(">>>>>>>>>mc " + merchantCategory);
     if (merchantCategory) {
       return merchantCategory.category;
     }
@@ -204,8 +204,6 @@ async function getCategoryByMerchantName(merchantName) {
 async function getCategoryByKeyword(keyword) {
   try {
     const categoryFound = await externalClient.search(keyword);
-    console.log(">>>>>>>>>tl " + categoryFound);
-
     return await createKeywordCategory(categoryFound, keyword);
   } catch (err) {
     console.log("Error finding category by " + keyword);

@@ -28,6 +28,7 @@ async function getScheduledPayments(event) {
   const params = {
     TableName: process.env.SCHEDULED_PAYMENTS_TABLE,
     Limit: 500,
+    ProjectionExpression: 'scheduledPaymentId, nickname, paymentSet, recurrence, payeeReference, payerReference',
     KeyConditionExpression: 'customerId = :customerId',
     ExpressionAttributeValues: {
       ':customerId': event.requestContext.authorizer.principalId
@@ -37,6 +38,8 @@ async function getScheduledPayments(event) {
   try {
     let result = await dynamoDb.query(params).promise();
     if (result && result.Items && result.Items.length > 0) {
+
+      //TODO: ordenar de menor a mayor segun recurrence.nextPaymentDate
       const body = {
         data: {
           scheduledPayments: result.Items
@@ -60,6 +63,7 @@ async function getScheduledPayments(event) {
     return { error: "Scheduled Payments not found" };
   }
 }
+
 async function getScheduledPaymentsByAccount(event) {
   const params = {
     TableName: process.env.SCHEDULED_PAYMENTS_TABLE,
