@@ -4,11 +4,14 @@ const AWS = require('aws-sdk');
 const jsonResponse = require("../libs/json-response");
 const encodeHelper = require("../libs/encode-helper");
 const mcccodes = require("../category/mcccodes.js");
+const moment = require('moment');
 
-const handlers = {
-  "GET": getTransactions,
-  "POST": createTransaction,
+const methodHandlers = {
+  "GET": getTransactionsByAccount,
   "PUT": updateTransaction
+}
+const collectionHandlers = {
+  "GET": getTransactions
 }
 
 var dynamodbOfflineOptions = {
@@ -22,6 +25,8 @@ const dynamoDb = isOffline()
   : new AWS.DynamoDB.DocumentClient();
 
 module.exports.handler = async (event) => {
+  let handlers = (event["pathParameters"] == null) ? collectionHandlers : methodHandlers;
+
   let httpMethod = event["httpMethod"];
   if (httpMethod in handlers) {
     const response = await handlers[httpMethod](event);
@@ -32,6 +37,39 @@ module.exports.handler = async (event) => {
 };
 
 async function getTransactions(event) {
+  const latest = getQueryParam(event, 'q', undefined);
+
+  if (latest !== "latest") {
+    return { error: "Transaction criteria not supported" };
+  }
+
+  const params = {
+    TableName: process.env.TRANSACTIONS_TABLE,
+    Limit: 10,
+    IndexName: 'latestTxnIndex',
+    ScanIndexForward: false,
+    KeyConditionExpression: 'customerId = :customerId',
+    ExpressionAttributeValues: {
+      ':customerId': event.requestContext.authorizer.principalId
+    }
+  };
+
+  try {
+    let result = await dynamoDb.query(params).promise();
+
+    if (result && result.Items) {
+      var body = {
+        data: { transactions: result.Items }
+      }
+      return body;
+    }
+    return { error: "Transactions not found" };
+  } catch (error) {
+    console.log(error);
+    return { error: "Error retrieving transactions" };
+  }
+}
+async function getTransactionsByAccount(event) {
   const pagesize = getQueryParam(event, 'page-size', 25);
   const category = getQueryParam(event, 'category', undefined);
   const month = getQueryParam(event, 'month', undefined);
@@ -84,16 +122,10 @@ async function getTransactions(event) {
   }
 };
 
-async function createTransaction(event) {
-  const data = JSON.parse(event.body);
-  
-  return saveTransaction(data);
-}
-
 async function updateTransaction(event) {
   const data = JSON.parse(event.body);
-  data.categoryFilter = data.category + "#" + data.postingDateTime;
-  data.accountFilter = data.accountId + "#" + data.categoryFilter;
+  data.accountFilter = data.accountId + "#" + data.category + "#" + data.postingDateTime;
+  data.updated = moment().format();
 
   //TODO: update also keyword-category table
   //TODO: if "Apply to All" then update the category of transactions with the same description.

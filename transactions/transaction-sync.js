@@ -23,7 +23,6 @@ const dynamoDb = isOffline()
 
 module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
-  const timestamp = new Date().getTime();
 
   console.log("Processing Account Transactions event...");
 
@@ -37,11 +36,10 @@ module.exports.handler = async (event) => {
         const validDate = getValidDate(txn);
         let id = txn.accountId + "#" + validDate + "#" + (txn.transactionId ? txn.transactionId : shortid.generate());
 
-        txn.updated = timestamp;
+        txn.created = validDate;
         txn.customerId = message.customerId;
         txn.category = await getCategory(txn);
-        txn.categoryFilter = txn.category + "#" + validDate;
-        txn.accountFilter = txn.accountId + "#" + txn.categoryFilter;
+        txn.accountFilter = txn.accountId + "#" + txn.category + "#" + validDate;
         txn.accountId = id;
 
         const params = {
@@ -73,7 +71,7 @@ async function getTransactions(message) {
   const headers = { Authorization: "Bearer " + message.access_token };
 
   while (keepGoing) {
-    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", { 
+    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", {
       headers: headers, params: {
         'accountId': message.accountId,
         'oldest-time': moment().subtract(3, 'months').format(),
@@ -92,6 +90,7 @@ async function getTransactions(message) {
 
     if (response && response.data && response.data.length > 0) {
       response.data.forEach(p => {
+        p.institution = message.bank_code;
         records.push(p);
       });
     } else {

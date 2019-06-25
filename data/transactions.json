@@ -15,8 +15,7 @@
         "reference": "5c90a613ecfb3767a2e5c7ac1",
         "merchantName": "GLUID",
         "merchantCategoryCode": "0732",
-        "category": "Income",
-        "categoryFilter": "Income#2019-05"
+        "category": "Income"
     },
     {
         "customerId": "auth0|5ca3224d04099c0e4aec452a",
@@ -160,8 +159,7 @@
         "reference": "5c90a6136f2bd5e084295986",
         "merchantName": "ACCUFARM",
         "merchantCategoryCode": "5411",
-        "category": "Groceries",
-        "categoryFilter": "Groceries#2019-03"
+        "category": "Groceries"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -179,8 +177,7 @@
         "reference": "5c90a613c32f9067e8201dfd",
         "merchantName": "TRIPSCH",
         "merchantCategoryCode": "5411",
-        "category": "Groceries",
-        "categoryFilter": "Groceries#2019-03"
+        "category": "Groceries"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -198,8 +195,7 @@
         "reference": "5c922200fb13560a10d2a557",
         "merchantName": "BIOLIVE",
         "merchantCategoryCode": "5462",
-        "category": "Groceries",
-        "categoryFilter": "Groceries#2019-03"
+        "category": "Groceries"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -217,8 +213,7 @@
         "reference": "5c9235c92dee430f4eb99f74",
         "merchantName": "BITTOR",
         "merchantCategoryCode": "5411",
-        "category": "Groceries",
-        "categoryFilter": "Groceries#2019-05"
+        "category": "Groceries"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",
@@ -236,8 +231,7 @@
         "reference": "5c9235c99f901b4ed256cfbe",
         "merchantName": "QABOOS",
         "merchantCategoryCode": "5411",
-        "category": "Groceries",
-        "categoryFilter": "Groceries#2018-11"
+        "category": "Groceries"
     },
     {
         "customerId": "auth0|5ca30dd504099c0e4aec4471",

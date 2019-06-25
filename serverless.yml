@@ -425,7 +425,7 @@ functions:
             type: token
       - http: 
           path: 'mybank/v1/transactions'
-          method: post
+          method: get
           cors: true
           private: true
           authorizer: 
@@ -795,7 +795,7 @@ resources:
             AttributeType: S
           - AttributeName: accountId
             AttributeType: S
-          - AttributeName: categoryFilter
+          - AttributeName: created
             AttributeType: S
           - AttributeName: accountFilter
             AttributeType: S
@@ -805,11 +805,11 @@ resources:
           - AttributeName: accountId
             KeyType: RANGE
         LocalSecondaryIndexes:
-          - IndexName: categoryIndex
+          - IndexName: latestTxnIndex
             KeySchema:
               - AttributeName: customerId
                 KeyType: HASH
-              - AttributeName: categoryFilter
+              - AttributeName: created
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
