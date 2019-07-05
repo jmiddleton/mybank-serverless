@@ -49,6 +49,7 @@ module.exports.handler = async (event) => {
 
         try {
           dynamoDb.put(params).promise();
+          console.log("Transactions " + txn.accountFilter + " processed successfully.");
         } catch (error) {
           console.error(error);
         }
@@ -163,7 +164,9 @@ async function getCategory(txn) {
 
     if (merchantCategoryCode) {
       const mcccode = await mcccodes.getMCCCategoryByCode(merchantCategoryCode);
-      category = mcccode.category;
+      if (mcccode) {
+        category = mcccode.category;
+      }
     } else {
       if (merchantName) {
         category = await getCategoryByMerchantName(merchantName);

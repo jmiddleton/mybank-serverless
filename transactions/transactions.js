@@ -127,14 +127,19 @@ async function updateTransaction(event) {
   data.accountFilter = data.accountId + "#" + data.category + "#" + data.postingDateTime;
   data.updated = moment().format();
 
-  //TODO: update also keyword-category table
-  //TODO: if "Apply to All" then update the category of transactions with the same description.
-  mcccodes.addKeywordCategory({
-    keyword: data.merchantName,
-    category: data.category
-  });
+  try {
+    //TODO: update also keyword-category table
+    //TODO: if "Apply to All" then update the category of transactions with the same description.
+    mcccodes.addKeywordCategory({
+      keyword: data.merchantName,
+      category: data.category
+    });
 
-  return saveTransaction(data);
+    return saveTransaction(data);
+  } catch (error) {
+    console.log(error);
+    return { error: "Error creating a transaction" };
+  }
 }
 
 async function saveTransaction(data) {
@@ -143,13 +148,8 @@ async function saveTransaction(data) {
     Item: data
   };
 
-  try {
-    await dynamoDb.put(params).promise();
-    return params.Item;
-  } catch (error) {
-    console.log(error);
-    return { error: "Error creating a transaction" };
-  }
+  await dynamoDb.put(params).promise();
+  return params.Item;
 }
 
 function addPaginationLinks(body, pathParameters, query, result) {

@@ -35,7 +35,7 @@ module.exports.handler = async (event) => {
                     if (accounts) {
                         await asyncForEach(accounts, async account => {
                             console.log("Refreshing account " + account.accountId);
-                            sendSNS(account.accountId, auth);
+                            sendSNS(account, auth);
                         });
                     } else {
                         console.log("Accounts not found.");
@@ -57,10 +57,11 @@ module.exports.handler = async (event) => {
     }
 };
 
-async function sendSNS(accountId, token) {
+async function sendSNS(account, token) {
     let messageData = {
         Message: JSON.stringify({
-            accountId: accountId,
+            accountId: account.accountId,
+            productCategory: account.productCategory,
             customerId: token.customerId,
             cdr_url: token.cdr_url,
             bank_code: token.bank,

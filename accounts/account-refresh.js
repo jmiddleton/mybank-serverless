@@ -14,7 +14,7 @@ if (isOffline()) {
 
 let sns = new AWS.SNS(snsOpts);
 
-//this endpoint refreshes account's details
+//this endpoint refresh account's details
 module.exports.handler = async (event) => {
     const accountId = event.pathParameters.accountId;
     const principalId = event.requestContext.authorizer.principalId;
@@ -29,7 +29,9 @@ module.exports.handler = async (event) => {
         }
 
         if (userBankAuth) {
-            sendSNS(accountId, userBankAuth);
+            //TODO: retrieve the account details
+            const account = { accountId: accountId, productCategory: "TRANS_AND_SAVINGS_ACCOUNTS" };
+            sendSNS(account, userBankAuth);
         } else {
             return jsonResponse.forbidden({ error: "TokenNotFound", message: "Access token not found" });
         }
@@ -41,10 +43,11 @@ module.exports.handler = async (event) => {
     }
 };
 
-async function sendSNS(accountId, token) {
+async function sendSNS(account, token) {
     let messageData = {
         Message: JSON.stringify({
-            accountId: accountId,
+            accountId: account.accountId,
+            productCategory: account.productCategory,
             customerId: token.customerId,
             cdr_url: token.cdr_url,
             bank_code: token.bank,

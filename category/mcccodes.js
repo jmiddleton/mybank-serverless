@@ -112,10 +112,12 @@ async function getCategoryByKey(keyword) {
 async function addKeywordCategory(data) {
     data.last_updated = new Date().getTime();
 
-    await dynamoDb.put({
-        TableName: process.env.KEYWORD_CATEGORY_TABLE,
-        Item: data
-    }).promise();
+    if (data.merchantName) {
+        await dynamoDb.put({
+            TableName: process.env.KEYWORD_CATEGORY_TABLE,
+            Item: data
+        }).promise();
+    }
 };
 
 async function getCategoryByCode(code) {

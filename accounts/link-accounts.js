@@ -59,6 +59,7 @@ async function publishAccountLinked(account, token) {
     let messageData = {
         Message: JSON.stringify({
             accountId: account.accountId,
+            productCategory: account.productCategory,
             customerId: token.customerId,
             cdr_url: token.cdr_url,
             bank_code: token.bank,

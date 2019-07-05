@@ -68,7 +68,7 @@ async function getAccountsByBank(customerId, institution) {
   const params = {
     TableName: process.env.ACCOUNTS_TABLE,
     IndexName: 'bankIndex',
-    ProjectionExpression: 'accountId',
+    ProjectionExpression: 'accountId, productCategory',
     KeyConditionExpression: 'customerId = :customerId and institution = :institution',
     ExpressionAttributeValues: {
       ':customerId': customerId,

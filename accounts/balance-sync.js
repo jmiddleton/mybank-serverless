@@ -41,6 +41,8 @@ async function updateBalance(balance, message) {
 
   balance.updated = new Date().getTime();
   balance.customerId = message.customerId;
+  balance.productCategory= message.productCategory;
+  
   const params = {
     TableName: process.env.BALANCES_TABLE,
     Item: balance
