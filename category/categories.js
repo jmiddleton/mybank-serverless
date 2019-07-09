@@ -50,30 +50,52 @@ async function getCategories() {
 
 async function bulkLoadCategories(event) {
     const requestBody = JSON.parse(event.body);
-    const putRequest = [];
-
-    requestBody.forEach(cat => {
-        putRequest.push({
-            "PutRequest": {
-                "Item": cat
-            }
-        })
-    });
-
-    const params = {
-        RequestItems: {
-            [process.env.CATEGORIES_TABLE]: putRequest
-        }
-    }
+    let putRequest = [];
+    let dataImported = true;
+    let chunkNumber = 1;
 
     try {
-        await dynamoDb.batchWrite(params).promise();
-        return jsonResponse.ok();
+        while (requestBody.length > 0) {
+            console.log('Processing chunk #' + chunkNumber + '...');
+
+            const splitArrays = requestBody.splice(0, 25);
+            splitArrays.forEach(cat => {
+                putRequest.push({
+                    "PutRequest": {
+                        "Item": cat
+                    }
+                });
+            });
+
+            const params = {
+                RequestItems: {
+                    [process.env.CATEGORIES_TABLE]: putRequest
+                }
+            }
+
+            try {
+                await dynamoDb.batchWrite(params).promise();
+                chunkNumber++;
+                dataImported = true;
+                console.log('Chunk #' + chunkNumber + ' processed successfully.');
+            } catch (error) {
+                dataImported = false;
+                console.log(error);
+                console.log('Fail chunk #' + chunkNumber);
+            } finally {
+                putRequest = [];
+            }
+        }
     } catch (error) {
         console.log(error);
+    }
+
+    if (dataImported) {
+        return jsonResponse.ok();
+    } else {
         return jsonResponse.notFound({
             error: "SystemError",
-            message: "Error loading bulk categories"
+            message: "Error loading bulk categories, please check server logs"
         });
     }
 };
