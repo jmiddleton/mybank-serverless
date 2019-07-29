@@ -102,15 +102,16 @@ async function getAccountById(event) {
   }
 }
 
+//TODO: check https://www.freecodecamp.org/news/avoiding-the-async-await-hell-c77a0fb71c4c/
 async function deleteAccount(event) {
   //TODO: send an SNS to functions to delete the data
   const principalId = event.requestContext.authorizer.principalId;
   const accountId = event.pathParameters.accountId;
 
-  deleteAccountById(principalId, accountId);
-  deleteAccountDetails(principalId, accountId);
-  deleteBalance(principalId, accountId);
-  deleteTransactions(principalId, accountId);
+  await deleteTransactions(principalId, accountId);
+  await deleteBalance(principalId, accountId);
+  await deleteAccountById(principalId, accountId);
+  await deleteAccountDetails(principalId, accountId);
 
   return jsonResponse.ok({ message: "Account has been successfully deleted" });
 }
@@ -125,7 +126,7 @@ async function deleteAccountById(customerId, accountId) {
   };
 
   try {
-    dynamoDb.delete(params).promise();
+    await dynamoDb.delete(params).promise();
     console.log("Account: " + accountId + " successfully deleted");
   } catch (error) {
     console.error(error);
@@ -142,7 +143,7 @@ async function deleteAccountDetails(customerId, accountId) {
   };
 
   try {
-    dynamoDb.delete(params).promise();
+    await dynamoDb.delete(params).promise();
     console.log("Account details: " + accountId + " successfully deleted");
   } catch (error) {
     console.error(error);
@@ -159,7 +160,7 @@ async function deleteBalance(customerId, accountId) {
   };
 
   try {
-    dynamoDb.delete(params).promise();
+    await dynamoDb.delete(params).promise();
     console.log("Balance for account: " + accountId + " successfully deleted");
   }catch (error) {
     console.error(error);
@@ -191,6 +192,8 @@ async function deleteTransactions(customerId, accountId) {
       });
 
       console.log("Transactions of account: " + accountId + " successfully deleted");
+    }else{
+      console.log("Transactions to delete not found.");
     }
   }
   catch (error) {

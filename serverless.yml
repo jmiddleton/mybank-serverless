@@ -221,6 +221,8 @@ plugins:
   - serverless-offline-scheduler
   - serverless-offline #serverless-offline needs to be last in the list
 custom:
+  serverless-offline:
+#    host: 192.168.1.8 #this is for the mobile app to reach the lambda functions
   serverless-jetpack:
     mode: npm
   dynamodb:

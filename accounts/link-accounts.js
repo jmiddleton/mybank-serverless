@@ -30,7 +30,7 @@ module.exports.handler = async (event) => {
             await asyncForEach(accounts, async account => {
                 const status = await registerAccount(account, userBankAuth);
                 if (status == 0) {
-                    publishAccountLinked(account, userBankAuth);
+                    await publishAccountLinked(account, userBankAuth);
                 }
             });
         } else {
@@ -72,7 +72,8 @@ async function publishAccountLinked(account, token) {
 
     console.log("PUBLISHING ACCOUNT MESSAGE TO SNS:", messageData);
     try {
-        await sns.publish(messageData).promise();
+        let snsResult = await sns.publish(messageData).promise();
+        console.log("PUBLISHED", snsResult);
     } catch (err) {
         console.log(err);
     }

@@ -10,6 +10,7 @@ const collectionHandlers = {
 
 module.exports.handler = async (event) => {
   let httpMethod = event["httpMethod"];
+  
   if (httpMethod in collectionHandlers) {
     const response = await collectionHandlers[httpMethod](event);
     return jsonResponse.ok(response);
