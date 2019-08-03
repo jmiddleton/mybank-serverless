@@ -5,9 +5,9 @@ const jsonResponse = require("../libs/json-response");
 const userbankDao = require("../customer/userbank-auth-dao.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const dynamoDbHelper = require('../libs/dynamodb-helper');
-const axios = require("axios");
+const bankclient = require("../libs/bank-client");
 
-const dynamoDb= dynamoDbHelper.dynamoDb;
+const dynamoDb = dynamoDbHelper.dynamoDb;
 
 var snsOpts = {
     region: "ap-southeast-2"
@@ -45,10 +45,8 @@ module.exports.handler = async (event) => {
 };
 
 async function getAccounts(token) {
-    const headers = { Authorization: "Bearer " + token.access_token, 'x-fapi-interaction-id': '1341341' };
-
     //TODO: for real openbanking API, replace banks for accounts
-    const accounts = await axios.get(token.cdr_url + "/banks/" + token.bank, { headers: headers });
+    const accounts = await bankclient.get(token.cdr_url + "/banks/" + token.bank, token);
     if (accounts && accounts.data && accounts.data.data && accounts.data.data.accounts) {
         return accounts.data.data.accounts;
     }
@@ -56,6 +54,7 @@ async function getAccounts(token) {
 }
 
 async function publishAccountLinked(account, token) {
+    console.log(token);
     let messageData = {
         Message: JSON.stringify({
             accountId: account.accountId,

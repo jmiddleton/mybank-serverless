@@ -1,17 +1,8 @@
 'use strict';
 
-const AWS = require('aws-sdk');
-const axios = require("axios");
-
-var dynamodbOfflineOptions = {
-  region: "localhost",
-  endpoint: "http://localhost:8000"
-},
-  isOffline = () => process.env.IS_OFFLINE;
-
-const dynamoDb = isOffline()
-  ? new AWS.DynamoDB.DocumentClient(dynamodbOfflineOptions)
-  : new AWS.DynamoDB.DocumentClient();
+const bankclient = require("../libs/bank-client");
+const dynamoDbHelper = require('../libs/dynamodb-helper');
+const dynamoDb = dynamoDbHelper.dynamoDb;
 
 module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
@@ -20,8 +11,7 @@ module.exports.handler = async (event) => {
   console.log("Processing Account Details event...");
 
   try {
-    const headers = { Authorization: "Bearer " + message.access_token };
-    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId, { headers: headers });
+    let response = await bankclient.get(message.cdr_url + "/accounts/" + message.accountId, message);
 
     //if (response && response.data) { //this endpoint should return a data element
     if (response && response.data && response.data.accountId) {

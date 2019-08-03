@@ -12,8 +12,7 @@
     "obj-clean": "^2.0.0",
     "querystring": "^0.2.0",
     "serverless-http": "^1.9.1",
-    "shortid": "^2.2.14",
-    "uuid": "^2.0.3"
+    "shortid": "^2.2.14"
   },
   "devDependencies": {
     "aws-sdk": "^2.290.0",
@@ -23,6 +22,7 @@
     "serverless-offline-dynamodb-streams": "^1.5.1",
     "serverless-offline-scheduler": "^0.3.7",
     "serverless-offline-sns": "^0.53.0",
-    "serverless-plugin-split-stacks": "^1.7.2"
+    "serverless-plugin-split-stacks": "^1.7.2",
+    "uuid": "^3.3.2"
   }
 }

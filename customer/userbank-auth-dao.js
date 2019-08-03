@@ -26,6 +26,9 @@ async function registerUserBankAuth(data, principalId) {
                 { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
 
             if (token_response && token_response.data) {
+                //TODO: call https://dev-mybank.au.auth0.com/api/v2/users/auth0|5ca30dd504099c0e4aec4471 
+                //to retrieve last_login and last_ip
+
                 console.log("Token successfully exchanged with bank " + bank.code);
                 const userBankAuth = {
                     customerId: principalId,

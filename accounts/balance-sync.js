@@ -1,7 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const axios = require("axios");
+const bankclient = require("../libs/bank-client");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 
 var dynamodbOfflineOptions = {
@@ -22,8 +22,7 @@ module.exports.handler = async (event) => {
   console.log("Processing Account Balance event...");
 
   try {
-    const headers = { Authorization: "Bearer " + message.access_token };
-    let response = await axios.get(message.cdr_url + "/balances/" + message.bank_code, { headers: headers });
+    let response = await bankclient.get(message.cdr_url + "/balances/" + message.bank_code, message);
 
     if (response && response.data && response.data.data && response.data.data.balances) {
       await asyncForEach(response.data.data.balances, async balance => {

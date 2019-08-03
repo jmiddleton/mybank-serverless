@@ -1,6 +1,6 @@
 'use strict';
 
-const axios = require("axios");
+const bankclient = require("../libs/bank-client");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const dynamoDbHelper = require('../libs/dynamodb-helper');
 const dynamoDb = dynamoDbHelper.dynamoDb;
@@ -12,14 +12,14 @@ module.exports.handler = async (event) => {
   console.log("Processing Direct Debits event...");
 
   try {
-    const headers = { Authorization: "Bearer " + message.access_token };
-    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/direct-debits", {
-      headers: headers, params: {
-        "page": page,
-        "page-size": 25,
-        "_page": page
-      }
-    });
+    const params = {
+      "page": page,
+      "page-size": 25,
+      "_page": page
+    };
+
+    let response = await bankclient.get(message.cdr_url + "/accounts/" + message.accountId + "/direct-debits",
+      message, params);
 
     if (response && response.data && response.data.data && response.data.data.directDebitAuthorisations) {
       await asyncForEach(response.data.data.directDebitAuthorisations, async directDebit => {

@@ -22,6 +22,10 @@
         "jwks_uri": "https://dev-mybank.au.auth0.com/.well-known/jwks.json",
         "registration_endpoint": "https://dev-mybank.au.auth0.com/oidc/register",
         "revocation_endpoint": "https://dev-mybank.au.auth0.com/oauth/revoke"
+      },
+      "versions":{
+        "/banking/accounts": "2",
+        "/banking/payees": "3"
       }
     }
   },

@@ -1,7 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const axios = require("axios");
+const bankclient = require("../libs/bank-client");
 const shortid = require('shortid');
 const mcccodes = require("../category/mcccodes.js");
 const externalClient = require("../category/truelocal-client.js");
@@ -48,19 +48,17 @@ module.exports.handler = async (event) => {
         };
 
         try {
-          dynamoDb.put(params).promise();
+          await dynamoDb.put(params).promise();
           console.log("Transactions " + txn.accountFilter + " processed successfully.");
         } catch (error) {
           console.error(error);
         }
       });
     } else {
-      console.log(JSON.stringify(transactions));
       console.log("No Transactions found.");
     }
   } catch (err) {
     console.log(err);
-    console.log("-> Error retrieving transactions: ");
   }
   console.log("Transactions processing finished.");
 };
@@ -69,19 +67,19 @@ async function getTransactions(message) {
   let records = [];
   let keepGoing = true;
   let page = 1;
-  const headers = { Authorization: "Bearer " + message.access_token };
 
   while (keepGoing) {
-    let response = await axios.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions", {
-      headers: headers, params: {
-        'accountId': message.accountId,
-        'oldest-time': moment().subtract(3, 'months').format(),
-        'newest-time': moment().format(),
-        "page": page,
-        "page-size": 25,
-        "_page": page
-      }
-    });
+    let params = {
+      'accountId': message.accountId,
+      'oldest-time': moment().subtract(3, 'months').format(),
+      'newest-time': moment().format(),
+      "page": page,
+      "page-size": 25,
+      "_page": page
+    };
+
+    let response = await bankclient.get(message.cdr_url + "/accounts/" + message.accountId + "/transactions",
+      message, params);
 
     //TODO: this is for openbanking
     // if (response && response.data && response.data.data && response.data.data.transactions) {
