@@ -6,6 +6,9 @@ const userbankDao = require("../customer/userbank-auth-dao.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const dynamoDbHelper = require('../libs/dynamodb-helper');
 const bankclient = require("../libs/bank-client");
+const log4js = require('log4js');
+const logger = log4js.getLogger('link-accounts');
+logger.level = 'debug';
 
 const dynamoDb = dynamoDbHelper.dynamoDb;
 
@@ -39,7 +42,7 @@ module.exports.handler = async (event) => {
 
         return jsonResponse.ok({});
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         return jsonResponse.error(err);
     }
 };
@@ -54,7 +57,7 @@ async function getAccounts(token) {
 }
 
 async function publishAccountLinked(account, token) {
-    console.log(token);
+    logger.debug(token);
     let messageData = {
         Message: JSON.stringify({
             accountId: account.accountId,
@@ -69,12 +72,12 @@ async function publishAccountLinked(account, token) {
         TopicArn: process.env.accountsTopicArn,
     };
 
-    console.log("PUBLISHING ACCOUNT MESSAGE TO SNS:", messageData);
+    logger.debug("PUBLISHING ACCOUNT MESSAGE TO SNS:", messageData);
     try {
         let snsResult = await sns.publish(messageData).promise();
-        console.log("PUBLISHED", snsResult);
+        logger.debug("PUBLISHED", snsResult);
     } catch (err) {
-        console.log(err);
+        logger.error(err);
     }
 }
 
@@ -92,10 +95,10 @@ async function registerAccount(account, token) {
 
     try {
         await dynamoDb.put(params).promise();
-        console.log("Account: " + account.accountId + " synched successfully");
+        logger.debug("Account: " + account.accountId + " synched successfully");
         return 0;
     } catch (error) {
-        console.error(error);
+        logger.error(error);
         return -1;
     }
 }

@@ -8,6 +8,9 @@ const externalClient = require("../category/truelocal-client.js");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
 const clean = require('obj-clean');
 const moment = require('moment');
+const log4js = require('log4js');
+const logger = log4js.getLogger('transactions-sync');
+logger.level = 'debug';
 
 //TODO: use const clean = require('obj-clean'); to remove empty elements not allowed by dynamoDB.
 
@@ -24,12 +27,12 @@ const dynamoDb = isOffline()
 module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
 
-  console.log("Processing Account Transactions event...");
+  logger.info("Processing Account Transactions event...");
 
   try {
     const transactions = await getTransactions(message);
     const hasTransactions = transactions.length > 0;
-    console.log("Found " + transactions.length + " transactions to process: ");
+    logger.debug("Found " + transactions.length + " transactions to process: ");
 
     if (hasTransactions) {
       await asyncForEach(transactions, async txn => {
@@ -49,18 +52,18 @@ module.exports.handler = async (event) => {
 
         try {
           await dynamoDb.put(params).promise();
-          console.log("Transactions " + txn.accountFilter + " processed successfully.");
+          logger.debug("Transactions " + txn.accountFilter + " processed successfully.");
         } catch (error) {
-          console.error(error);
+          logger.error(error);
         }
       });
     } else {
-      console.log("No Transactions found.");
+      logger.info("No Transactions found.");
     }
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
-  console.log("Transactions processing finished.");
+  logger.info("Transactions processing finished.");
 };
 
 async function getTransactions(message) {
@@ -177,8 +180,8 @@ async function getCategory(txn) {
       return category;
     }
   } catch (err) {
-    console.log("Error retrieving category: " + err.response);
-    console.log(err);
+    logger.debug("Error retrieving category: " + err.response);
+    logger.debug(err);
   }
   return "Uncategorized";
 }
@@ -195,8 +198,8 @@ async function getCategoryByMerchantName(merchantName) {
     return await getCategoryByKeyword(merchantName);
 
   } catch (err) {
-    console.log("Error finding category by merchant name.");
-    console.log(err);
+    logger.debug("Error finding category by merchant name.");
+    logger.debug(err);
   }
 }
 
@@ -206,8 +209,8 @@ async function getCategoryByKeyword(keyword) {
     const categoryFound = await externalClient.search(keyword);
     return await createKeywordCategory(categoryFound, keyword);
   } catch (err) {
-    console.log("Error finding category by " + keyword);
-    console.log(err);
+    logger.debug("Error finding category by " + keyword);
+    logger.debug(err);
   }
 }
 

@@ -45,7 +45,7 @@ async function getTransactions(event) {
 
   const params = {
     TableName: process.env.TRANSACTIONS_TABLE,
-    Limit: 10,
+    Limit: 50,
     IndexName: 'latestTxnIndex',
     ScanIndexForward: false,
     KeyConditionExpression: 'customerId = :customerId',
@@ -70,7 +70,7 @@ async function getTransactions(event) {
   }
 }
 async function getTransactionsByAccount(event) {
-  const pagesize = getQueryParam(event, 'page-size', 25);
+  const pagesize = getQueryParam(event, 'page-size', 50);
   const category = getQueryParam(event, 'category', undefined);
   const month = getQueryParam(event, 'month', undefined);
   const nextkey = getQueryParam(event, 'nextkey', '');

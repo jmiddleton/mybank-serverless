@@ -1,5 +1,8 @@
 const axios = require("axios");
 const uuid = require('uuid/v3');
+const log4js = require('log4js');
+const logger = log4js.getLogger('bank-client');
+logger.level = 'debug';
 
 module.exports.get = async (url, token, params) => {
 
@@ -16,7 +19,7 @@ module.exports.get = async (url, token, params) => {
         "x-fapi-interaction-id": uuid.URL
     };
 
-    console.log("{'url': '" + url + "', 'headers': " + JSON.stringify(headers) + ", 'params': " + JSON.stringify(params) + "}");
+    logger.debug("{'url': '" + url + "', 'headers': " + JSON.stringify(headers) + ", 'params': " + JSON.stringify(params) + "}");
 
     return await axios.get(url, { headers: headers, params: params });
 }

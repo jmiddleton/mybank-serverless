@@ -3,6 +3,10 @@
 const AWS = require('aws-sdk');
 const axios = require("axios");
 const asyncForEach = require("../libs/async-helper").asyncForEach;
+const bankclient = require("../libs/bank-client");
+const log4js = require('log4js');
+const logger = log4js.getLogger('payees-sync');
+logger.level = 'debug';
 
 var dynamodbOfflineOptions = {
   region: "localhost",
@@ -17,7 +21,7 @@ const dynamoDb = isOffline()
 module.exports.handler = async (event) => {
   const message = JSON.parse(event.Records[0].Sns.Message);
 
-  console.log("Processing Payees event...");
+  logger.debug("Processing Payees event...");
 
   try {
     const payees = await getPayees(message);
@@ -28,10 +32,10 @@ module.exports.handler = async (event) => {
         await updatePayee(payeeDetails, message);
       });
     } else {
-      console.log("No Payee found.");
+      logger.debug("No Payee found.");
     }
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -39,16 +43,15 @@ async function getPayees(message) {
   let records = [];
   let keepGoing = true;
   let page = 1;
-  const headers = { Authorization: "Bearer " + message.access_token };
 
   while (keepGoing) {
-    let response = await axios.get(message.cdr_url + "/payees/" + message.bank_code, {
-      headers: headers, params: {
-        "type": "ALL",
-        "page": page,
-        "page-size": 10
-      }
-    });
+    let params = {
+      "type": "ALL",
+      "page": page,
+      "page-size": 25
+    };
+
+    let response = await bankclient.get(message.cdr_url + "/payees/" + message.bank_code, message, params);
 
     if (response && response.data && response.data.payees) {
       response.data.payees.forEach(p => {
@@ -69,16 +72,12 @@ async function getPayees(message) {
 }
 
 async function getPayeeDetails(payee, message) {
-  const headers = { Authorization: "Bearer " + message.access_token };
 
   try {
-    const payeeDetailsResponse = await axios.get(message.cdr_url + "/payees/" + payee.payeeId, {
-      headers: headers
-    });
+    const payeeDetailsResponse = await axios.get(message.cdr_url + "/payees/" + payee.payeeId, message);
     return payeeDetailsResponse ? payeeDetailsResponse.data : undefined;
-  }
-  catch (error) {
-    console.error("Payee: " + payee.payeeId + " not found");
+  } catch (error) {
+    logger.error("Payee: " + payee.payeeId + " not found");
   }
 }
 
@@ -98,10 +97,10 @@ async function updatePayee(payee, message) {
 
   try {
     await dynamoDb.put(params).promise();
-    console.log("Payee: " + payee.payeeId + " synched successfully");
+    logger.debug("Payee: " + payee.payeeId + " synched successfully");
   }
   catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 }
 
